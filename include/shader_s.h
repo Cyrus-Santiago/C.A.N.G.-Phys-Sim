@@ -1,3 +1,5 @@
+/* This class file was made with the help of https://learnopengl.com */
+
 #ifndef SHADER_H
 #define SHADER_H
 
