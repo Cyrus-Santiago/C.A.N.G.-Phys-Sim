@@ -6,11 +6,11 @@
 #include "../include/stb_image.h"
 
 #include "../include/shader_s.h"
+#include "../include/input.h"
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 860;
@@ -38,6 +38,8 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, mouseClickCallback);
+    glfwSetCursorPosCallback(window, mousePosCallback);
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -124,16 +126,8 @@ int main()
     return 0;
 }
 
-// function takes in user input and responds accordingly
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
 // this function gets called everytime the window is resized
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		// changes viewport with window size
     glViewport(0, 0, width, height);
 }
