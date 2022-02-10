@@ -5,10 +5,11 @@
 #include <GLFW/glfw3.h>
 #include "../include/stb_image.h"
 
-#include "../include/shader_s.h"
-#include "../include/input.h"
+#include "../include/shader_s.hpp"
+#include "../include/input.hpp"
 
 #include <iostream>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -38,8 +39,8 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, mouseClickCallback);
-    glfwSetCursorPosCallback(window, mousePosCallback);
+    glfwSetMouseButtonCallback(window, Input::mouseClickCallback);
+    glfwSetCursorPosCallback(window, Input::mousePosCallback);
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -54,15 +55,25 @@ int main()
     // vertex points that will be used for drawing
     float vertices[] = {
         // positions
-         0.8f,  0.8f, 0.0f, // top right
-         0.8f, -0.5f, 0.0f, // bottom right
-        -0.8f, -0.5f, 0.0f, // bottom left
-        -0.8f,  0.8f, 0.0f, // top left 
+         0.8f,  0.8f, 0.0f, // top right    0
+         0.8f, -0.5f, 0.0f, // bottom right 1
+        -0.8f, -0.5f, 0.0f, // bottom left  2
+        -0.8f,  0.8f, 0.0f, // top left     3
+
+        // buttons
+        -0.6f, -0.6f, 0.0f, // top right    4
+        -0.6f, -0.7f, 0.0f, // bottom right 5
+        -0.8f, -0.7f, 0.0f, // bottom left  6
+        -0.8f, -0.6f, 0.0f  // top left     7
+
     };
 		// tells GPU which vertices to draw triangles with in order to draw a rectangle
     unsigned int indices[] = {
         0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+        1, 2, 3, // second triangle
+
+        4, 5, 7,
+        5, 6, 7
     };
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -99,10 +110,10 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
 				// check for user input
-        processInput(window);
+        Input::processInput(window);
 
         // set background color
-        glClearColor(0.8f, 1.0f, 1.0f, 1.0f);
+        glClearColor(abs(sin(Input::xClick)), abs(sin(Input::xClick * Input::yClick)), abs(sin(Input::yClick)), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
 				// use compiled shader
@@ -110,7 +121,7 @@ int main()
 				// bind to vertex array buffer
         glBindVertexArray(VAO);
 				// draw elements based on vertexes
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 				
 				// swaps color buffer and shows it as output to screen
         glfwSwapBuffers(window);
