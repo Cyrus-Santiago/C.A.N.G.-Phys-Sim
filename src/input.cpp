@@ -5,20 +5,22 @@
 #include <iostream>
 
 // initialize private position coordinate variables
-double Input::xPos = 0;
-double Input::yPos = 0;
+double Input::xPos = 1;
+double Input::yPos = 1;
 
 // initialize public click position coordinate vatiables
-double Input::xClick = 0;
-double Input::yClick = 0;
+double Input::xClick = 1;
+double Input::yClick = 1;
 
 // This function is called by glfw whenever a mouse click occurs
 void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int mods) {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     // debug statement
-    std::cout << "X=" << xPos << ", Y=" << yPos << std::endl;
+    //std::cout << "X=" << xPos << ", Y=" << yPos << std::endl;
     // we record the mouse click in the input class as a public variable
-    xClick = xPos; yClick = yPos;
+    if(((xPos > 86) && (xPos < 172)) && ((yPos > 432) && (yPos < 459))) {
+      xClick = xPos; yClick = yPos;
+    }
   }
 }
 
