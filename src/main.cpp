@@ -5,8 +5,8 @@
 #include <GLFW/glfw3.h>
 #include "../include/stb_image.h"
 
-#include "../include/shader_s.h"
-#include "../include/input.h"
+#include "../include/shader_s.hpp"
+#include "../include/input.hpp"
 
 #include <iostream>
 
@@ -38,8 +38,8 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, mouseClickCallback);
-    glfwSetCursorPosCallback(window, mousePosCallback);
+    glfwSetMouseButtonCallback(window, Input::mouseClickCallback);
+    glfwSetCursorPosCallback(window, Input::mousePosCallback);
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -99,7 +99,7 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
 				// check for user input
-        processInput(window);
+        Input::processInput(window);
 
         // set background color
         glClearColor(0.8f, 1.0f, 1.0f, 1.0f);
