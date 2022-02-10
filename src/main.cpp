@@ -9,6 +9,7 @@
 #include "../include/input.hpp"
 
 #include <iostream>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -102,7 +103,7 @@ int main()
         Input::processInput(window);
 
         // set background color
-        glClearColor(0.8f, 1.0f, 1.0f, 1.0f);
+        glClearColor(abs(sin(Input::xClick)), abs(sin(Input::xClick * Input::yClick)), abs(sin(Input::yClick)), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
 				// use compiled shader
