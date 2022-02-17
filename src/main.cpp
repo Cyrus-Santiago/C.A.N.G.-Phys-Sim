@@ -5,8 +5,9 @@
 #include <GLFW/glfw3.h>
 #include "../include/stb_image.h"
 
-#include "../include/shader_s.hpp"
+#include "../include/shader.hpp"
 #include "../include/input.hpp"
+#include "../include/resourceManager.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -48,8 +49,10 @@ int main()
         return -1;
     }
 
-    // build and compile our shader program
-    Shader ourShader("src/shader.vs", "src/shader.fs");
+    // here we declare ourShader, and use the resource manager to load the
+    // shaders and compile them, we've named these shaders default
+    Shader ourShader ;
+    ourShader = ResourceManager::LoadShader("src/shader.vs", "src/shader.fs", "default");
 
     // vertex points that will be used for drawing
     float vertices[] = {
@@ -103,7 +106,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    ourShader.use(); // activate shader
+    ourShader.Use(); // activate shader
 
     /* RENDER LOOP */
     while (!glfwWindowShouldClose(window))
@@ -115,11 +118,13 @@ int main()
         // from the input class
         Click mousePosData = Input::getLastMouseClickPos();
         // set background color based on mouse position data (to demonstrate that it works)
-        glClearColor(abs(sin(mousePosData.xPos)), abs(sin(mousePosData.xPos * mousePosData.yPos)), abs(sin(mousePosData.yPos)), 1.0f);
+        glClearColor(abs(sin(mousePosData.xPos)),
+                     abs(sin(mousePosData.xPos * mousePosData.yPos)),
+                     abs(sin(mousePosData.yPos)), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
 				// use compiled shader
-        ourShader.use();
+        ourShader.Use();
 				// bind to vertex array buffer
         glBindVertexArray(VAO);
 				// draw elements based on vertexes
