@@ -1,3 +1,5 @@
+/* Code on this page was written with the help https://learnopengl.com */
+
 #include "glad.h"
 #include <GLFW/glfw3.h>
 

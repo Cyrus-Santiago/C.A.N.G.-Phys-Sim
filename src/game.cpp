@@ -1,3 +1,5 @@
+/* Code on this page was written with the help https://learnopengl.com */
+
 #include "../include/game.hpp"
 
 Game::Game(unsigned int width, unsigned int height) 
