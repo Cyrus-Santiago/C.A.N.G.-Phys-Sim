@@ -13,37 +13,8 @@ Shader &Shader::Use() {
 }
 
 // this method is used to compile our shaders
-void Shader::Compile(const char * vertexPath,
-                     const char * fragmentPath) {
-
-    // retrieve fragment and vertex shade source code from file path
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-    // ensure ifstream objects can throw exceptions
-    vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-    fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        // open files
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-        // read file's buffer contents into streams
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-        // close file handlers
-        vShaderFile.close();
-        fShaderFile.close();
-        // convert stream into string
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-    } catch (std::ifstream::failure& e) {
-        std::cout << "ERROR::STREAM::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
-    }
-    const char * vShaderCode = vertexCode.c_str();
-    const char * fShaderCode = fragmentCode.c_str();
-    
+void Shader::Compile(const char * vShaderCode,
+                     const char * fShaderCode) {    
     unsigned int vertex, fragment;
 
     // compile vertex shader

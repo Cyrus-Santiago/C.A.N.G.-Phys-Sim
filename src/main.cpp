@@ -7,6 +7,7 @@
 
 #include "../include/shader.hpp"
 #include "../include/input.hpp"
+#include "../include/resourceManager.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -48,9 +49,10 @@ int main()
         return -1;
     }
 
-    // build and compile our shader program
-    Shader ourShader;
-    ourShader.Compile("src/shader.vs", "src/shader.fs");
+    // here we declare ourShader, and use the resource manager to load the
+    // shaders and compile them, we've named these shaders default
+    Shader ourShader ;
+    ourShader = ResourceManager::LoadShader("src/shader.vs", "src/shader.fs", "default");
 
     // vertex points that will be used for drawing
     float vertices[] = {
