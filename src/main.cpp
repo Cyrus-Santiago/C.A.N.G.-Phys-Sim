@@ -11,11 +11,11 @@
 #include <iostream>
 #include <cmath>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 // settings
 const unsigned int SCR_WIDTH = 860;
 const unsigned int SCR_HEIGHT = 540;
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main()
 {
@@ -40,7 +40,6 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetMouseButtonCallback(window, Input::mouseClickCallback);
-    glfwSetCursorPosCallback(window, Input::mousePosCallback);
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -112,8 +111,11 @@ int main()
 				// check for user input
         Input::processInput(window);
 
-        // set background color
-        glClearColor(abs(sin(Input::xClick)), abs(sin(Input::xClick * Input::yClick)), abs(sin(Input::yClick)), 1.0f);
+        // here we have a click object that holds position data, and we get that data
+        // from the input class
+        Click mousePosData = Input::getLastMouseClickPos();
+        // set background color based on mouse position data (to demonstrate that it works)
+        glClearColor(abs(sin(mousePosData.xPos)), abs(sin(mousePosData.xPos * mousePosData.yPos)), abs(sin(mousePosData.yPos)), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
 				// use compiled shader
