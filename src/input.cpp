@@ -4,11 +4,6 @@
 #include "../include/input.hpp"
 #include <iostream>
 
-// initialize private position coordinate variables
-double Input::xPos = 1;
-double Input::yPos = 1;
-
-// initialize public click position coordinate vatiables
 double Input::xClick = 1;
 double Input::yClick = 1;
 
@@ -18,20 +13,26 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // debug statement
     //std::cout << "X=" << xPos << ", Y=" << yPos << std::endl;
     // we record the mouse click in the input class as a public variable
+
+    // declare variables that glfw will store mouse position data in
+    double xPos, yPos;
+    // call glfw to give us mouse position data
+    glfwGetCursorPos(window, &xPos, &yPos);
+    // here I hardcoded in button position data, and update click if the mouse is clicked
+    // within these bounds, otherwise it's not updated
     if(((xPos > 86) && (xPos < 172)) && ((yPos > 432) && (yPos < 459))) {
       xClick = xPos; yClick = yPos;
     }
   }
 }
 
-// this function is called by glfw whenever the moust changes position
-void Input::mousePosCallback(GLFWwindow * window, double x, double y) {
-  // we keep track of the position in the Input class as a private variable
-  xPos = x; yPos = y;
-}
-
 // function takes in user input and responds accordingly
 void Input::processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+}
+// allows us to access mouse position data without using global variables
+Click Input::getLastMouseClickPos() {
+  Click clickPosData(xClick, yClick);
+  return clickPosData;
 }
