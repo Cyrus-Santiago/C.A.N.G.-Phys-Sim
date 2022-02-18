@@ -1,5 +1,5 @@
 #include "../include/glad.h"
-#include <GLFW/glfw3.h>
+#include "../include/glfw3.h"
 #include "../include/stb_image.h"
 #include "../include/input.hpp"
 #include <iostream>

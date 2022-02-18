@@ -1,4 +1,4 @@
-#include <GLFW/glfw3.h>
+#include "../include/glfw3.h"
 
 // class that stores mouse click position, mouse position, and callback functions for
 // glfw to call
