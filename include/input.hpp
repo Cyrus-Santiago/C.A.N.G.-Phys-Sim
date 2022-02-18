@@ -1,4 +1,4 @@
-#include <GLFW/glfw3.h>
+#include "../include/glfw3.h"
 
 // class only exists so we have an object that holds click data,
 // maybe I should've used a struct instead...

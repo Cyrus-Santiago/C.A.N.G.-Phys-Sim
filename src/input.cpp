@@ -1,5 +1,5 @@
 #include "../include/glad.h"
-#include <GLFW/glfw3.h>
+#include "../include/glfw3.h"
 #include "../include/stb_image.h"
 #include "../include/input.hpp"
 #include <iostream>
@@ -31,7 +31,6 @@ void Input::processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
-
 // allows us to access mouse position data without using global variables
 Click Input::getLastMouseClickPos() {
   Click clickPosData(xClick, yClick);
