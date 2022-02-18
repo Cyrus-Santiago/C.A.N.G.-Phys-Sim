@@ -1,5 +1,12 @@
+/* Code on this page was written with the help https://learnopengl.com */
+
+#ifndef GAME_H
+#define GAME_H
+
 #include "glad.h"
 #include <GLFW/glfw3.h>
+
+#include "../include/resourceManager.hpp"
 
 // represents the state of the game
 enum GameState {
@@ -27,3 +34,5 @@ class Game {
         void Update(float dt);
         void Render();
 };
+
+#endif

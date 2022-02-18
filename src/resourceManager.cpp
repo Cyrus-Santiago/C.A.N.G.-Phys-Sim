@@ -9,6 +9,7 @@
 #include "../include/stb_image.h"
 
 std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
 
 Shader ResourceManager::LoadShader(const char *vShaderFile,
                                    const char *fShaderFile,
@@ -19,6 +20,15 @@ Shader ResourceManager::LoadShader(const char *vShaderFile,
 
 Shader ResourceManager::GetShader(std::string name) {
     return Shaders[name];
+}
+
+Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, std::string name) {
+    Textures[name] = loadTextureFromFile(file, alpha);
+    return Textures[name];
+}
+
+Texture2D ResourceManager::GetTexture(std::string name) {
+    return Textures[name];
 }
 
 void ResourceManager::Clear() {
@@ -55,4 +65,21 @@ Shader ResourceManager::loadShaderFromFile(const char * vShaderFile, const char 
     Shader shader;
     shader.Compile(vShaderCode, fShaderCode);
     return shader;
+}
+
+Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha) {
+    // create texture
+    Texture2D texture;
+    if (alpha) {
+        texture.internalFormat = GL_RGBA;
+        texture.imageFormat = GL_RGBA;
+    }
+    // load image
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
+    // now generate texture
+    texture.Generate(width, height, data);
+    // and finally free image data
+    stbi_image_free(data);
+    return texture;
 }
