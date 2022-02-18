@@ -1,5 +1,8 @@
 /* Code on this page was written with the help https://learnopengl.com */
 
+#ifndef TEXTURE_H
+#define TEXTURE_H
+
 #include "../include/glad.h"
 
 class Texture2D {
@@ -23,3 +26,5 @@ public:
     // sets current texture
     void Bind() const;
 };
+
+#endif

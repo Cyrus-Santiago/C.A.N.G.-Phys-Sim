@@ -1,5 +1,8 @@
 /* Code on this page was written with the help https://learnopengl.com */
 
+#ifndef RESOURCEMANAGER_H
+#define RESOURCEMANAGER_H
+
 #include <map>
 #include <string>
 
@@ -32,3 +35,5 @@ private:
     // load and gen texture from file
     static Texture2D loadTextureFromFile(const char *file, bool alpha);
 };
+
+#endif
