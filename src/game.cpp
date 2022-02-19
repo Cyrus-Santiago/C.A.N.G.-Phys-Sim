@@ -18,7 +18,7 @@ Game::~Game() {
 
 void Game::Init() {
   // load in shader files and name them sprite
-  ResourceManager::LoadShader("src/sprite.vs", "src/sprite.fs", "sprite");
+  ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
