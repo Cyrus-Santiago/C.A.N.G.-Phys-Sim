@@ -1,5 +1,6 @@
 /* This class was entirely written by Nate */
 
+#include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/glfw3.h"
 #include <iostream>
@@ -34,4 +35,6 @@ public:
     static Click getLastMouseClickPos();
 
     static void getButtonData(std::vector<Button> Buttons);
+
+    static std::vector<Button> giveButtonData();
 };

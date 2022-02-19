@@ -8,8 +8,8 @@ and it should not count towards his 1000 lines. */
 #include "../include/texture.hpp"
 
 // constructor
-Texture2D::Texture2D() : width(0), height(0), internalFormat(GL_RGB), wrapS(GL_REPEAT),
-    filterMin(GL_LINEAR), filterMax(GL_LINEAR) {
+Texture2D::Texture2D() : width(0), height(0), internalFormat(GL_RGB), imageFormat(GL_RGB), wrapS(GL_REPEAT),
+    wrapT(GL_REPEAT), filterMin(GL_LINEAR), filterMax(GL_LINEAR) {
     glGenTextures(1, &this->ID);
 }
 

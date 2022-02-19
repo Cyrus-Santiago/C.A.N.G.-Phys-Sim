@@ -1,3 +1,7 @@
+
+#ifndef MENU_H
+#define MENU_H
+
 #include "../include/button.hpp"
 #include <vector>
 
@@ -13,3 +17,5 @@ public:
     // intialize level from button data
     void init(unsigned int menuWidth, unsigned int menuHeight, unsigned int scrWidth, unsigned int scrHeight);
 };
+
+#endif

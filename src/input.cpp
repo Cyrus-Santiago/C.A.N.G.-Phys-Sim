@@ -5,6 +5,7 @@ and it should not count towards his 1000 lines. */
 
 
 #include "../include/input.hpp"
+#include <vector>
 
 double Input::xClick = 1;
 double Input::yClick = 1;
@@ -23,15 +24,19 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // call glfw to give us mouse position data
     glfwGetCursorPos(window, &xPos, &yPos);
 
-    // here I hardcoded in button position data, and update click if the mouse is clicked
-    // within these bounds, otherwise it's not updated
-    if ((xPos > Buttons[0].Position.x) && (xPos < Buttons[0].Position.x + Buttons[0].Size.x) && (yPos > Buttons[0].Position.y) && (yPos < Buttons[0].Position.y + Buttons[0].Size.y)) {
-      xClick = xPos; yClick = yPos;
-      std::cout << "BUTTON 1!" << std::endl;
-    }
-    if ((xPos > Buttons[1].Position.x) && (xPos < Buttons[1].Position.x + Buttons[1].Size.x) && (yPos > Buttons[1].Position.y) && (yPos < Buttons[1].Position.y + Buttons[1].Size.y)) {
-      xClick = xPos; yClick = yPos;
-      std::cout << "BUTTON 2!" << std::endl;
+    for (int i = 0; i < Buttons.size(); ++i) {
+      if ((xPos > Buttons[i].Position.x) && (xPos < Buttons[i].Position.x + Buttons[i].Size.x) &&
+          (yPos > Buttons[i].Position.y) && (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
+        xClick = xPos; yClick = yPos;
+        std::cout << "Button " << i << " pressed!" << std::endl;
+        if (Buttons[i].Pressed) {
+          Buttons[i].Sprite = ResourceManager::GetTexture("button1");
+          Buttons[i].Pressed = false;
+        } else {
+          Buttons[i].Sprite = ResourceManager::GetTexture("button2");
+          Buttons[i].Pressed = true;
+        }
+      }
     }
   }
 }
@@ -50,4 +55,8 @@ Click Input::getLastMouseClickPos() {
 
 void Input::getButtonData(std::vector<Button> buttons) {
   Buttons = buttons;
+}
+
+std::vector<Button> Input::giveButtonData() {
+  return Buttons;
 }
