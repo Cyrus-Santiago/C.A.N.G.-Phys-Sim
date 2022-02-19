@@ -18,7 +18,7 @@ and it should not count towards his 1000 lines. */
 
 // settings
 const unsigned int SCR_WIDTH = 860;
-const unsigned int SCR_HEIGHT = 540;
+const unsigned int SCR_HEIGHT = 860;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 

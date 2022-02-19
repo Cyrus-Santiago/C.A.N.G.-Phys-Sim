@@ -3,6 +3,9 @@ a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
 he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
+#ifndef SPRITERENDERER_H
+#define SPRITERENDERER_H
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../include/shader.hpp"
@@ -26,3 +29,5 @@ private:
     // used to declare vertices and do some dense opengl stuff
     void initRenderData();
 };
+
+#endif
