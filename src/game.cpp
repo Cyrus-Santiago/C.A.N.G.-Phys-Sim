@@ -6,6 +6,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 //#include "../include/menu.hpp"
 #include "../include/input.hpp"
+#include <ostream>
 
 Menu menu;
 SpriteRenderer * Renderer;
@@ -23,6 +24,11 @@ void Game::Init() {
   // load in shader files and name them sprite
   ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
 
+  // load our image as a texture
+  ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
+  ResourceManager::LoadTexture("textures/button2.png", false, "button2");
+  ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
   glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
@@ -36,11 +42,8 @@ void Game::Init() {
   myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   Renderer = new SpriteRenderer(myShader);
-  // load our image as a texture
-  ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
-  //ResourceManager::LoadTexture("textures/block_solid.png", true, "block_solid");
 
-  menu.init(1, 1, Width, Height);
+  menu.init(6, 5, Width, Height);
   Input::getButtonData(menu.Buttons);
 }
 

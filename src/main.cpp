@@ -20,6 +20,8 @@ and it should not count towards his 1000 lines. */
 const unsigned int SCR_WIDTH = 860;
 const unsigned int SCR_HEIGHT = 860;
 
+Game physSim(SCR_WIDTH, SCR_HEIGHT);
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main()
@@ -35,7 +37,9 @@ int main()
 #endif
 
     // glfw window creation
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window;
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -53,7 +57,6 @@ int main()
         return -1;
     }
 
-    Game physSim(SCR_WIDTH, SCR_HEIGHT);
     physSim.Init();
 
     /* RENDER LOOP */
@@ -66,9 +69,7 @@ int main()
         // from the input class
         Click mousePosData = Input::getLastMouseClickPos();
         // set background color based on mouse position data (to demonstrate that it works)
-        glClearColor(abs(sin(mousePosData.xPos)),
-                     abs(sin(mousePosData.xPos * mousePosData.yPos)),
-                     abs(sin(mousePosData.yPos)), 1.0f);
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         physSim.Render();
@@ -92,4 +93,6 @@ int main()
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		// changes viewport with window size
     glViewport(0, 0, width, height);
+    physSim.Width = width;
+    physSim.Height = height;
 }
