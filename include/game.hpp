@@ -1,4 +1,7 @@
-/* Code on this page was written with the help https://learnopengl.com */
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
 
 #ifndef GAME_H
 #define GAME_H
@@ -7,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../include/resourceManager.hpp"
+#include "../include/spriteRenderer.hpp"
 
 // represents the state of the game
 enum GameState {
@@ -19,7 +23,6 @@ enum GameState {
 class Game {    
     public:
         GameState State;
-        bool Keys[1024];
         unsigned int Width, Height;
 
         // constuctor
@@ -30,7 +33,6 @@ class Game {
         void Init();
 
         // game loop
-        void ProcessInput(float dt);
         void Update(float dt);
         void Render();
 };

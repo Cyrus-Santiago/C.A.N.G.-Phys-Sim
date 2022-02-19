@@ -1,4 +1,7 @@
-/* Code on this page was written with the help https://learnopengl.com */
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
 
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
@@ -30,6 +33,7 @@ public:
     // free the memory!
     static void Clear();
 private:
+    ResourceManager() { }
     // load and gen shader from a file
     static Shader loadShaderFromFile(const char * vShaderFile, const char * fShaderFile);
     // load and gen texture from file

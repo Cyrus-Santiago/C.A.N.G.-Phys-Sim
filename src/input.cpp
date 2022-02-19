@@ -1,3 +1,8 @@
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
+
 #include "../include/glad.h"
 #include "../include/glfw3.h"
 #include "../include/stb_image.h"
@@ -20,7 +25,7 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     glfwGetCursorPos(window, &xPos, &yPos);
     // here I hardcoded in button position data, and update click if the mouse is clicked
     // within these bounds, otherwise it's not updated
-    if(((xPos > 86) && (xPos < 172)) && ((yPos > 432) && (yPos < 459))) {
+    if(((xPos > 20) && (xPos < 110)) && ((yPos > 490) && (yPos < 520))) {
       xClick = xPos; yClick = yPos;
     }
   }

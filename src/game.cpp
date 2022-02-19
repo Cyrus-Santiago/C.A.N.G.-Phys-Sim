@@ -1,11 +1,14 @@
-/* Code on this page was written with the help https://learnopengl.com */
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
 
 #include "../include/game.hpp"
 
-Shader ourShader;
+SpriteRenderer * Renderer;
 
 Game::Game(unsigned int width, unsigned int height) 
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height) {
+    : State(GAME_ACTIVE), Width(width), Height(height) {
 
 }
 
@@ -14,78 +17,39 @@ Game::~Game() {
 }
 
 void Game::Init() {
-    // here we declare ourShader, and use the resource manager to load the
-    // shaders and compile them, we've named these shaders default
-    Shader ourShader;
-    ourShader = ResourceManager::LoadShader("src/shader.vs", "src/shader.fs", "default");
+  // load in shader files and name them sprite
+  ResourceManager::LoadShader("src/sprite.vs", "src/sprite.fs", "sprite");
 
-    // vertex points that will be used for drawing
-    float vertices[] = {
-        // positions
-         0.8f,  0.8f, 0.0f, // top right    0
-         0.8f, -0.5f, 0.0f, // bottom right 1
-        -0.8f, -0.5f, 0.0f, // bottom left  2
-        -0.8f,  0.8f, 0.0f, // top left     3
-
-        // buttons
-        -0.6f, -0.6f, 0.0f, // top right    4
-        -0.6f, -0.7f, 0.0f, // bottom right 5
-        -0.8f, -0.7f, 0.0f, // bottom left  6
-        -0.8f, -0.6f, 0.0f  // top left     7
-
-    };
-		// tells GPU which vertices to draw triangles with in order to draw a rectangle
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3, // second triangle
-
-        4, 5, 7,
-        5, 6, 7
-    };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    // generates buffer IDs for our Vertex buffer object and Element Buffer Object
-		glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-		// bind the Vertex Array Object
-    glBindVertexArray(VAO);
-
-		// bind the Vertex Buffer Object to the GL_ARRAY_BUFFER type
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		// copy vertex data into buffer's memory
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		// bind the Element Buffer Object to the GL_ELEMENT_ARRAY_BUFFER type
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		// copy indices data into buffer's memory
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // here we tell opengl how to interpret data we've placed in memory
-    // arg1 specifies location of vertex attribute,
-    // arg2 specifies the size of the vertex attribute,
-    // arg3 specifies the data type and in GLSL vec * contains floats,
-    // arg4 will normalize the data if set to true,
-  	// arg5 defines the stride, how far to the next set of position data,
-    // arg6 is the offset of where the position data begins in the buffer.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    ourShader.Use(); // activate shader
-
+  // set projection matrix based on dimensions of screen (that way we can provide
+  // our coordinates in easy to decipher pixel coordinates)
+  glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
+    static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
+  // tell the shader we're going to be providing an image
+  ResourceManager::GetShader("sprite").Use().SetInt("image", 0);
+  // provide the shader with the projection matrix
+  ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+  Shader myShader;
+  // retrieve the shader we loaded earlier from storage
+  myShader = ResourceManager::GetShader("sprite");
+  // call sprite renderer on our shader
+  Renderer = new SpriteRenderer(myShader);
+  // load our image as a texture
+  ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
 }
 
 void Game::Update(float dt) {
 
 }
 
-void Game::ProcessInput(float dt) {
-
-}
-
 void Game::Render() {
+  Texture2D myTexture;
+  // get our texture from storage
+  myTexture = ResourceManager::GetTexture("face");
+  // render the sprite
+  Renderer->DrawSprite(myTexture, glm::vec2(20, 490),
+    glm::vec2(90, 30), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     // use compiled shader
-    ourShader.Use();
+    //ourShader.Use();
     // bind to vertex array buffer
     //glBindVertexArray(VAO);
 }

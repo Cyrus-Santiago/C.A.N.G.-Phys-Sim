@@ -1,5 +1,7 @@
-/* Code on this page was written with the help https://learnopengl.com */
-
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
 #ifndef TEXTURE_H
 #define TEXTURE_H
 

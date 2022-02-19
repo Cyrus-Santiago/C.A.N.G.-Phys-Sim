@@ -1,4 +1,7 @@
-/* Code on this page was written with the help https://learnopengl.com */
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
 
 #include "../include/resourceManager.hpp"
 
@@ -8,9 +11,11 @@
 
 #include "../include/stb_image.h"
 
+// arrays for storing shaders and textures (so we don't have to repeatedly load them)
 std::map<std::string, Shader> ResourceManager::Shaders;
 std::map<std::string, Texture2D> ResourceManager::Textures;
 
+// we provide the file path and a name, and the resource manager stores it as text
 Shader ResourceManager::LoadShader(const char *vShaderFile,
                                    const char *fShaderFile,
                                    std::string name) {
@@ -18,22 +23,30 @@ Shader ResourceManager::LoadShader(const char *vShaderFile,
     return Shaders[name];
 }
 
+// retrieve a shader we loaded earlier
 Shader ResourceManager::GetShader(std::string name) {
     return Shaders[name];
 }
 
+// we provide the file path and a name, and the resource manager stores it as text
 Texture2D ResourceManager::LoadTexture(const char *file, bool alpha, std::string name) {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
+// retrieve a texture we loaded earlier
 Texture2D ResourceManager::GetTexture(std::string name) {
     return Textures[name];
 }
 
+// FREE THE MEMORY!
 void ResourceManager::Clear() {
     // go through and delete all shaders
     for (auto iter : Shaders) {
+        glDeleteProgram(iter.second.ID);
+    }
+    // go through and delete all textures
+    for (auto iter : Textures) {
         glDeleteProgram(iter.second.ID);
     }
 }

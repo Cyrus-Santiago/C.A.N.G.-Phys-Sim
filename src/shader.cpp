@@ -1,4 +1,8 @@
-/* This class file was made with the help of https://learnopengl.com */
+/* Although this code was physically typed out by Nate, he followed
+a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
+he does not feel comfortable claiming this code as his intellectual property
+and it should not count towards his 1000 lines. */
+
 #include "../include/shader.hpp"
 
 #include <string>
@@ -44,6 +48,7 @@ void Shader::Compile(const char * vShaderCode,
 	glDeleteShader(fragment);
 }
 
+// this is a method that prints errors that opengl throws at us while linking and compiling
 void Shader::checkCompileErrors(unsigned int object, std::string type) {
     int success;
     char infoLog[512];
@@ -62,4 +67,20 @@ void Shader::checkCompileErrors(unsigned int object, std::string type) {
                 << infoLog << "\n" << std::endl;
         }
     }
+}
+
+// these are utility functions (more info in header)
+void Shader::SetInt(const char *name, int value, bool useShader) {
+    if (useShader) this->Use();
+    glUniform1i(glGetUniformLocation(this->ID, name), value);
+}
+
+void Shader::SetMatrix4(const char *name, const glm::mat4 &matrix, bool useShader) {
+    if (useShader) this->Use();
+    glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
+}
+
+void Shader::SetVector3f(const char *name, const glm::vec3 &value, bool useShader) {
+    if (useShader) this->Use();
+    glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
 }

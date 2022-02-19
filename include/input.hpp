@@ -1,3 +1,5 @@
+/* This class was entirely written by Nate */
+
 #include "../include/glfw3.h"
 
 // class only exists so we have an object that holds click data,
@@ -27,15 +29,4 @@ public:
     static void processInput(GLFWwindow *window);
 
     static Click getLastMouseClickPos();
-};
-
-class Button {
-    public:
-        float top, bottom, left, right;
-        Button(float T, float B, float L, float R) {
-            top = T;
-            bottom = B;
-            left = L;
-            right = R;
-        }
 };
