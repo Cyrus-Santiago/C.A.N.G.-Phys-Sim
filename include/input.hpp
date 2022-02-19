@@ -1,6 +1,8 @@
 /* This class was entirely written by Nate */
 
+#include "../include/menu.hpp"
 #include "../include/glfw3.h"
+#include <iostream>
 
 // class only exists so we have an object that holds click data,
 // maybe I should've used a struct instead...
@@ -19,6 +21,7 @@ class Input {
 private:
     // these variables store where the mouse was clicked
     static double xClick, yClick;
+    static std::vector<Button> Buttons;
 
 public:
     // called by glfw on mouse click
@@ -29,4 +32,6 @@ public:
     static void processInput(GLFWwindow *window);
 
     static Click getLastMouseClickPos();
+
+    static void getButtonData(std::vector<Button> Buttons);
 };

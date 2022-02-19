@@ -4,7 +4,10 @@ he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
 #include "../include/game.hpp"
+//#include "../include/menu.hpp"
+#include "../include/input.hpp"
 
+Menu menu;
 SpriteRenderer * Renderer;
 
 Game::Game(unsigned int width, unsigned int height) 
@@ -35,6 +38,10 @@ void Game::Init() {
   Renderer = new SpriteRenderer(myShader);
   // load our image as a texture
   ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
+  //ResourceManager::LoadTexture("textures/block_solid.png", true, "block_solid");
+
+  menu.init(1, 1, Width, Height);
+  Input::getButtonData(menu.Buttons);
 }
 
 void Game::Update(float dt) {
@@ -42,14 +49,5 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
-  Texture2D myTexture;
-  // get our texture from storage
-  myTexture = ResourceManager::GetTexture("face");
-  // render the sprite
-  Renderer->DrawSprite(myTexture, glm::vec2(20, 490),
-    glm::vec2(90, 30), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    // use compiled shader
-    //ourShader.Use();
-    // bind to vertex array buffer
-    //glBindVertexArray(VAO);
+  menu.Draw(*Renderer);
 }
