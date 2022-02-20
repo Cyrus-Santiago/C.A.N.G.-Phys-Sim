@@ -1,0 +1,21 @@
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+
+static GLubyte rasters[24] = {
+        0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00,
+        0xff, 0x00, 0xff, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00,
+        0xff, 0xc0, 0xff, 0xc0
+    };
+
+class TextRenderer {
+public:
+    static void init();
+
+    static void display();
+
+    static void reshape(int width, int height);
+
+    static void keyboard(unsigned char key, int x, int y);
+};

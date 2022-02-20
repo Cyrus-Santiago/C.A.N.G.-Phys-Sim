@@ -16,7 +16,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         for (int y = 0; y < menuHeight; ++y) {
             glm::vec2 pos(20 + (x * ((scrWidth - 20) / menuWidth)), (scrHeight * 0.6) + (y * (scrHeight * 0.4) / menuHeight));
             glm::vec2 size((scrWidth / menuWidth) - 20, ((scrHeight * 0.4) / menuHeight) - 20);
-            Button obj(pos, size, ResourceManager::GetTexture("button1"),
+            Button obj(pos, size, ResourceManager::GetTexture("button2"),
                        glm::vec3(1.0f, 1.0f, 1.0f));
             this->Buttons.push_back(obj);
         }
