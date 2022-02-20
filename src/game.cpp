@@ -6,9 +6,11 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 //#include "../include/menu.hpp"
 #include "../include/input.hpp"
+#include "../include/playArea.hpp"
 #include <ostream>
 
 Menu menu;
+playArea parea;
 SpriteRenderer * Renderer;
 
 Game::Game(unsigned int width, unsigned int height) 
@@ -43,6 +45,7 @@ void Game::Init() {
   // call sprite renderer on our shader
   Renderer = new SpriteRenderer(myShader);
 
+  parea.init(Height,Width);
   menu.init(6, 5, Width, Height);
   Input::getButtonData(menu.Buttons);
 }
