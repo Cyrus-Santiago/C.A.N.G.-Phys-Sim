@@ -1,7 +1,4 @@
-/* Although this code was physically typed out by Nate, he followed
-a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
-he does not feel comfortable claiming this code as his intellectual property
-and it should not count towards his 1000 lines. */
+// This code was written by Nate
 
 
 #include "../include/input.hpp"
@@ -30,10 +27,10 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
         xClick = xPos; yClick = yPos;
         std::cout << "Button " << i << " pressed!" << std::endl;
         if (Buttons[i].Pressed) {
-          Buttons[i].Sprite = ResourceManager::GetTexture("button1");
+          Buttons[i].Color = glm::vec3(1.0f, 1.0f, 1.0f);
           Buttons[i].Pressed = false;
         } else {
-          Buttons[i].Sprite = ResourceManager::GetTexture("button2");
+          Buttons[i].Color = glm::vec3(0.3f, 0.3f, 0.3f);
           Buttons[i].Pressed = true;
         }
       }

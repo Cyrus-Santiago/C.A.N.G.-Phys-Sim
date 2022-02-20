@@ -1,4 +1,4 @@
-/* This class was entirely written by Nate */
+/* This code was written by Nate */
 
 #include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"

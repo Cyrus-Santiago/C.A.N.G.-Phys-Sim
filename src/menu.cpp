@@ -1,11 +1,13 @@
+// This code was written by Nate
+
 #include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/input.hpp"
 
 void Menu::Draw(SpriteRenderer &renderer) {
     Buttons = Input::giveButtonData();
-    for (Button &title : this->Buttons)
-        title.Draw(renderer);
+    for (Button &button : this->Buttons)
+        button.Draw(renderer, button.Color);
 }
 
 void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
