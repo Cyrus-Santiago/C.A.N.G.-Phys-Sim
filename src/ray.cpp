@@ -56,9 +56,8 @@ class Ray{
     }
 };
 
-    int main(){
+    /*int main(){
 
-        /* Testing */
         Ray ray1 = {1.8, 2.3, 3.5};
         Ray ray2 = {4.2, 5.1, 9.4};
 
@@ -73,4 +72,4 @@ class Ray{
         ray2.printRayCoords();
 
         return 0;
-    }
+    }*/
