@@ -26,13 +26,10 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
           (yPos > Buttons[i].Position.y) && (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
         xClick = xPos; yClick = yPos;
         std::cout << "Button " << i << " pressed!" << std::endl;
-        if (Buttons[i].Pressed) {
-          Buttons[i].Color = glm::vec3(1.0f, 1.0f, 1.0f);
+        if (Buttons[i].Pressed)
           Buttons[i].Pressed = false;
-        } else {
-          Buttons[i].Color = glm::vec3(0.3f, 0.3f, 0.3f);
+        else
           Buttons[i].Pressed = true;
-        }
       }
     }
   }

@@ -14,5 +14,5 @@ public:
 
     void Init();
     
-    void Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position);
+    void Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position, unsigned int fontSize);
 };

@@ -34,7 +34,7 @@ void TextRenderer::Init() {
     this->CharacterPositionData.push_back(Character('.', glm::vec2(1.2f, 7.75f))); //  .
 }
 
-void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position) {
+void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position, unsigned int fontSize) {
     for (char &letter : sentence) {
         for (int i = 0; i < CharacterPositionData.size(); i++) {
             if (letter == CharacterPositionData[i].character) {
@@ -45,7 +45,7 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec
     }
     int i = 0;
     for (Character &character : this->Characters) {
-        character.Draw(renderer, i, position);
+        character.Draw(renderer, i, position, fontSize);
         i++;
     }
     Characters.clear();

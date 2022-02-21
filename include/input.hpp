@@ -1,6 +1,5 @@
 /* This code was written by Nate */
 
-#include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/glfw3.h"
 #include <iostream>
