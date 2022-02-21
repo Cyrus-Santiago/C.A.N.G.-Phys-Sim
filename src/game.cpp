@@ -54,15 +54,30 @@ void Game::Update(float dt) {
 void Game::Render() {
   menu.Draw(*Renderer);
   Texture2D texture = ResourceManager::GetTexture("font");
-  Renderer->DrawSprite(texture, glm::vec2(100, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(5.55f, 3.8f)); // H
-  Renderer->DrawSprite(texture, glm::vec2(120, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(3.2f, 3.8f));  // E
-  Renderer->DrawSprite(texture, glm::vec2(140, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(8.5f, 3.8f));  // L
-  Renderer->DrawSprite(texture, glm::vec2(160, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(8.5f, 3.8f));  // L
-  Renderer->DrawSprite(texture, glm::vec2(180, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(0.8f, 5.02f)); // O
-
-  Renderer->DrawSprite(texture, glm::vec2(220, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(7.55f, 5.02f));// W
-  Renderer->DrawSprite(texture, glm::vec2(240, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(0.8f, 5.02f)); // O
-  Renderer->DrawSprite(texture, glm::vec2(260, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(3.36f, 5.02f));// R
-  Renderer->DrawSprite(texture, glm::vec2(280, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(8.5f, 3.8f));  // L
-  Renderer->DrawSprite(texture, glm::vec2(300, 100), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.09f), glm::vec2(2.35f, 3.8f)); // D
+  Renderer->DrawSprite(texture, glm::vec2(0,   120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(0.0f, 0.0f)); // A
+  Renderer->DrawSprite(texture, glm::vec2(20,  120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(1.1f, 0.0f)); // B
+  Renderer->DrawSprite(texture, glm::vec2(40,  120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(2.2f, 0.0f)); // C
+  Renderer->DrawSprite(texture, glm::vec2(60,  120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(3.3f, 0.0f)); // D
+  Renderer->DrawSprite(texture, glm::vec2(80,  120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(4.4f, 0.0f)); // E
+  Renderer->DrawSprite(texture, glm::vec2(100, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(5.5f, 0.0f)); // F
+  Renderer->DrawSprite(texture, glm::vec2(120, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(6.6f, 0.0f)); // G
+  Renderer->DrawSprite(texture, glm::vec2(140, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(7.7f, 0.0f)); // H
+  Renderer->DrawSprite(texture, glm::vec2(160, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(8.8f, 0.0f)); // I
+  Renderer->DrawSprite(texture, glm::vec2(180, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(0.0f, 1.04f)); // J
+  Renderer->DrawSprite(texture, glm::vec2(200, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(1.1f, 1.04f)); // K
+  Renderer->DrawSprite(texture, glm::vec2(220, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(2.2f, 1.04f)); // L
+  Renderer->DrawSprite(texture, glm::vec2(240, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(4.4f, 1.04f)); // M
+  Renderer->DrawSprite(texture, glm::vec2(260, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(5.5f, 1.04f)); // N
+  Renderer->DrawSprite(texture, glm::vec2(280, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(6.6f, 1.04f)); // O
+  Renderer->DrawSprite(texture, glm::vec2(300, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(7.7f, 1.04f)); // P
+  Renderer->DrawSprite(texture, glm::vec2(320, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(8.8f, 1.04f)); // Q
+  Renderer->DrawSprite(texture, glm::vec2(340, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(0.0f, 2.075f)); // R
+  Renderer->DrawSprite(texture, glm::vec2(360, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(1.1f, 2.075f)); // S
+  Renderer->DrawSprite(texture, glm::vec2(380, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(2.2f, 2.075f)); // T
+  Renderer->DrawSprite(texture, glm::vec2(400, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(3.3f, 2.075f)); // U
+  Renderer->DrawSprite(texture, glm::vec2(420, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(4.4f, 2.075f)); // V
+  Renderer->DrawSprite(texture, glm::vec2(440, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(5.5f, 2.075f)); // W
+  Renderer->DrawSprite(texture, glm::vec2(460, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(6.6f, 2.075f)); // X
+  Renderer->DrawSprite(texture, glm::vec2(480, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(7.7f, 2.075f)); // Y
+  Renderer->DrawSprite(texture, glm::vec2(500, 120), glm::vec2(20, 20), 0.0f, glm::vec3(1.0f), glm::vec2(0.1f), glm::vec2(8.8f, 2.075f)); // Z
 }
