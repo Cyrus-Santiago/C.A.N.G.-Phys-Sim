@@ -6,13 +6,14 @@
 #include <iostream>
 
 // constructor
-Button::Button(glm::vec2 position, glm::vec2 size, Texture2D sprite,
+Button::Button(glm::vec2 position, glm::vec2 size, Texture2D texture,
                      glm::vec3 color, std::string type, bool pressed) :
                      Position(position), Size(size), Type(type),
-                     Color(color), Pressed(pressed), Sprite(sprite) { }
+                     Color(color), Pressed(pressed), Texture(texture) { }
 
 // call to make drawing buttons simpler
 void Button::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm::vec3 color) {
+    // an elegant solution for changing button color for different elements
     if (this->Type == "WATER") color = glm::vec3(0.4f, 0.4f, 1.0f);
     else if (this->Type == "MERCURY") color = glm::vec3(0.8f, 0.8f, 0.8f);
     else if (this->Type == "COBALT") color = glm::vec3(0.6f, 0.6f, 1.0f);
@@ -45,7 +46,10 @@ void Button::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm
     else if (this->Type == "LITHIUM") color = glm::vec3(0.4f, 0.35f, 0.4f);
     else if (this->Type == "MAGNESIUM") color = glm::vec3(0.8f, 0.8f, 0.8f);
     else if (this->Type == "URANIUM") color = glm::vec3(1.0f, 1.0f, 0.0f);
+    // this makes the button darker when it's pressed
     if (this->Pressed) color *= glm::vec3(0.5f);
-    spriteRenderer.DrawSprite(this->Sprite, this->Position, this->Size, 0.0f, color);
+    // tell the sprite renderer what to draw
+    spriteRenderer.DrawSprite(this->Texture, this->Position, this->Size, 0.0f, color);
+    // tell the text renderer what to write
     textRenderer.Draw(spriteRenderer, this->Type, glm::vec2(this->Position.x + 7, this->Position.y + 16), 14);
 }

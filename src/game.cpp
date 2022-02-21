@@ -44,8 +44,11 @@ void Game::Init() {
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
 
+  // initialize menu
   menu.init(6, 5, Width, Height);
+  // give the button data to input class
   Input::getButtonData(menu.Buttons);
+  // initialize the text renderer (actually manager)
   textRenderer.Init();
 }
 
@@ -54,5 +57,6 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
+  // draws all the buttons
   menu.Draw(*spriteRenderer, textRenderer);
 }

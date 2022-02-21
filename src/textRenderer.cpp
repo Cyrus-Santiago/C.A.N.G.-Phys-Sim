@@ -1,12 +1,17 @@
+// this code was written by Nate
+
 #include "../include/textRenderer.hpp"
 #include <glm/fwd.hpp>
 #include <string>
 #include <iostream>
 
 void TextRenderer::Init() {
+    // Yeah I know this is cursed. But this is the best way I could come up with for
+    // storing the bit map character data. Feel free to change it if you come up with
+    // a better way.
     this->CharacterPositionData.push_back(Character('A', glm::vec2(0.07f, 0.01f))); // A
     this->CharacterPositionData.push_back(Character('B', glm::vec2(1.17f, 0.01f))); // B
-    this->CharacterPositionData.push_back(Character('C', glm::vec2(2.23f,0.01f))); // C
+    this->CharacterPositionData.push_back(Character('C', glm::vec2(2.23f,0.01f)));  // C
     this->CharacterPositionData.push_back(Character('D', glm::vec2(3.37f, 0.01f))); // D
     this->CharacterPositionData.push_back(Character('E', glm::vec2(4.47f, 0.01f))); // E
     this->CharacterPositionData.push_back(Character('F', glm::vec2(5.57f, 0.01f))); // F
@@ -34,9 +39,14 @@ void TextRenderer::Init() {
     this->CharacterPositionData.push_back(Character('.', glm::vec2(1.2f, 7.75f))); //  .
 }
 
-void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position, unsigned int fontSize) {
+void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position,
+    unsigned int fontSize) {
+    // loop through every char in sentence
     for (char &letter : sentence) {
+        // loop through each Character object in position data array
         for (int i = 0; i < CharacterPositionData.size(); i++) {
+            // if a letter matches data from the array then we add
+            // it to the Characters array so we can draw it
             if (letter == CharacterPositionData[i].character) {
                 Characters.push_back(CharacterPositionData[i]);
                 break;
@@ -44,9 +54,12 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec
         }
     }
     int i = 0;
+    // here we loop through the characters array and draw each
+    // character
     for (Character &character : this->Characters) {
         character.Draw(renderer, i, position, fontSize);
         i++;
     }
+    // no longer need the data in this array
     Characters.clear();
 }

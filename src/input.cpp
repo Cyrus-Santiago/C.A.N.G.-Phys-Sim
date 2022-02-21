@@ -1,6 +1,5 @@
 // This code was written by Nate
 
-
 #include "../include/input.hpp"
 #include <vector>
 
@@ -22,10 +21,14 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     glfwGetCursorPos(window, &xPos, &yPos);
 
     for (int i = 0; i < Buttons.size(); ++i) {
+      // checks bounds of current button and compares that to click data
       if ((xPos > Buttons[i].Position.x) && (xPos < Buttons[i].Position.x + Buttons[i].Size.x) &&
           (yPos > Buttons[i].Position.y) && (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
+        // records click
         xClick = xPos; yClick = yPos;
+        // debug
         std::cout << "Button " << i << " pressed!" << std::endl;
+        // records button press so we can do something with it
         if (Buttons[i].Pressed)
           Buttons[i].Pressed = false;
         else
@@ -50,7 +53,6 @@ Click Input::getLastMouseClickPos() {
 void Input::getButtonData(std::vector<Button> buttons) {
   Buttons = buttons;
 }
-
 std::vector<Button> Input::giveButtonData() {
   return Buttons;
 }
