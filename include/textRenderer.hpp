@@ -1,21 +1,18 @@
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+#include "../include/character.hpp"
 
-static GLubyte rasters[24] = {
-        0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00,
-        0xff, 0x00, 0xff, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00,
-        0xff, 0xc0, 0xff, 0xc0
-    };
+#include <glm/fwd.hpp>
+#include <string>
+#include <vector>
 
 class TextRenderer {
 public:
-    static void init();
+    std::vector<Character> CharacterPositionData;
+    std::vector<Character> Characters;
 
-    static void display();
+    TextRenderer() { }
 
-    static void reshape(int width, int height);
-
-    static void keyboard(unsigned char key, int x, int y);
+    void Init();
+    
+    void Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position);
 };
