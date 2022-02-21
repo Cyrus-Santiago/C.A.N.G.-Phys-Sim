@@ -6,7 +6,7 @@
 #include "../include/spriteRenderer.hpp"
 
 class Background{
-    public:
+public:
     glm::vec2 Position, Size;
     glm::vec3 Color;
     Texture2D bgSprite;

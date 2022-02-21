@@ -45,7 +45,6 @@ void Game::Init() {
   // call sprite renderer on our shader
   Renderer = new SpriteRenderer(myShader);
 
-  parea.init(Height,Width);
   menu.init(6, 5, Width, Height);
   Input::getButtonData(menu.Buttons);
 }
@@ -56,4 +55,5 @@ void Game::Update(float dt) {
 
 void Game::Render() {
   menu.Draw(*Renderer);
+  parea.Draw(*Renderer, Height, Width);
 }

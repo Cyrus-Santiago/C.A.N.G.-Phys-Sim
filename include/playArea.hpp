@@ -10,9 +10,7 @@ class playArea{
         //Constructor for playArea
         playArea(){};
         //Renders the play area background
-        void Draw(SpriteRenderer &renderer);
-        //Initializes the area
-        void init(unsigned int scrHeight, unsigned int scrWidth);
+        void Draw(SpriteRenderer &renderer, unsigned int scrHeight, unsigned int scrWidth);
 
     private:
         unsigned int areaHeight;
