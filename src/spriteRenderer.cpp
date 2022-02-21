@@ -43,12 +43,16 @@ void SpriteRenderer::initRenderData() {
     // tells opengl how our vertex data is organized
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
 
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, 
-  glm::vec2 size, float rotate, glm::vec3 color)
+  glm::vec2 size, float rotate, glm::vec3 color, glm::vec2 texZoom, glm::vec2 texPos)
 {
     // prepare transformations
     this->shader.Use();
@@ -70,6 +74,9 @@ void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position,
     this->shader.SetMatrix4("model", model);
     // provide color to the shader
     this->shader.SetVector3f("spriteColor", color);
+
+    this->shader.SetVector2f("texPos", texPos);
+    this->shader.SetVector2f("texZoom", texZoom);
 
     // set the texture
     glActiveTexture(GL_TEXTURE0);

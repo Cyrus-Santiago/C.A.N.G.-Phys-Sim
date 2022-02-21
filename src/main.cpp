@@ -19,6 +19,7 @@ and it should not count towards his 1000 lines. */
 // settings
 const unsigned int SCR_WIDTH = 860;
 const unsigned int SCR_HEIGHT = 860;
+const char* menuTitle = "C.A.N.G. Physics Simulator";
 
 Game physSim(SCR_WIDTH, SCR_HEIGHT);
 
@@ -39,7 +40,7 @@ int main()
     // glfw window creation
     GLFWwindow* window;
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "C.A.N.G. Physics Simulation", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, menuTitle, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

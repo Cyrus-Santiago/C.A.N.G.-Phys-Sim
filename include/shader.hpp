@@ -34,6 +34,9 @@ public:
     void SetVector3f (const char *name, const glm::vec3 &value,
 					  bool useShader = false);
 
+	void SetVector2f(const char *name, const glm::vec2 &value,
+							 bool useShader = false);
+
 	// sets a matrice's values for a shader input
     void SetMatrix4 (const char *name, const glm::mat4 &matrix,
 				 	 bool useShader = false);
