@@ -1,74 +1,61 @@
-/* Title: Ray - Class Methods
-   Author: Amethyst Skye
-   Description: Handles all operations performed on light ray(s) within simulation environment.
- */
+/* Ray - Class Methods
+   Written by Amethyst Skye
+   Description: Handles all operations performed on light ray(s) within simulation environment. */
 
 #include "../include/ray.hpp"
+#include <cmath>
 
     /* Print the contents of the rayOrigin array */
     void Ray::printRayCoords(){
-        std::cout <<"Ray Origin: (" << rayOrigin[0] << ", " << rayOrigin[1] << ", " << rayOrigin[2] << ")" << std::endl;
+        std::cout <<"Ray Origin: (" << Origin[0] << ", " << Origin[1] << ")" << std::endl;
 
-        std::cout <<"End: (" << rayEnd[0] << ", " << rayEnd[1] << ", " << rayEnd[2] << ")" << std::endl;
+        std::cout <<"Ray End: (" << End[0] << ", " << End[1] << ")" << std::endl;
     }
 
     /* Set position of the ray origin */
-    void Ray::setOrigin(float x, float y, float z){
+    glm::vec2 Ray::setOrigin(double x, double y){
+        Origin[0] = (float)x;
+        Origin[1] = (float)y;
 
-        rayOrigin[0] = x;
-        rayOrigin[1] = y;
-        rayOrigin[2] = z;
+        return (Origin);
     }
     /* Set position of the ray end */
-    void Ray::setEnd(float x, float y, float z){
-        rayEnd[0] = x;
-        rayEnd[1] = y;
-        rayEnd[2] = z;
+    glm::vec2 Ray::setEnd(double x, double y){
+        End[0] = (float)x;
+        End[1] = (float)y;
+
+        return (End);
+    }
+
+    /* Ray Dimensions (length, width) */
+    glm::vec2 Ray::setSize(glm::vec2 origin, glm::vec2 end){
+        Size[0] = fabsf(end[0]-origin[0]);
+        Size[1] = 0.01;
+
+        return (Size);
     }
 
     /* Delete ray from environment */
     void Ray::deleteRay(){
-        isActiveFlag = 0;
-        setOrigin(0,0,0);
-        setEnd(0,0,0);
+        isActive = 0;
+        setOrigin(0,0);
+        setEnd(0,0);
     }
 
-    int drawRay(){
+    /* Used to draw the ray image */
+    int Ray::drawRay(){
         return 0;
     }
 
+    /* Handles placing light ray into sim environment */
     void Ray::placeRay(Click mouseClick){
-        if(isActiveFlag == 1){
-            setOrigin(mouseClick.xPos, mouseClick.yPos, 0);
-            setEnd(0,0,0); /* change later - needs some math */
+        setOrigin(mouseClick.xPos, mouseClick.yPos);
+        setEnd(0,0); /* change later - needs some math from play area bounds */
+        isActive = 1;
+        if(drawRay()){
+            std::cout << "Successfully placed light ray" << std::endl;
             printRayCoords();
-            if(drawRay() == 1)
-                std::cout << "Successfully placed light ray" << std::endl;
-            else
-                std::cout << "Light ray could not be placed" << std::endl;
         }
+        else
+            std::cout << "Light ray could not be placed" << std::endl;
     }
-
-    std::string Ray::isActive(){
-        if(isActiveFlag == 1) return ("active");
-        else return ("not active");
-    }
-
-    /*For Testing
-    int main(){
-
-        Ray ray1 = {1.8, 2.3, 3.5};
-        Ray ray2 = {4.2, 5.1, 9.4};
-
-        ray1.setEnd(3.3, 5.5, 6.6);
-        ray2.setEnd(1.1, 9.9, 3.2);
-
-        std::cout << "Ray 1 is " << ray1.isActive() << ", and coordinates are "<< std::endl;
-        ray1.printRayCoords();
-        ray2.deleteRay();
-
-        std::cout << "Ray 2 is " << ray2.isActive() << ", and coordinates are "<< std::endl;
-        ray2.printRayCoords();
-
-        return 0;
-    } */
