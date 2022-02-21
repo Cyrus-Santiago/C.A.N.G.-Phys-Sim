@@ -5,6 +5,7 @@
 #ifndef RAY_H
 #define RAY_H
 
+#include "../include/input.hpp"
 #include <iostream>
 
 class Ray{
@@ -23,6 +24,7 @@ public: float rayOrigin[3]; /* origin coordinates */
         void setOrigin(float x, float y, float z);
         void setEnd(float x, float y, float z);
         void deleteRay();
+        void placeRay(Click mouseClick);
         std::string isActive();
 };
 #endif
