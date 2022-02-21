@@ -1,4 +1,4 @@
-//Cyrus here, this is to render a backgroud for the play area :)
+//Cyrus here, this is to render a backgroud and border for the play area :)
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 

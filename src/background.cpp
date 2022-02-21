@@ -1,3 +1,4 @@
+//Background for the playArea, made by Cyrus 
 #include "../include/background.hpp"
 
 Background::Background(glm::vec2 position, glm::vec2 size, Texture2D bgsprite, glm::vec3 color) :
