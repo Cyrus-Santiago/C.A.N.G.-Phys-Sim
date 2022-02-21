@@ -6,11 +6,12 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 //#include "../include/menu.hpp"
 #include "../include/input.hpp"
-#include "../include/playArea.hpp"
+#include "../include/playBorder.hpp"
 #include <ostream>
 
 Menu menu;
 playArea parea;
+playBorder pborder;
 SpriteRenderer * Renderer;
 
 Game::Game(unsigned int width, unsigned int height) 
@@ -30,6 +31,7 @@ void Game::Init() {
   ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
   ResourceManager::LoadTexture("textures/button2.png", false, "button2");
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+  ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
@@ -46,6 +48,7 @@ void Game::Init() {
   Renderer = new SpriteRenderer(myShader);
 
   menu.init(6, 5, Width, Height);
+  parea.init(Width, Height);
   Input::getButtonData(menu.Buttons);
 }
 
@@ -55,5 +58,6 @@ void Game::Update(float dt) {
 
 void Game::Render() {
   menu.Draw(*Renderer);
-  parea.Draw(*Renderer, Height, Width);
+  parea.Draw(*Renderer);
+  pborder.Draw(*Renderer);
 }
