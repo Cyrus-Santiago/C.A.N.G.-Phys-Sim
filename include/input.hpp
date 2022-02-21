@@ -1,6 +1,5 @@
-/* This class was entirely written by Nate */
+/* This code was written by Nate */
 
-#include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/glfw3.h"
 #include <iostream>
@@ -31,10 +30,9 @@ public:
     static void mousePosCallback(GLFWwindow * window, double xPos, double yPos);
     // called by glfw on keyboard input
     static void processInput(GLFWwindow *window);
-
+    // does exactly what it says
     static Click getLastMouseClickPos();
-
+    // these are here so we can give/get button data from the menu
     static void getButtonData(std::vector<Button> Buttons);
-
     static std::vector<Button> giveButtonData();
 };

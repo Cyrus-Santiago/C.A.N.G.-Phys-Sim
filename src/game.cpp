@@ -4,12 +4,13 @@ he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
 #include "../include/game.hpp"
-//#include "../include/menu.hpp"
 #include "../include/input.hpp"
+#include <glm/fwd.hpp>
 #include <ostream>
 
 Menu menu;
-SpriteRenderer * Renderer;
+SpriteRenderer * spriteRenderer;
+TextRenderer textRenderer;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -25,9 +26,9 @@ void Game::Init() {
   ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
 
   // load our image as a texture
-  ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
-  ResourceManager::LoadTexture("textures/button2.png", false, "button2");
+  ResourceManager::LoadTexture("textures/button2.png", true, "button2");
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+  ResourceManager::LoadTexture("textures/font.png", true, "font");
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
@@ -41,10 +42,14 @@ void Game::Init() {
   // retrieve the shader we loaded earlier from storage
   myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
-  Renderer = new SpriteRenderer(myShader);
+  spriteRenderer = new SpriteRenderer(myShader);
 
+  // initialize menu
   menu.init(6, 5, Width, Height);
+  // give the button data to input class
   Input::getButtonData(menu.Buttons);
+  // initialize the text renderer (actually manager)
+  textRenderer.Init();
 }
 
 void Game::Update(float dt) {
@@ -52,5 +57,6 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
-  menu.Draw(*Renderer);
+  // draws all the buttons
+  menu.Draw(*spriteRenderer, textRenderer);
 }
