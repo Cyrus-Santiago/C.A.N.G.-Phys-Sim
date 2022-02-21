@@ -7,13 +7,14 @@
 
     /* Print the contents of the rayOrigin array */
     void Ray::printRayCoords(){
-        std::cout <<"Origin: (" << rayOrigin[0] << ", " << rayOrigin[1] << ", " << rayOrigin[2] << ")" << std::endl;
+        std::cout <<"Ray Origin: (" << rayOrigin[0] << ", " << rayOrigin[1] << ", " << rayOrigin[2] << ")" << std::endl;
 
         std::cout <<"End: (" << rayEnd[0] << ", " << rayEnd[1] << ", " << rayEnd[2] << ")" << std::endl;
     }
 
     /* Set position of the ray origin */
     void Ray::setOrigin(float x, float y, float z){
+
         rayOrigin[0] = x;
         rayOrigin[1] = y;
         rayOrigin[2] = z;
@@ -30,6 +31,22 @@
         isActiveFlag = 0;
         setOrigin(0,0,0);
         setEnd(0,0,0);
+    }
+
+    int drawRay(){
+        return 0;
+    }
+
+    void Ray::placeRay(Click mouseClick){
+        if(isActiveFlag == 1){
+            setOrigin(mouseClick.xPos, mouseClick.yPos, 0);
+            setEnd(0,0,0); /* change later - needs some math */
+            printRayCoords();
+            if(drawRay() == 1)
+                std::cout << "Successfully placed light ray" << std::endl;
+            else
+                std::cout << "Light ray could not be placed" << std::endl;
+        }
     }
 
     std::string Ray::isActive(){
