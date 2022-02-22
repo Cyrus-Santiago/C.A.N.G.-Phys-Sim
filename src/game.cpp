@@ -6,6 +6,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
+#include "../include/simulationObject.hpp"
 #include <ostream>
 #include <glm/fwd.hpp>
 
@@ -57,6 +58,7 @@ void Game::Init() {
   Input::getButtonData(menu.Buttons);
   // initialize the text renderer (actually manager)
   textRenderer.Init();
+  
 }
 
 void Game::Update(float dt) {
@@ -68,4 +70,7 @@ void Game::Render() {
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
   menu.Draw(*spriteRenderer, textRenderer);
+
+  SimulationObject simObj(glm::vec2(100, 100));
+  simObj.Draw(*spriteRenderer);
 }
