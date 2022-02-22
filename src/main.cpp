@@ -60,11 +60,20 @@ int main()
 
     physSim.Init();
 
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
     /* RENDER LOOP */
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
 				// check for user input
         Input::processInput(window);
+
+        physSim.Update(deltaTime);
 
         // here we have a click object that holds position data, and we get that data
         // from the input class
