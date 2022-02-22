@@ -42,9 +42,21 @@
         setEnd(0,0);
     }
 
+    void Ray::successfulDraw(int x){
+        if(x == 1){
+            std::cout << "Successfully placed light ray" << std::endl;
+            printRayCoords();
+        }
+        else
+            std::cout << "Light ray could not be placed" << std::endl;
+    }
+
     /* Used to draw the ray image */
-    int Ray::drawRay(){
-        return 0;
+    void Ray::drawRay(SpriteRenderer &renderer){
+        rayTexture = ResourceManager::GetTexture("button1");
+        Color = {0.9f, 0.9f, 0.1f};
+        renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
+        successfulDraw(1);
     }
 
     /* Handles placing light ray into sim environment */
@@ -52,10 +64,4 @@
         setOrigin(mouseClick.xPos, mouseClick.yPos);
         setEnd(0,0); /* change later - needs some math from play area bounds */
         isActive = 1;
-        if(drawRay()){
-            std::cout << "Successfully placed light ray" << std::endl;
-            printRayCoords();
-        }
-        else
-            std::cout << "Light ray could not be placed" << std::endl;
     }

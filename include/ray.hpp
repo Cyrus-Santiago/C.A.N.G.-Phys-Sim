@@ -1,6 +1,5 @@
-/* Title: Ray - Class Declaration
-   Author: Amethyst Skye
- */
+/* Ray - Class Declaration
+   Written by Amethyst Skye */
 
 #ifndef RAY_H
 #define RAY_H
@@ -14,7 +13,7 @@ class Ray{
         /* Fields */
 public: glm::vec2 Origin, End, Size;
         glm::vec3 Color;
-        //Texture2D rayTexture;
+        Texture2D rayTexture;
         bool isActive;
 
         /* Constructor */
@@ -28,7 +27,8 @@ public: glm::vec2 Origin, End, Size;
         glm::vec2 setEnd(double, double);
         glm::vec2 setSize(glm::vec2, glm::vec2);
         void deleteRay();
+        void successfulDraw(int);
         void placeRay(Click);
-        int drawRay();
+        void drawRay(SpriteRenderer &renderer);
 };
 #endif
