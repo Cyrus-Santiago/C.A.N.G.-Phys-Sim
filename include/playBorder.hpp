@@ -6,10 +6,10 @@
 #include "../include/playArea.hpp"
 #include <vector>
 
-class playBorder : public playArea{
+class PlayBorder : public PlayArea{
     public:
         //Constructor
-        playBorder(){};
+        PlayBorder(){};
         //Draw each line in the border
         void Draw(SpriteRenderer &renderer);
         //Array of Borders for each side

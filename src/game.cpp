@@ -12,8 +12,8 @@ and it should not count towards his 1000 lines. */
 #include <glm/fwd.hpp>
 
 Menu menu;
-playArea parea;
-playBorder pborder;
+PlayArea parea;
+PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 TextRenderer textRenderer;
 Simulation simulation;
@@ -58,6 +58,7 @@ void Game::Init() {
   pborder.init(Width,Height);
   // give the button data to input class
   Input::getButtonData(menu.Buttons);
+  //simulation.getBorder(pborder.Border);
   // initialize the text renderer (actually manager)
   textRenderer.Init();
   simulation.Create(glm::vec2(50, 100), glm::vec3(1.0f, 0.0f, 0.0f));

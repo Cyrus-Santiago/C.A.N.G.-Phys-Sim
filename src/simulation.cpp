@@ -3,6 +3,8 @@
 #include "../include/simulation.hpp"
 #include <iostream>
 
+Collision col;
+
 void Simulation::Draw(SpriteRenderer &spriteRenderer) {
     // loops through each element in Sim Obj array and draws it
     // if it isn't destroyed
@@ -63,6 +65,13 @@ void Simulation::Update(float dt) {
     for (SimulationObject &simObj : this->SimulationObjects) {
         if (!simObj.Destroyed) {
             simObj.Move(dt);
+            //if(col.borderDet(simObj,)){ I'm going to put border collision detection somewhere else - Cyrus
+            //    col.collide(simObj);
+            //}
         }
     }
+}
+
+void Simulation::getBorder(std::vector<Background> border){
+    Border = border;
 }
