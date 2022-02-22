@@ -32,6 +32,7 @@ void Game::Init() {
   ResourceManager::LoadTexture("textures/button2.png", true, "button2");
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
   ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
+  ResourceManager::LoadTexture("textures/laser.png", true, "laser");
   ResourceManager::LoadTexture("textures/font.png", true, "font");
 
   // set projection matrix based on dimensions of screen (that way we can provide
