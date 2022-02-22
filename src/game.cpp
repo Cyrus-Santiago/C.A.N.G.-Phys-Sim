@@ -51,6 +51,7 @@ void Game::Init() {
   // initialize menu
   menu.init(6, 5, Width, Height);
   parea.init(Width, Height);
+  pborder.init(Width,Height);
   // give the button data to input class
   Input::getButtonData(menu.Buttons);
   // initialize the text renderer (actually manager)

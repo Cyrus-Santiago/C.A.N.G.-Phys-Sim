@@ -16,7 +16,8 @@ class playBorder : public playArea{
         std::vector<Background> Border;
     private:
         int x=0; //for the purposes of counting 
-        unsigned int Pos;
+        unsigned int PosX, PosY, sizeX, sizeY;
+        void createLine(unsigned int PosX, unsigned int PosY, unsigned int sizeX, unsigned int sizeY);
 };
 
 #endif
