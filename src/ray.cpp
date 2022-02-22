@@ -54,7 +54,7 @@
     /* Used to draw the ray image */
     void Ray::drawRay(SpriteRenderer &renderer){
         rayTexture = ResourceManager::GetTexture("button1");
-        Color = {0.9f, 0.9f, 0.1f};
+        Color = {0.9f, 0.9f, 0.1f, 1.0f};
         renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
         successfulDraw(1);
     }

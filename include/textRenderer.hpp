@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-// this class facilitates rendering text. Well actually sprite renderer does that still...
-// should've called it TextManager or something
+// this class facilitates rendering text. Well actually sprite renderer
+// does that still... should've called it TextManager or something
 class TextRenderer {
 public:
     // this array is for storing bitmap coordinates
@@ -22,5 +22,9 @@ public:
     void Init();
     
     // draws every character in the Characters array
-    void Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position, unsigned int fontSize);
+    void Draw(SpriteRenderer &renderer, std::string sentence,
+              glm::vec2 position, unsigned int fontSize,
+              bool fade = false, float dt = 0);
+
+    void statusMessage(SpriteRenderer &renderer, std::string sentence, float dt);
 };

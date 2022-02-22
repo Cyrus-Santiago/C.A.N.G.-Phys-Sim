@@ -60,15 +60,15 @@ void Game::Init() {
   Input::getButtonData(menu.Buttons);
   // initialize the text renderer (actually manager)
   textRenderer.Init();
-  simulation.Create(glm::vec2(50, 100), glm::vec3(1.0f, 0.0f, 0.0f));
-  simulation.Create(glm::vec2(100, 100), glm::vec3(0.0f, 1.0f, 0.0f));
+  simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(100, 100), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
   SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
   SimulationObject simObj2 = simulation.Create(glm::vec2(200, 100));
-  simulation.Create(glm::vec2(250, 100), glm::vec3(0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(250, 100), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
   simulation.Destroy(simObj1);
   simulation.Destroy(simObj2);
-  simulation.Create(glm::vec2(150, 100), glm::vec3(1.0f, 0.0f, 1.0f));
-  simulation.Create(glm::vec2(200, 100), glm::vec3(1.0f, 1.0f, 0.0f));
+  simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void Game::Update(float dt) {

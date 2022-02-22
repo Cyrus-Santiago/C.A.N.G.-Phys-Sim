@@ -90,3 +90,8 @@ void Shader::SetVector2f(const char *name, const glm::vec2 &value, bool useShade
         this->Use();
     glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
 }
+void Shader::SetVector4f(const char *name, const glm::vec4 &value, bool useShader) {
+    if (useShader)
+        this->Use();
+    glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
+}

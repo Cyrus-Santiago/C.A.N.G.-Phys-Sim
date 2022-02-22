@@ -5,7 +5,7 @@
 #include "../include/simulationObject.hpp"
 
 // constructor, self explanatory
-SimulationObject::SimulationObject(glm::vec2 position, glm::vec3 color,
+SimulationObject::SimulationObject(glm::vec2 position, glm::vec4 color,
                      glm::vec2 size, Texture2D texture, glm::vec2 velocity,
                      bool destroyed) :
                      Position(position), Size(size), Color(color),

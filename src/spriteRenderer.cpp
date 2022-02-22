@@ -52,7 +52,7 @@ void SpriteRenderer::initRenderData() {
 }
 
 void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, 
-  glm::vec2 size, float rotate, glm::vec3 color, glm::vec2 texZoom, glm::vec2 texPos)
+  glm::vec2 size, float rotate, glm::vec4 color, glm::vec2 texZoom, glm::vec2 texPos)
 {
     // prepare transformations
     this->shader.Use();
@@ -73,7 +73,7 @@ void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position,
     // provide this data to the shader
     this->shader.SetMatrix4("model", model);
     // provide color to the shader
-    this->shader.SetVector3f("spriteColor", color);
+    this->shader.SetVector4f("spriteColor", color);
 
     this->shader.SetVector2f("texPos", texPos);
     this->shader.SetVector2f("texZoom", texZoom);

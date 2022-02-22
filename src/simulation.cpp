@@ -14,7 +14,7 @@ void Simulation::Draw(SpriteRenderer &spriteRenderer) {
 }
 
 
-SimulationObject Simulation::Create(glm::vec2 position, glm::vec3 color,
+SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
                         glm::vec2 size, Texture2D texture,
                         glm::vec2 velocity) {
     // flag used to let us know if we found a spot with a destroyed object we

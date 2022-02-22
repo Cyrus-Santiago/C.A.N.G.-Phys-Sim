@@ -23,7 +23,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             glm::vec2 size((scrWidth / menuWidth) - 20, ((scrHeight * 0.4) / menuHeight) - 20);
             // load info into Button object
             Button obj(pos, size, ResourceManager::GetTexture("button2"),
-                       glm::vec3(1.0f, 1.0f, 1.0f), Menu::Types[i]);
+                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Menu::Types[i]);
             i++;
             // add button object to Buttons array
             this->Buttons.push_back(obj);
