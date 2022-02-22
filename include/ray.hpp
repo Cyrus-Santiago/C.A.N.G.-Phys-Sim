@@ -5,7 +5,8 @@
 #define RAY_H
 
 #include "../include/input.hpp"
-#include "../include/spriteRenderer.hpp"
+#include "../include/simulationObject.hpp"
+#include "../include/simulation.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 
@@ -17,10 +18,7 @@ public: glm::vec2 Origin, End, Size;
         bool isActive;
 
         /* Constructor */
-        Ray(double x, double y){
-            Origin[0] = x;
-            Origin[1] = y;
-        }
+        Ray(){}
         /* Methods */
         void printRayCoords();
         glm::vec2 setOrigin(double, double);
