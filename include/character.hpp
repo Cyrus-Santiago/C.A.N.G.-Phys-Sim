@@ -17,6 +17,7 @@ public:
     // holds the kind of character ex: 'A' and bitmap formatting coordinates
     char character;
     glm::vec2 location;
+    double timeElapsed = 0.0f;
 
     // simple constructor
     Character(const char character, glm::vec2 location);

@@ -24,7 +24,17 @@ public:
     // draws every character in the Characters array
     void Draw(SpriteRenderer &renderer, std::string sentence,
               glm::vec2 position, unsigned int fontSize,
-              bool fade = false, float dt = 0);
+              bool fade = false);
 
-    void statusMessage(SpriteRenderer &renderer, std::string sentence, float dt);
+    void SetMessage(SpriteRenderer &renderer, std::string sentence);
+
+    void Update(float dt);
+
+    void FlashMessage(bool flag);
+
+private:
+    float dt;
+    float timeElapsed;
+    bool stopDrawing;
+    bool statusOn;
 };

@@ -10,6 +10,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulation.hpp"
 #include <ostream>
 #include <glm/fwd.hpp>
+#include <vector>
 
 Menu menu;
 playArea parea;
@@ -17,6 +18,7 @@ playBorder pborder;
 SpriteRenderer * spriteRenderer;
 TextRenderer textRenderer;
 Simulation simulation;
+std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -73,12 +75,21 @@ void Game::Init() {
 
 void Game::Update(float dt) {
   simulation.Update(dt);
+  textRenderer.Update(dt);
 }
 
 void Game::Render() {
+  Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
   menu.Draw(*spriteRenderer, textRenderer);
   simulation.Draw(*spriteRenderer);
+  if (Buttons[0].Pressed) {
+    textRenderer.SetMessage(*spriteRenderer, Buttons[0].Type);
+    textRenderer.FlashMessage(true);
+  } else {
+    textRenderer.SetMessage(*spriteRenderer, Buttons[0].Type);
+    textRenderer.FlashMessage(false);
+  }
 }

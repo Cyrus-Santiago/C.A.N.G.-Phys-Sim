@@ -32,8 +32,7 @@ void TextRenderer::Init() {
 }
 
 void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence,
-                        glm::vec2 position, unsigned int fontSize, bool fade,
-                        float dt) {
+                        glm::vec2 position, unsigned int fontSize, bool fade) {
     // loop through every char in sentence
     for (char &letter : sentence) {
         // loop through each Character object in position data array
@@ -50,14 +49,28 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence,
     // here we loop through the characters array and draw each
     // character
     for (Character &character : this->Characters) {
-        character.Draw(renderer, i, position, fontSize, fade, dt);
+        character.Draw(renderer, i, position, fontSize, fade, timeElapsed);
         i++;
     }
     // no longer need the data in this array
     Characters.clear();
 }
 
-void TextRenderer::statusMessage(SpriteRenderer &renderer,
-                                 std::string sentence, float dt) {
-    this->Draw(renderer, sentence, glm::vec2(20, 20), 20, true, dt);
+void TextRenderer::SetMessage(SpriteRenderer &renderer,
+                                 std::string sentence) {
+    this->Draw(renderer, sentence, glm::vec2(40, 20), 20, true);
+}
+
+void TextRenderer::Update(float dt) {
+    this->dt = dt;
+
+    if (this->statusOn) {
+        if (this->timeElapsed < 1.0f) this->timeElapsed += (dt * 0.4);
+    } else {
+        if (this->timeElapsed >= 0.0f) this->timeElapsed -= (dt * 0.4);
+    }
+}
+
+void TextRenderer::FlashMessage(bool flag) {
+    this->statusOn = flag;
 }

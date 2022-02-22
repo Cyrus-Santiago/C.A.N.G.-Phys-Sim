@@ -7,6 +7,7 @@
 void Menu::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer) {
     // gets button data from input (in case the color changed or sum)
     Buttons = Input::giveButtonData();
+
     // draws every single button
     for (Button &button : this->Buttons)
         button.Draw(spriteRenderer, textRenderer, button.Color);
