@@ -51,17 +51,30 @@
             std::cout << "Light ray could not be placed" << std::endl;
     }
 
-    /* Used to draw the ray image */
+    /* Used to draw the ray image
     void Ray::drawRay(SpriteRenderer &renderer){
-        rayTexture = ResourceManager::GetTexture("button1");
+        Simulation simulation;
+        rayTexture = ResourceManager::GetTexture("laser");
         Color = {0.9f, 0.9f, 0.1f};
-        renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
+        glm::vec2 velocity(0.0f);
+        //renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
+        simulation.Create(Origin, Color, Size, rayTexture, velocity);
         successfulDraw(1);
-    }
+    }*/
 
     /* Handles placing light ray into sim environment */
     void Ray::placeRay(Click mouseClick){
         setOrigin(mouseClick.xPos, mouseClick.yPos);
         setEnd(0,0); /* change later - needs some math from play area bounds */
         isActive = 1;
+    }
+
+    int main(){
+        Ray ray;
+        ray.setOrigin(1,1);
+        ray.setEnd(2,2);
+        ray.setSize(ray.Origin, ray.End);
+
+        std::cout << "Ray has size = " << ray.Size[0] << "x" << ray.Size[1] << std::endl;
+        ray.printRayCoords();
     }
