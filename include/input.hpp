@@ -1,6 +1,7 @@
 /* This code was written by Nate */
 
 #include "../include/menu.hpp"
+#include "../include/playArea.hpp"
 #include "../include/glfw3.h"
 #include <iostream>
 
@@ -22,7 +23,6 @@ private:
     // these variables store where the mouse was clicked
     static double xClick, yClick;
     static std::vector<Button> Buttons;
-
 public:
     // called by glfw on mouse click
     static void mouseClickCallback(GLFWwindow * window, int button, int action, int mods);

@@ -5,10 +5,13 @@ and it should not count towards his 1000 lines. */
 
 #include "../include/game.hpp"
 #include "../include/input.hpp"
-#include <glm/fwd.hpp>
+#include "../include/playBorder.hpp"
 #include <ostream>
+#include <glm/fwd.hpp>
 
 Menu menu;
+playArea parea;
+playBorder pborder;
 SpriteRenderer * spriteRenderer;
 TextRenderer textRenderer;
 
@@ -28,6 +31,7 @@ void Game::Init() {
   // load our image as a texture
   ResourceManager::LoadTexture("textures/button2.png", true, "button2");
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+  ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
   ResourceManager::LoadTexture("textures/laser.png", true, "laser");
   ResourceManager::LoadTexture("textures/font.png", true, "font");
 
@@ -47,6 +51,8 @@ void Game::Init() {
 
   // initialize menu
   menu.init(6, 5, Width, Height);
+  parea.init(Width, Height);
+  pborder.init(Width,Height);
   // give the button data to input class
   Input::getButtonData(menu.Buttons);
   // initialize the text renderer (actually manager)
@@ -58,6 +64,8 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
+  parea.Draw(*spriteRenderer);
+  pborder.Draw(*spriteRenderer);
   // draws all the buttons
   menu.Draw(*spriteRenderer, textRenderer);
 }
