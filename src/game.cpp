@@ -7,6 +7,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
 #include "../include/simulationObject.hpp"
+#include "../include/simulation.hpp"
 #include <ostream>
 #include <glm/fwd.hpp>
 
@@ -15,6 +16,7 @@ playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
 TextRenderer textRenderer;
+Simulation simulation;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -58,7 +60,15 @@ void Game::Init() {
   Input::getButtonData(menu.Buttons);
   // initialize the text renderer (actually manager)
   textRenderer.Init();
-  
+  simulation.Create(glm::vec2(50, 100));
+  simulation.Create(glm::vec2(100, 100));
+  SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
+  SimulationObject simObj2 = simulation.Create(glm::vec2(200, 100));
+  simulation.Create(glm::vec2(250, 100));
+  simulation.Destroy(simObj1);
+  simulation.Destroy(simObj2);
+  simulation.Create(glm::vec2(300, 100));
+  simulation.Create(glm::vec2(350, 100));
 }
 
 void Game::Update(float dt) {
@@ -70,7 +80,5 @@ void Game::Render() {
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
   menu.Draw(*spriteRenderer, textRenderer);
-
-  SimulationObject simObj(glm::vec2(100, 100));
-  simObj.Draw(*spriteRenderer);
+  simulation.Draw(*spriteRenderer);
 }
