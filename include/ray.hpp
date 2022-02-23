@@ -13,7 +13,7 @@
 class Ray{
         /* Fields */
 public: glm::vec2 Origin, End, Size;
-        glm::vec3 Color;
+        glm::vec4 Color;
         Texture2D rayTexture;
         bool isActive;
 

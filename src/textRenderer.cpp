@@ -1,65 +1,136 @@
 // this code was written by Nate
 
-#include "../include/textRenderer.hpp"
+#include "../include/game.hpp"
+#include <cassert>
 #include <glm/fwd.hpp>
 #include <string>
 #include <iostream>
+#include <utility>
+#include <vector>
+
+    std::vector<Character> TextRenderer::CharPosData;
+
+    // this array is for storing words we want to draw
+    std::map<std::string, TextRenderer::CharactersArray> TextRenderer::Sentences;
+    
+    // an array of structures that store information about bitmap coordinates
+    TextRenderer::CharacterPosition TextRenderer::CharPositions[27];
+
+    float TextRenderer::dt;
 
 void TextRenderer::Init() {
-    // Yeah I know this is cursed. But this is the best way I could come up with for
-    // storing the bit map character data. Feel free to change it if you come up with
-    // a better way.
-    this->CharacterPositionData.push_back(Character('A', glm::vec2(0.07f, 0.01f))); // A
-    this->CharacterPositionData.push_back(Character('B', glm::vec2(1.17f, 0.01f))); // B
-    this->CharacterPositionData.push_back(Character('C', glm::vec2(2.23f,0.01f)));  // C
-    this->CharacterPositionData.push_back(Character('D', glm::vec2(3.37f, 0.01f))); // D
-    this->CharacterPositionData.push_back(Character('E', glm::vec2(4.47f, 0.01f))); // E
-    this->CharacterPositionData.push_back(Character('F', glm::vec2(5.57f, 0.01f))); // F
-    this->CharacterPositionData.push_back(Character('G', glm::vec2(6.63f, 0.01f))); // G
-    this->CharacterPositionData.push_back(Character('H', glm::vec2(7.77f, 0.01f))); // H
-    this->CharacterPositionData.push_back(Character('I', glm::vec2(8.87f, 0.01f))); // I
-    this->CharacterPositionData.push_back(Character('J', glm::vec2(0.07f, 1.05f))); // J
-    this->CharacterPositionData.push_back(Character('K', glm::vec2(1.17f, 1.05f))); // K
-    this->CharacterPositionData.push_back(Character('L', glm::vec2(2.27f, 1.05f))); // L
-    this->CharacterPositionData.push_back(Character('M', glm::vec2(3.37f, 1.05f))); // M
-    this->CharacterPositionData.push_back(Character('N', glm::vec2(4.50f, 1.05f))); // N
-    this->CharacterPositionData.push_back(Character('O', glm::vec2(5.57f, 1.05f))); // O
-    this->CharacterPositionData.push_back(Character('P', glm::vec2(6.67f, 1.05f))); // P
-    this->CharacterPositionData.push_back(Character('Q', glm::vec2(7.77f, 1.05f))); // Q
-    this->CharacterPositionData.push_back(Character('R', glm::vec2(8.87f, 1.05f))); // R
-    this->CharacterPositionData.push_back(Character('S', glm::vec2(0.07f, 2.09f))); // S
-    this->CharacterPositionData.push_back(Character('T', glm::vec2(1.17f, 2.09f))); // T
-    this->CharacterPositionData.push_back(Character('U', glm::vec2(2.305f, 2.09f)));// U
-    this->CharacterPositionData.push_back(Character('V', glm::vec2(3.37f, 2.09f))); // V
-    this->CharacterPositionData.push_back(Character('W', glm::vec2(4.47f, 2.09f))); // W
-    this->CharacterPositionData.push_back(Character('X', glm::vec2(5.57f, 2.09f))); // X
-    this->CharacterPositionData.push_back(Character('Y', glm::vec2(6.67f, 2.09f))); // Y
-    this->CharacterPositionData.push_back(Character('Z', glm::vec2(7.77f, 2.09f))); // Z
-    this->CharacterPositionData.push_back(Character(' ', glm::vec2(8.87f, 2.09f)));// ' '
-    this->CharacterPositionData.push_back(Character('.', glm::vec2(1.2f, 7.75f))); //  .
+    
+    // an array used to store specific coordinates for letters in the bitmap
+    CharacterPosition charPositions[] = {
+      {0.07f, 0.01f}, {1.17f, 0.01f}, {2.23f, 0.01f},
+      {3.37f, 0.01f}, {4.47f, 0.01f}, {5.57f, 0.01f},
+      {6.63f, 0.01f}, {7.77f, 0.01f}, {8.87f, 0.01f},
+      {0.07f, 1.05f}, {1.17f, 1.05f}, {2.27f, 1.05f},
+      {3.37f, 1.05f}, {4.50f, 1.05f}, {5.57f, 1.05f},
+      {6.67f, 1.05f}, {7.77f, 1.05f}, {8.87f, 1.05f},
+      {0.07f, 2.09f}, {1.17f, 2.09f}, {2.305f,2.09f},
+      {3.37f, 2.09f}, {4.47f, 2.09f}, {5.57f, 2.09f},
+      {6.67f, 2.09f}, {7.77f, 2.09f}, {8.87f, 2.09f},
+      {1.2f,  7.75f}
+    };
+
+    // loops through each letter and put it in a character object,
+    // then adds it to the charPosData array so we can draw the letters
+    // later on
+    for (int i = 0; i < 26; i++) {
+        CharPosData.push_back(Character('A' + i,
+            glm::vec2(charPositions[i].x, charPositions[i].y)));
+    }
+    // adds space and period to the charPosData array
+    CharPosData.push_back(
+        Character(' ', glm::vec2(charPositions[26].x, charPositions[26].y)));
+    CharPosData.push_back(
+        Character('.', glm::vec2(charPositions[27].x, charPositions[27].y)));
 }
 
-void TextRenderer::Draw(SpriteRenderer &renderer, std::string sentence, glm::vec2 position,
-    unsigned int fontSize) {
+void TextRenderer::NewSentence(SpriteRenderer &renderer, std::string newSentence,
+    glm::vec2 position, unsigned int fontSize) {
+    // here we check to see if the sentence we're trying to add already exists,
+    // that way we don't add it twice if we don't have to
+    if (Sentences.find(newSentence) != Sentences.end()) {
+        if (Sentences.at(newSentence).position != position) {
+            newSentence += " ";
+        } else {
+            return;
+        }
+    }
+        
+
+    // declare an array of characters to build the sentence from bitmap
+    // data
+    std::vector<Character> Characters;
+
     // loop through every char in sentence
-    for (char &letter : sentence) {
-        // loop through each Character object in position data array
-        for (int i = 0; i < CharacterPositionData.size(); i++) {
+    for (char &letter : newSentence) {
+        // loop through each character in position data array
+        for (int i = 0; i < 27; ++i) {
             // if a letter matches data from the array then we add
             // it to the Characters array so we can draw it
-            if (letter == CharacterPositionData[i].character) {
-                Characters.push_back(CharacterPositionData[i]);
+            if (letter == CharPosData[i].character) {
+                Characters.push_back(CharPosData[i]);
                 break;
             }
         }
     }
+    // now we declare our struct, storing some important information about
+    // the text we render so we don't have to ask again
+    CharactersArray charArray = {Characters, position, fontSize, 0.0f};
+
+    // adds the struct to the sentences array, and maps it to a key that's
+    // equal to the sentence stored in the text we're rendering
+    Sentences.insert(std::pair<std::string,
+        CharactersArray>(newSentence, charArray));
+    
+    // make sure the world isn't falling apart and the sentence we just
+    // added exists
+    assert(Sentences.find(newSentence) != Sentences.end());
+}
+
+void TextRenderer::Draw(SpriteRenderer &renderer, std::string name) {
+    // ensure the programmer doesn't try to render text that hasn't been loaded
+    assert(Sentences.find(name) != Sentences.end());
+    // retrieve the struct information from sentence array
+    CharactersArray charArray = Sentences.at(name);
     int i = 0;
-    // here we loop through the characters array and draw each
-    // character
-    for (Character &character : this->Characters) {
-        character.Draw(renderer, i, position, fontSize);
+    // loop through every character
+    for (Character &character : charArray.Characters) {
+        // draw every character (increasing horizontal position in sentence)
+        character.Draw(renderer, i, charArray.position, charArray.fontSize, 
+        glm::vec4(1.0f, 1.0f, 1.0f, charArray.time));
         i++;
     }
-    // no longer need the data in this array
-    Characters.clear();
+    // check to see if opacity is full, if it isn't then we keep incrementing
+    if (charArray.time < 1.0f) Sentences.at(name).time += dt;
+}
+
+void TextRenderer::Hide(SpriteRenderer &renderer, std::string name) {
+    // assert that the thing we're hiding actually exists
+    assert(Sentences.find(name) != Sentences.end());
+    // get the struct using the key on Sentences array
+    CharactersArray charArray = Sentences.at(name);
+    // we only want to draw if the opacity is above 0
+    if (charArray.time > 0.0f) {
+        // we update the time for a fadeout effect
+        Sentences.at(name).time -= dt;
+        // I'd like to have this function just call draw, but the fade out
+        // effect doesn't seem to work when I do that, so here's the code above
+        // again.
+        int i = 0;
+        for (Character &character : charArray.Characters) {
+            character.Draw(renderer, i, charArray.position, charArray.fontSize, 
+            glm::vec4(1.0f, 1.0f, 1.0f, charArray.time));
+            i++;
+        }
+    }
+}
+
+void TextRenderer::Update(float newDt) {
+    // keep the delta frame updated so we're aware of time for the purposes of
+    // fading effects
+    dt = newDt;
 }

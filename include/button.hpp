@@ -13,7 +13,7 @@
 class Button {
 public:
     glm::vec2 Position, Size;
-    glm::vec3 Color;
+    glm::vec4 Color;
     std::string Type;
     bool Pressed;
     Texture2D Texture;
@@ -21,10 +21,10 @@ public:
     // constructor! by default the color is the same as the original texture,
     // it's for a chemcial and it's not pressed
     Button(glm::vec2 position, glm::vec2 size, Texture2D sprite,
-              glm::vec3 color = glm::vec3(1.0f), std::string type = "CHEMICAL", bool pressed = false);
+              glm::vec4 color = glm::vec4(1.0f), std::string type = "CHEMICAL", bool pressed = false);
 
     // here we set the color, add the text, and pass the button to the sprite renderer
-    virtual void Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm::vec3 color);
+    virtual void Draw(SpriteRenderer &spriteRenderer, glm::vec4 color);
 };
 
 #endif

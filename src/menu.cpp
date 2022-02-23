@@ -3,13 +3,17 @@
 #include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/input.hpp"
+#include <glm/fwd.hpp>
 
-void Menu::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer) {
+void Menu::Draw(SpriteRenderer &spriteRenderer) {
     // gets button data from input (in case the color changed or sum)
     Buttons = Input::giveButtonData();
     // draws every single button
-    for (Button &button : this->Buttons)
-        button.Draw(spriteRenderer, textRenderer, button.Color);
+    for (Button &button : this->Buttons) {
+        TextRenderer::NewSentence(spriteRenderer, button.Type, 
+            glm::vec2(button.Position.x + 10, button.Position.y + 18), 14);
+        button.Draw(spriteRenderer, glm::vec4(1.0f));
+    }
 }
 
 void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
@@ -19,11 +23,13 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     // a specific area
     for (int x = 0; x < menuWidth; ++x) {
         for (int y = 0; y < menuHeight; ++y) {
-            glm::vec2 pos(20 + (x * ((scrWidth - 20) / menuWidth)), (scrHeight * 0.6) + (y * (scrHeight * 0.4) / menuHeight));
-            glm::vec2 size((scrWidth / menuWidth) - 20, ((scrHeight * 0.4) / menuHeight) - 20);
+            glm::vec2 pos(20 + (x * ((scrWidth - 20) / menuWidth)),
+                (scrHeight * 0.6) + (y * (scrHeight * 0.4) / menuHeight));
+            glm::vec2 size((scrWidth / menuWidth) - 20,
+                ((scrHeight * 0.4) / menuHeight) - 20);
             // load info into Button object
             Button obj(pos, size, ResourceManager::GetTexture("button2"),
-                       glm::vec3(1.0f, 1.0f, 1.0f), Menu::Types[i]);
+                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), Menu::Types[i]);
             i++;
             // add button object to Buttons array
             this->Buttons.push_back(obj);

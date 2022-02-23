@@ -10,13 +10,14 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulation.hpp"
 #include <ostream>
 #include <glm/fwd.hpp>
+#include <vector>
 
 Menu menu;
 playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
-TextRenderer textRenderer;
 Simulation simulation;
+std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -56,29 +57,47 @@ void Game::Init() {
   menu.init(6, 5, Width, Height);
   parea.init(Width, Height);
   pborder.init(Width,Height);
+
+  // retrieve button data
+  Buttons = menu.Buttons;
   // give the button data to input class
-  Input::getButtonData(menu.Buttons);
+  Input::getButtonData(Buttons);
+
   // initialize the text renderer (actually manager)
-  textRenderer.Init();
-  simulation.Create(glm::vec2(50, 100), glm::vec3(1.0f, 0.0f, 0.0f));
-  simulation.Create(glm::vec2(100, 100), glm::vec3(0.0f, 1.0f, 0.0f));
+  TextRenderer::Init();
+  simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(100, 100), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
   SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
   SimulationObject simObj2 = simulation.Create(glm::vec2(200, 100));
-  simulation.Create(glm::vec2(250, 100), glm::vec3(0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(250, 100), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
   simulation.Destroy(simObj1);
   simulation.Destroy(simObj2);
-  simulation.Create(glm::vec2(150, 100), glm::vec3(1.0f, 0.0f, 1.0f));
-  simulation.Create(glm::vec2(200, 100), glm::vec3(1.0f, 1.0f, 0.0f));
+  simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+  for (Button &button : Buttons) {
+    TextRenderer::NewSentence(* spriteRenderer, 
+    button.Type + " ", glm::vec2(40, 20), 20);
+  }
 }
 
 void Game::Update(float dt) {
   simulation.Update(dt);
+  TextRenderer::Update(dt);
 }
 
 void Game::Render() {
+  Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
-  menu.Draw(*spriteRenderer, textRenderer);
+  menu.Draw(*spriteRenderer);
   simulation.Draw(*spriteRenderer);
+  for (Button &button : Buttons) {
+    if (button.Pressed) {
+      TextRenderer::Draw(*spriteRenderer, button.Type + " ");
+    } else {
+      TextRenderer::Hide(*spriteRenderer, button.Type + " ");
+    }
+  }
 }
