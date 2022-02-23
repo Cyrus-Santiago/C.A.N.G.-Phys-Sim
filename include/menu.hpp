@@ -24,7 +24,7 @@ public:
     // constructor
     Menu() { }
     // rendering menu
-    void Draw(SpriteRenderer &renderer, TextRenderer textRenderer);
+    void Draw(SpriteRenderer &renderer);
 
     // intialize level from button data
     void init(unsigned int menuWidth, unsigned int menuHeight, unsigned int scrWidth, unsigned int scrHeight);

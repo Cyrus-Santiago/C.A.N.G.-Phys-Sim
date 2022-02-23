@@ -12,7 +12,7 @@ Button::Button(glm::vec2 position, glm::vec2 size, Texture2D texture,
                      Color(color), Pressed(pressed), Texture(texture) { }
 
 // call to make drawing buttons simpler
-void Button::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm::vec4 color) {
+void Button::Draw(SpriteRenderer &spriteRenderer, glm::vec4 color) {
     // an elegant solution for changing button color for different elements
     if (this->Type == "WATER") color = glm::vec4(0.4f, 0.4f, 1.0f, 1.0f);
     else if (this->Type == "MERCURY") color = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
@@ -51,5 +51,5 @@ void Button::Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm
     // tell the sprite renderer what to draw
     spriteRenderer.DrawSprite(this->Texture, this->Position, this->Size, 0.0f, color);
     // tell the text renderer what to write
-    textRenderer.Draw(spriteRenderer, this->Type, glm::vec2(this->Position.x + 7, this->Position.y + 16), 14);
+    TextRenderer::Draw(spriteRenderer, this->Type);
 }

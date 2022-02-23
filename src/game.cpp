@@ -16,7 +16,6 @@ Menu menu;
 playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
-TextRenderer textRenderer;
 Simulation simulation;
 std::vector<Button> Buttons;
 
@@ -58,10 +57,14 @@ void Game::Init() {
   menu.init(6, 5, Width, Height);
   parea.init(Width, Height);
   pborder.init(Width,Height);
+
+  // retrieve button data
+  Buttons = menu.Buttons;
   // give the button data to input class
-  Input::getButtonData(menu.Buttons);
+  Input::getButtonData(Buttons);
+
   // initialize the text renderer (actually manager)
-  textRenderer.Init();
+  TextRenderer::Init();
   simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
   simulation.Create(glm::vec2(100, 100), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
   SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
@@ -71,11 +74,16 @@ void Game::Init() {
   simulation.Destroy(simObj2);
   simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
   simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+  for (Button &button : Buttons) {
+    TextRenderer::NewSentence(* spriteRenderer, 
+    button.Type + " ", glm::vec2(40, 20), 20);
+  }
 }
 
 void Game::Update(float dt) {
   simulation.Update(dt);
-  textRenderer.Update(dt);
+  TextRenderer::Update(dt);
 }
 
 void Game::Render() {
@@ -83,13 +91,13 @@ void Game::Render() {
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
-  menu.Draw(*spriteRenderer, textRenderer);
+  menu.Draw(*spriteRenderer);
   simulation.Draw(*spriteRenderer);
-  if (Buttons[0].Pressed) {
-    textRenderer.SetMessage(*spriteRenderer, Buttons[0].Type);
-    textRenderer.FlashMessage(true);
-  } else {
-    textRenderer.SetMessage(*spriteRenderer, Buttons[0].Type);
-    textRenderer.FlashMessage(false);
+  for (Button &button : Buttons) {
+    if (button.Pressed) {
+      TextRenderer::Draw(*spriteRenderer, button.Type + " ");
+    } else {
+      TextRenderer::Hide(*spriteRenderer, button.Type + " ");
+    }
   }
 }

@@ -24,7 +24,7 @@ public:
               glm::vec4 color = glm::vec4(1.0f), std::string type = "CHEMICAL", bool pressed = false);
 
     // here we set the color, add the text, and pass the button to the sprite renderer
-    virtual void Draw(SpriteRenderer &spriteRenderer, TextRenderer textRenderer, glm::vec4 color);
+    virtual void Draw(SpriteRenderer &spriteRenderer, glm::vec4 color);
 };
 
 #endif

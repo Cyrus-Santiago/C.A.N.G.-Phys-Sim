@@ -27,7 +27,7 @@ public:
     // on the screen, and font size is obvious
     void Draw(SpriteRenderer &renderer, int charPosition,
               glm::vec2 screenPosition, unsigned int fontSize,
-              bool fade = false, float dt = 0);
+              glm::vec4 color = glm::vec4(1.0f));
 };
 
 #endif

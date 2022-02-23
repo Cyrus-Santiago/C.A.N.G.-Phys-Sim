@@ -53,18 +53,15 @@
 
     /* Used to draw the ray image
     void Ray::drawRay(SpriteRenderer &renderer){
-<<<<<<< HEAD
         rayTexture = ResourceManager::GetTexture("button1");
         Color = {0.9f, 0.9f, 0.1f, 1.0f};
         renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
-=======
         Simulation simulation;
         rayTexture = ResourceManager::GetTexture("laser");
         Color = {0.9f, 0.9f, 0.1f, 1.0f};
         glm::vec2 velocity(0.0f);
         //renderer.DrawSprite(rayTexture, Origin, Size, 0, Color, {0,0}, {0,0,});
         simulation.Create(Origin, Color, Size, rayTexture, velocity);
->>>>>>> 1d0fd027ac1515b46681633ca0f4f15fd5bb6ab0
         successfulDraw(1);
     }*/
 
@@ -75,7 +72,7 @@
         isActive = 1;
     }
 
-    int main(){
+    /*int main(){
         Ray ray;
         ray.setOrigin(1,1);
         ray.setEnd(2,2);
@@ -83,4 +80,4 @@
 
         std::cout << "Ray has size = " << ray.Size[0] << "x" << ray.Size[1] << std::endl;
         ray.printRayCoords();
-    }
+    }*/
