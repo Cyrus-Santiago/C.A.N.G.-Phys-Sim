@@ -43,6 +43,11 @@ SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
     return simulationObject;
 }
 
+SimulationObject Simulation::Create(SimulationObject simObj) {
+    SimulationObjects.push_back(simObj);
+    return simObj;
+}
+
 void Simulation::Destroy(SimulationObject simulationObject) {
     // here we loop through our array and look for the object we're destroying
     for (SimulationObject &simObj : this->SimulationObjects) {

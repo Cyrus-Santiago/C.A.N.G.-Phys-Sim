@@ -25,6 +25,7 @@ public:
                 Texture2D texture = ResourceManager::GetTexture("button2"),
                 glm::vec2 velocity = glm::vec2(0.0f));
             
+    SimulationObject Create(SimulationObject simObj);
     // used to mark a simulation object as destroyed, so it's storage space can be
     // reused by a new object
     void Destroy(SimulationObject simObj);

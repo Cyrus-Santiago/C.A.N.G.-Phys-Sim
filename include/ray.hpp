@@ -19,10 +19,11 @@ public: glm::vec2 Position, Tail, Size, Velocity;
         Ray(glm::vec2 position, glm::vec4 color = glm::vec4(1.0f),
                      glm::vec2 size = glm::vec2(5),
                      Texture2D texture = ResourceManager::GetTexture("laser"),
-                     glm::vec2 velocity = glm::vec2(0.0f), bool Destroyed = false) :
+                     glm::vec2 velocity = glm::vec2(0.0f),
+                     float mass = 0, bool Destroyed = false) :
 
-                     SimulationObject(Position, Color, Size,
-                     Texture, Velocity, Destroyed) {}
+                     SimulationObject(position, color, size,
+                     texture, velocity, mass, Destroyed) {}
         /* Methods */
         void printRayCoords();
         glm::vec2 setPosition(double, double);

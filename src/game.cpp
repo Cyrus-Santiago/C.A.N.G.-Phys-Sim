@@ -7,8 +7,10 @@ and it should not count towards his 1000 lines. */
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
 #include "../include/simulationObject.hpp"
+#include "../include/ray.hpp"
 #include "../include/simulation.hpp"
-#include <ostream>
+#include <glm/detail/qualifier.hpp>
+#include <iostream>
 #include <glm/fwd.hpp>
 #include <vector>
 
@@ -86,6 +88,8 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
+  Ray ray(glm::vec2(100, 100));
+  simulation.Create(ray);
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
