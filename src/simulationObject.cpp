@@ -1,15 +1,16 @@
 // this code was written by Nate
 
+#include <glm/fwd.hpp>
+#include <iostream>
 #define GRAVITY 9.71
 
 #include "../include/simulationObject.hpp"
 
 // constructor, self explanatory
 SimulationObject::SimulationObject(glm::vec2 position, glm::vec4 color,
-                     glm::vec2 size, Texture2D texture, glm::vec2 velocity,
-                     bool destroyed) :
-                     Position(position), Size(size), Color(color),
-                     Texture(texture), Velocity(velocity), Destroyed(destroyed) { }
+    glm::vec2 size, Texture2D texture, glm::vec2 velocity, float mass,
+    bool destroyed) : Position(position), Size(size), Color(color),
+    Texture(texture), Velocity(velocity), Mass(mass), Destroyed(destroyed) { }
 
 void SimulationObject::Draw(SpriteRenderer &spriteRenderer) {
     // we call draw sprite with the intrinsic information of the object
@@ -22,5 +23,5 @@ void SimulationObject::Move(float dt) {
     // dt is the delta frame, which is the time since the last frame was
     // rendered
     this->Position += this->Velocity * dt;
-    this->Position.y += GRAVITY * dt * 5;
+    this->Position.y += GRAVITY * dt * 5 * this->Mass;
 }
