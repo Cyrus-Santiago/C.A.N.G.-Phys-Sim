@@ -12,7 +12,6 @@ and it should not count towards his 1000 lines. */
 #include <glm/fwd.hpp>
 #include <vector>
 
-Menu menu;
 playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
@@ -37,7 +36,7 @@ void Game::Init() {
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
   ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
   ResourceManager::LoadTexture("textures/laser.png", true, "laser");
-  ResourceManager::LoadTexture("textures/font.png", true, "font");
+  ResourceManager::LoadTexture("textures/font2.png", true, "font2");
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
@@ -54,12 +53,12 @@ void Game::Init() {
   spriteRenderer = new SpriteRenderer(myShader);
 
   // initialize menu
-  menu.init(6, 5, Width, Height);
+  Menu::init(6, 5, Width, Height);
   parea.init(Width, Height);
   pborder.init(Width,Height);
 
   // retrieve button data
-  Buttons = menu.Buttons;
+  Buttons = Menu::Buttons;
   // give the button data to input class
   Input::getButtonData(Buttons);
 
@@ -91,11 +90,12 @@ void Game::Render() {
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
-  menu.Draw(*spriteRenderer);
+  Menu::Draw(*spriteRenderer);
   simulation.Draw(*spriteRenderer);
   for (Button &button : Buttons) {
     if (button.Pressed) {
-      TextRenderer::Draw(*spriteRenderer, button.Type + " ");
+      TextRenderer::Draw(*spriteRenderer, button.Type + " ",
+        Menu::Types.at(button.Type).color);
     } else {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }

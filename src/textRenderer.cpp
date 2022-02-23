@@ -22,16 +22,13 @@ void TextRenderer::Init() {
     
     // an array used to store specific coordinates for letters in the bitmap
     CharacterPosition charPositions[] = {
-      {0.07f, 0.01f}, {1.17f, 0.01f}, {2.23f, 0.01f},
-      {3.37f, 0.01f}, {4.47f, 0.01f}, {5.57f, 0.01f},
-      {6.63f, 0.01f}, {7.77f, 0.01f}, {8.87f, 0.01f},
-      {0.07f, 1.05f}, {1.17f, 1.05f}, {2.27f, 1.05f},
-      {3.37f, 1.05f}, {4.50f, 1.05f}, {5.57f, 1.05f},
-      {6.67f, 1.05f}, {7.77f, 1.05f}, {8.87f, 1.05f},
-      {0.07f, 2.09f}, {1.17f, 2.09f}, {2.305f,2.09f},
-      {3.37f, 2.09f}, {4.47f, 2.09f}, {5.57f, 2.09f},
-      {6.67f, 2.09f}, {7.77f, 2.09f}, {8.87f, 2.09f},
-      {1.2f,  7.75f}
+      {0.07f, 0.01f}, {1.17f, 0.01f}, {2.23f, 0.01f}, {3.37f, 0.01f},
+      {4.47f, 0.01f}, {5.57f, 0.01f}, {6.63f, 0.01f}, {7.77f, 0.01f},
+      {8.87f, 0.01f}, {0.07f, 1.05f}, {1.17f, 1.05f}, {2.27f, 1.05f},
+      {3.37f, 1.05f}, {4.50f, 1.05f}, {5.57f, 1.05f}, {6.67f, 1.05f},
+      {7.77f, 1.05f}, {8.87f, 1.05f}, {0.07f, 2.09f}, {1.17f, 2.09f},
+      {2.305f,2.09f}, {3.37f, 2.09f}, {4.47f, 2.09f}, {5.57f, 2.09f},
+      {6.67f, 2.09f}, {7.77f, 2.09f}, {8.87f, 2.09f}, {1.2f,  7.75f}
     };
 
     // loops through each letter and put it in a character object,
@@ -91,7 +88,8 @@ void TextRenderer::NewSentence(SpriteRenderer &renderer, std::string newSentence
     assert(Sentences.find(newSentence) != Sentences.end());
 }
 
-void TextRenderer::Draw(SpriteRenderer &renderer, std::string name) {
+void TextRenderer::Draw(SpriteRenderer &renderer, std::string name,
+    glm::vec4 color) {
     // ensure the programmer doesn't try to render text that hasn't been loaded
     assert(Sentences.find(name) != Sentences.end());
     // retrieve the struct information from sentence array
@@ -100,8 +98,9 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string name) {
     // loop through every character
     for (Character &character : charArray.Characters) {
         // draw every character (increasing horizontal position in sentence)
+        color.w = charArray.time;
         character.Draw(renderer, i, charArray.position, charArray.fontSize, 
-        glm::vec4(1.0f, 1.0f, 1.0f, charArray.time));
+        color);
         i++;
     }
     // check to see if opacity is full, if it isn't then we keep incrementing

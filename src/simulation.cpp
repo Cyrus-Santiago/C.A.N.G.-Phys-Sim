@@ -20,8 +20,7 @@ SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
     // can use for our new object
     bool failure = true;
     // construct our new object
-    SimulationObject simulationObject(position, color, size,
-                                          texture, velocity);
+    SimulationObject simulationObject(position, color, size, texture, velocity);
     // loops through each simulation object                    
     for (SimulationObject &simObj : this->SimulationObjects) {
         // if we find a destroyed one, our new object takes it's place, we

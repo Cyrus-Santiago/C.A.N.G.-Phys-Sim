@@ -53,7 +53,8 @@ public:
 
     // draws text from memory, can't draw text that hasn't been created with
     // new sentence
-    static void Draw(SpriteRenderer &renderer, std::string name);
+    static void Draw(SpriteRenderer &renderer, std::string name,
+        glm::vec4 color);
 
     // turns down opacity on text for a fade out, then stops rendering it
     static void Hide(SpriteRenderer &renderer, std::string name);
