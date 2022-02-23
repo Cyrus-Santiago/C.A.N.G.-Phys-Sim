@@ -8,8 +8,8 @@
 #include "../include/spriteRenderer.hpp"
 #include "game.hpp"
 
-// holds data about buttons like; what is it for? where is it? how big is it? what texture does it use?
-// was it pressed? and also draws buttons.
+// holds data about buttons like; what is it for? where is it? how big is it?
+// what texture does it use? was it pressed? and also draws buttons.
 class Button {
 public:
     glm::vec2 Position, Size;
@@ -24,7 +24,7 @@ public:
               glm::vec4 color = glm::vec4(1.0f), std::string type = "CHEMICAL", bool pressed = false);
 
     // here we set the color, add the text, and pass the button to the sprite renderer
-    virtual void Draw(SpriteRenderer &spriteRenderer, glm::vec4 color);
+    virtual void Draw(SpriteRenderer &spriteRenderer);
 };
 
 #endif
