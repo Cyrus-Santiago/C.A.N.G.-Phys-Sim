@@ -1,32 +1,34 @@
-/* Ray - Class Declaration
+/* Ray (Extends Simulation Object) - Class Declaration
    Written by Amethyst Skye */
 
 #ifndef RAY_H
 #define RAY_H
 
-#include "../include/input.hpp"
 #include "../include/simulationObject.hpp"
-#include "../include/simulation.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 
-class Ray{
-        /* Fields */
-public: glm::vec2 Origin, End, Size;
+class Ray : public SimulationObject{
+public: glm::vec2 Position, Tail, Size, Velocity;
         glm::vec4 Color;
-        Texture2D rayTexture;
-        bool isActive;
+        bool Destroyed;
+        float Mass;
+        Texture2D Texture;
 
         /* Constructor */
-        Ray(){}
+        Ray(glm::vec2 position, glm::vec4 color = glm::vec4(1.0f),
+                     glm::vec2 size = glm::vec2(5),
+                     Texture2D texture = ResourceManager::GetTexture("laser"),
+                     glm::vec2 velocity = glm::vec2(0.0f), bool Destroyed = false) :
+
+                     SimulationObject(Position, Color, Size,
+                     Texture, Velocity, Destroyed) {}
         /* Methods */
         void printRayCoords();
-        glm::vec2 setOrigin(double, double);
-        glm::vec2 setEnd(double, double);
+        glm::vec2 setPosition(double, double);
+        glm::vec2 setTail(double, double);
         glm::vec2 setSize(glm::vec2, glm::vec2);
-        void deleteRay();
         void successfulDraw(int);
-        void placeRay(Click);
-        void drawRay(SpriteRenderer &renderer);
+        void init();
 };
 #endif
