@@ -88,7 +88,7 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
-  Ray ray(glm::vec2(100, 100));
+  Ray ray({100,100});
   simulation.Create(ray);
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);

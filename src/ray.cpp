@@ -22,15 +22,13 @@
         Tail[0] = (float)x;
         Tail[1] = (float)y;
 
-        return (Tail);
+        return(Tail);
     }
 
     /* Ray Dimensions (length, width) */
-    glm::vec2 Ray::setSize(glm::vec2 position, glm::vec2 tail){
+    void Ray::setSize(glm::vec2 position, glm::vec2 tail){
         Size[0] = fabsf(tail[0]-position[0]);
         Size[1] = 0.01;
-
-        return (Size);
     }
 
     void Ray::successfulDraw(int x){
@@ -43,9 +41,9 @@
     }
 
     void Ray::init(){
-        Position = {0, 0};
-        Tail = {1, 1};
-        Size = setSize(Position, Tail);
+        Position = {100, 100};
+        Tail = {500, 250};
+        setSize(Position, Tail);
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
         Move(0);
