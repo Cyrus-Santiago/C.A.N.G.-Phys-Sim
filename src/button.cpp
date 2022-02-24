@@ -22,7 +22,8 @@ void Button::Draw(SpriteRenderer &spriteRenderer) {
         color *= glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     }
     // tell the sprite renderer what to draw
-    spriteRenderer.DrawSprite(this->Texture, this->Position, this->Size, 0.0f, color);
+    spriteRenderer.DrawSprite(this->Texture, this->Position, this->Size, 0.0f,
+        color);
     // tell the text renderer what to write
     TextRenderer::Draw(spriteRenderer, this->Type, color * 
         glm::vec4(0.6f, 0.6f, 0.6f, 1.0f));

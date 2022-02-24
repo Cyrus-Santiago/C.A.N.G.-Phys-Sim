@@ -45,8 +45,8 @@ public:
     
     // creates a new sentence so we can draw it later, this saves us from having
     // to build the same sentences repeatedly
-    static void NewSentence(SpriteRenderer &renderer, std::string sentence,
-              glm::vec2 position, unsigned int fontSize);
+    static void NewSentence(std::string sentence, glm::vec2 position,
+        unsigned int fontSize);
 
     // updates delta frame for fading in/out effects
     static void Update(float dt);

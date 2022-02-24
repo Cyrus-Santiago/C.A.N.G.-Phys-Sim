@@ -13,6 +13,7 @@ and it should not count towards his 1000 lines. */
 #include <iostream>
 #include <glm/fwd.hpp>
 #include <vector>
+#include <memory>
 
 playArea parea;
 playBorder pborder;
@@ -26,7 +27,7 @@ Game::Game(unsigned int width, unsigned int height)
 }
 
 Game::~Game() {
-
+  delete spriteRenderer;
 }
 
 void Game::Init() {
@@ -77,8 +78,7 @@ void Game::Init() {
   simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
 
   for (Button &button : Buttons) {
-    TextRenderer::NewSentence(* spriteRenderer, 
-    button.Type + " ", glm::vec2(40, 20), 20);
+    TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
 }
 
