@@ -1,5 +1,8 @@
 /* This code was written by Nate */
 
+#ifndef INPUT_H
+#define INPUT_H
+
 #include "../include/menu.hpp"
 #include "../include/playArea.hpp"
 #include "../include/glfw3.h"
@@ -36,3 +39,5 @@ public:
     static void getButtonData(std::vector<Button> Buttons);
     static std::vector<Button> giveButtonData();
 };
+
+#endif

@@ -22,8 +22,10 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
 
     for (int i = 0; i < Buttons.size(); ++i) {
       // checks bounds of current button and compares that to click data
-      if ((xPos > Buttons[i].Position.x) && (xPos < Buttons[i].Position.x + Buttons[i].Size.x) &&
-          (yPos > Buttons[i].Position.y) && (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
+      if ((xPos > Buttons[i].Position.x) &&
+        (xPos < Buttons[i].Position.x + Buttons[i].Size.x) &&
+        (yPos > Buttons[i].Position.y) &&
+        (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
         // records click
         xClick = xPos; yClick = yPos;
         // debug

@@ -16,15 +16,13 @@ void Simulation::Draw(SpriteRenderer &spriteRenderer) {
 }
 
 
-SimulationObject Simulation::Create(glm::vec2 position, glm::vec3 color,
-                        glm::vec2 size, Texture2D texture,
-                        glm::vec2 velocity) {
+SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
+    glm::vec2 size, Texture2D texture, glm::vec2 velocity) {
     // flag used to let us know if we found a spot with a destroyed object we
     // can use for our new object
     bool failure = true;
     // construct our new object
-    SimulationObject simulationObject(position, color, size,
-                                          texture, velocity);
+    SimulationObject simulationObject(position, color, size, texture, velocity);
     // loops through each simulation object                    
     for (SimulationObject &simObj : this->SimulationObjects) {
         // if we find a destroyed one, our new object takes it's place, we
@@ -41,10 +39,15 @@ SimulationObject Simulation::Create(glm::vec2 position, glm::vec3 color,
 
     // debug statement to make sure the simulation isn't growing
     // the array when there's destroyed objects
-    std::cout << SimulationObjects.size() << std::endl;
+    // std::cout << SimulationObjects.size() << std::endl;
 
     // here we return our newly minted object
     return simulationObject;
+}
+
+SimulationObject Simulation::Create(SimulationObject simObj) {
+    SimulationObjects.push_back(simObj);
+    return simObj;
 }
 
 void Simulation::Destroy(SimulationObject simulationObject) {

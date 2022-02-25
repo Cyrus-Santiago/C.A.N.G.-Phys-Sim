@@ -7,16 +7,19 @@ and it should not count towards his 1000 lines. */
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
 #include "../include/simulationObject.hpp"
+#include "../include/ray.hpp"
 #include "../include/simulation.hpp"
-#include <ostream>
+#include <glm/detail/qualifier.hpp>
+#include <iostream>
 #include <glm/fwd.hpp>
+#include <vector>
 
 Menu menu;
 PlayArea parea;
 PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
-TextRenderer textRenderer;
 Simulation simulation;
+std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -36,7 +39,7 @@ void Game::Init() {
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
   ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
   ResourceManager::LoadTexture("textures/laser.png", true, "laser");
-  ResourceManager::LoadTexture("textures/font.png", true, "font");
+  ResourceManager::LoadTexture("textures/font2.png", true, "font2");
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
@@ -53,33 +56,53 @@ void Game::Init() {
   spriteRenderer = new SpriteRenderer(myShader);
 
   // initialize menu
-  menu.init(6, 5, Width, Height);
+  Menu::init(6, 5, Width, Height);
   parea.init(Width, Height);
   pborder.init(Width,Height);
+
+  // retrieve button data
+  Buttons = Menu::Buttons;
   // give the button data to input class
-  Input::getButtonData(menu.Buttons);
-  //simulation.getBorder(pborder.Border);
+  Input::getButtonData(Buttons);
+
   // initialize the text renderer (actually manager)
-  textRenderer.Init();
-  simulation.Create(glm::vec2(50, 100), glm::vec3(1.0f, 0.0f, 0.0f));
-  simulation.Create(glm::vec2(100, 100), glm::vec3(0.0f, 1.0f, 0.0f));
+  TextRenderer::Init();
+  simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(100, 100), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
   SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
   SimulationObject simObj2 = simulation.Create(glm::vec2(200, 100));
-  simulation.Create(glm::vec2(250, 100), glm::vec3(0.0f, 0.0f, 1.0f));
+  simulation.Create(glm::vec2(250, 100), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
   simulation.Destroy(simObj1);
   simulation.Destroy(simObj2);
-  simulation.Create(glm::vec2(150, 100), glm::vec3(1.0f, 0.0f, 1.0f));
-  simulation.Create(glm::vec2(200, 100), glm::vec3(1.0f, 1.0f, 0.0f));
+  simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+  for (Button &button : Buttons) {
+    TextRenderer::NewSentence(* spriteRenderer, 
+    button.Type + " ", glm::vec2(40, 20), 20);
+  }
 }
 
 void Game::Update(float dt) {
   simulation.Update(dt);
+  TextRenderer::Update(dt);
 }
 
 void Game::Render() {
+  Ray ray({100,100});
+  simulation.Create(ray);
+  Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
-  menu.Draw(*spriteRenderer, textRenderer);
+  Menu::Draw(*spriteRenderer);
   simulation.Draw(*spriteRenderer);
+  for (Button &button : Buttons) {
+    if (button.Pressed) {
+      TextRenderer::Draw(*spriteRenderer, button.Type + " ",
+        Menu::Types.at(button.Type).color);
+    } else {
+      TextRenderer::Hide(*spriteRenderer, button.Type + " ");
+    }
+  }
 }
