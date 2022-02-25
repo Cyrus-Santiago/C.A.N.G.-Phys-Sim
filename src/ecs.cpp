@@ -1,23 +1,40 @@
 // this code was written by Nate
 
 #include "../include/ecs.hpp"
+#include "../include/resourceManager.hpp"
+#include <cstdarg>
 #include <cstdint>
+#include <iostream>
+
+std::queue<ECS::Entity>
+ECS::AvailableEntityIDs;
+
+std::map<uint32_t, ECS::Components>
+ECS::EntityToComponents;
 
 // constructor
-EntityComponentSystem::EntityComponentSystem() {
-    Entity entity;
+ECS::ECS() {
+
+    ECS::Entity entity;
     // create an entity ID for every possible entity
     for (uint32_t i = 0; i < ENTITYMAX; i++) {
         // assigns current iterator value as entity ID
         entity.ID = i;
         // sets all component bits to zero (even though they should be already)
-        entity.ComponentFlags.reset();
+        entity.ComponentBitMask.reset();
         // push the entity onto the queue
-        AvailableEntityIDs.push(entity);
+        ECS::AvailableEntityIDs.push(entity);
+
+        ECS::Dimension dimension = {50, 50, 10, 10, "button2"};
+        ECS::Components componentList = {dimension};
+
+        ECS::EntityToComponents.insert(
+            std::pair<uint32_t,
+            ECS::Components>(entity.ID, componentList));
     }
 }
 
-EntityComponentSystem::Entity EntityComponentSystem::CreateEntity() {
+ECS::Entity ECS::CreateEntity() {
     Entity entity;
     // gets entity from front of queue
     entity = AvailableEntityIDs.front();
@@ -26,25 +43,28 @@ EntityComponentSystem::Entity EntityComponentSystem::CreateEntity() {
     return entity;
 }
 
-void EntityComponentSystem::DeleteEntity(Entity entity) {
+void ECS::DeleteEntity(Entity entity) {
     // set all component flags to zero
-    entity.ComponentFlags.reset();
+    entity.ComponentBitMask.reset();
     // push entity back to end of queue
     AvailableEntityIDs.push(entity);
 }
 
-void EntityComponentSystem::AddComponent(Entity entity, uint8_t componentID) {
+ECS::Entity ECS::AddComponent(
+    Entity entity, uint8_t componentID) {
     // set the bit for the specified component ID
-    entity.ComponentFlags.set(componentID, 1);
+    entity.ComponentBitMask.set(componentID - 1, 1);
+    return entity;
 }
 
-void EntityComponentSystem::RemoveComponent(Entity entity,
+void ECS::RemoveComponent(Entity entity,
     uint8_t componentID) {
     // reset bit for specified component ID to zero
-    entity.ComponentFlags.reset(componentID);
+    entity.ComponentBitMask.reset(componentID);
 }
 
-bool EntityComponentSystem::EntityHasComponent(Entity entity,
+bool ECS::EntityHasComponent(Entity entity,
     uint8_t componentID) {
-    return entity.ComponentFlags.test(componentID);
+    // test to see if the specified component bit is 1
+    return entity.ComponentBitMask.test(componentID - 1);
 }

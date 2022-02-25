@@ -9,6 +9,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
+#include "../include/ecs.hpp"
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
 #include <glm/fwd.hpp>
@@ -19,6 +20,7 @@ playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
+ECS ecs;
 std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height) 
@@ -80,6 +82,7 @@ void Game::Init() {
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
+
 }
 
 void Game::Update(float dt) {
@@ -88,6 +91,7 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
+  Texture2D texture = ResourceManager::GetTexture("button2");
   Ray ray({100,100});
   simulation.Create(ray);
   Buttons = Input::giveButtonData();
@@ -103,5 +107,13 @@ void Game::Render() {
     } else {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
+  }
+  
+  ECS::Entity entity1 = ecs.CreateEntity();
+  entity1 = ecs.AddComponent(entity1, DIMENSIONID);
+  if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture, 
+      glm::vec2(ECS::EntityToComponents.at(entity1.ID).dimension.xPos,
+        ECS::EntityToComponents.at(entity1.ID).dimension.yPos));
   }
 }
