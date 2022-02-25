@@ -20,11 +20,11 @@ public:
 
     // constructor
     SimulationObject(glm::vec2 position, glm::vec4 color = glm::vec4(1.0f),
-                     glm::vec2 size = glm::vec2(5),
-                     Texture2D texture = ResourceManager::GetTexture("button2"),
-                     glm::vec2 velocity = glm::vec2(0.0f),
-                     float mass = 1, bool Destroyed = false);
-    
+        glm::vec2 size = glm::vec2(5),
+        Texture2D texture = ResourceManager::GetTexture("button2"),
+        glm::vec2 velocity = glm::vec2(0.0f), float mass = 1,
+        bool Destroyed = false);
+
     // used so the simulation object can experience gravity
     void Move(float dt);
 

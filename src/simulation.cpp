@@ -3,6 +3,12 @@
 #include "../include/simulation.hpp"
 #include <iostream>
 
+// destructor
+Simulation::~Simulation() {
+    // clear array of simulation objects
+    Simulation::SimulationObjects.clear();
+}
+
 void Simulation::Draw(SpriteRenderer &spriteRenderer) {
     // loops through each element in Sim Obj array and draws it
     // if it isn't destroyed
@@ -12,7 +18,6 @@ void Simulation::Draw(SpriteRenderer &spriteRenderer) {
         }
     }
 }
-
 
 SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
     glm::vec2 size, Texture2D texture, glm::vec2 velocity) {
