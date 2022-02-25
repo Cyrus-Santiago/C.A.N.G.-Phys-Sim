@@ -74,6 +74,7 @@ void TextRenderer::NewSentence(std::string newSentence,
             }
         }
     }
+
     // now we declare our struct, storing some important information about
     // the text we render so we don't have to ask again
     CharactersArray charArray = {Characters, position, fontSize, 0.0f};
