@@ -96,3 +96,16 @@ Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha) {
     stbi_image_free(data);
     return texture;
 }
+
+void ResourceManager::initializeResources(){
+    /* This will load our sprite shaders */
+  ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
+  /* Load our images as textures */
+  ResourceManager::LoadTexture("textures/button2.png", true, "button2");
+  ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+  ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
+  ResourceManager::LoadTexture("textures/laser.png", true, "laser");
+  ResourceManager::LoadTexture("textures/font2.png", true, "font2");
+  /* Tell the shader we're going to be providing an image */
+  ResourceManager::GetShader("sprite").Use().SetInt("image", 0);
+}
