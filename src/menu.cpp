@@ -106,6 +106,5 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         Button boxObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
             glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y]);
         Buttons.push_back(boxObj);
-        std::cout<<"Hello"<<std::endl;
     }
 }
