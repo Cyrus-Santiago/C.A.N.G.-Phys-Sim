@@ -13,9 +13,10 @@
 #include "../include/texture.hpp"
 
 #define ENTITYMAX 5000
-#define COMPONENTMAX 2
+#define COMPONENTMAX 3
 #define DIMENSIONID 1
 #define GRAVITYID 2
+#define GROWID 3
 
 class ECS {
 public: 
@@ -28,8 +29,8 @@ public:
     typedef struct {
         float xPos;
         float yPos;
-        uint8_t xSize;
-        uint8_t ySize;
+        float xSize;
+        float ySize;
         std::string texture;
     } Dimension;
 

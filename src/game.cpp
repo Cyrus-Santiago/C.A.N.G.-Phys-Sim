@@ -21,7 +21,7 @@ playBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
-ECS::Entity entity1, entity2;
+ECS::Entity entity1, entity2, entity3, entity4;
 std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -68,6 +68,15 @@ void Game::Init() {
   entity2 = ecs.CreateEntity();
   entity2 = ecs.AddComponent(entity2, DIMENSIONID);
   ecs.EntityToComponents.at(entity2.ID).dimension.xPos = 100;
+  entity3 = ecs.CreateEntity();
+  entity3 = ecs.AddComponent(entity3, DIMENSIONID);
+  entity3 = ecs.AddComponent(entity3, GROWID);
+  ecs.EntityToComponents.at(entity3.ID).dimension.xPos = 150;
+  entity4 = ecs.CreateEntity();
+  entity4 = ecs.AddComponent(entity4, DIMENSIONID);
+  entity4 = ecs.AddComponent(entity4, GROWID);
+  entity4 = ecs.AddComponent(entity4, GRAVITYID);
+  ecs.EntityToComponents.at(entity4.ID).dimension.xPos = 200;
 }
 void Game::Update(float dt) {
   simulation.Update(dt);
@@ -75,6 +84,17 @@ void Game::Update(float dt) {
   if (ecs.EntityHasComponent(entity1, GRAVITYID)) {
     ecs.EntityToComponents.at(entity1.ID).dimension.yPos += dt * 45;
   }
+  if (ecs.EntityHasComponent(entity3, GROWID)) {
+    ecs.EntityToComponents.at(entity3.ID).dimension.xSize *= 1.001;
+    ecs.EntityToComponents.at(entity3.ID).dimension.ySize *= 1.001;
+  }
+  if (ecs.EntityHasComponent(entity4, GROWID) &&
+    ecs.EntityHasComponent(entity4, GRAVITYID)) {
+    ecs.EntityToComponents.at(entity4.ID).dimension.yPos += dt * 45;
+    ecs.EntityToComponents.at(entity4.ID).dimension.xSize *= 1.001;
+    ecs.EntityToComponents.at(entity4.ID).dimension.ySize *= 1.001;
+  }
+
 }
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
@@ -104,5 +124,19 @@ void Game::Render() {
     spriteRenderer->DrawSprite(texture,
       glm::vec2(ecs.EntityToComponents.at(entity2.ID).dimension.xPos,
       ecs.EntityToComponents.at(entity2.ID).dimension.yPos));
+  }
+  if (ecs.EntityHasComponent(entity3, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity3.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity3.ID).dimension.yPos),
+      glm::vec2(ecs.EntityToComponents.at(entity3.ID).dimension.xSize,
+      ecs.EntityToComponents.at(entity3.ID).dimension.xSize));
+  }
+  if (ecs.EntityHasComponent(entity4, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity4.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity4.ID).dimension.yPos),
+      glm::vec2(ecs.EntityToComponents.at(entity4.ID).dimension.xSize,
+      ecs.EntityToComponents.at(entity4.ID).dimension.xSize));
   }
 }
