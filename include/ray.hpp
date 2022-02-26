@@ -35,5 +35,6 @@ public: glm::vec2 Position, Tail, Size, Velocity;
         void setSize(glm::vec2, glm::vec2);
         void successfulDraw(int);
         void init();
+        void clear();
 };
 #endif
