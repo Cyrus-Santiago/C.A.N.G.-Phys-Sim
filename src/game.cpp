@@ -21,6 +21,9 @@ playBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
+Click newMouseClick, oldMouseClick;
+Input input;
+
 std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -47,11 +50,12 @@ void Game::Init() {
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
 
-  // initialize menu
+  // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
   pborder.init(Width*0.85,Height);
-
+  Input::screenWidth=Width*0.85;
+  Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // give the button data to input class
@@ -74,6 +78,12 @@ void Game::Init() {
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
+  newMouseClick = input.getLastMouseClickPos();
+  //If there is a new mouse click
+  if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
+    Input::determineAreaPressed(newMouseClick.xPos, newMouseClick.yPos);
+    oldMouseClick=newMouseClick;
+  }
 }
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
