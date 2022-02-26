@@ -51,3 +51,13 @@
         Move(0);
         Destroyed = false;
     }
+
+    void Ray::clear(){
+        Position = {0, 0};
+        Tail = {0, 0};
+        setSize(Position, Tail);
+        Texture = ResourceManager::GetTexture("laser");
+        Velocity = {0, 0};
+        Move(0);
+        Destroyed = true;
+    }
