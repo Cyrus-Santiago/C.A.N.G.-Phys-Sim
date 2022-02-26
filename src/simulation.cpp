@@ -3,7 +3,11 @@
 #include "../include/simulation.hpp"
 #include <iostream>
 
-Collision col;
+// destructor
+Simulation::~Simulation() {
+    // clear array of simulation objects
+    Simulation::SimulationObjects.clear();
+}
 
 void Simulation::Draw(SpriteRenderer &spriteRenderer) {
     // loops through each element in Sim Obj array and draws it
@@ -14,7 +18,6 @@ void Simulation::Draw(SpriteRenderer &spriteRenderer) {
         }
     }
 }
-
 
 SimulationObject Simulation::Create(glm::vec2 position, glm::vec4 color,
     glm::vec2 size, Texture2D texture, glm::vec2 velocity) {
@@ -68,10 +71,10 @@ void Simulation::Update(float dt) {
     for (SimulationObject &simObj : this->SimulationObjects) {
         if (!simObj.Destroyed) {
             simObj.Move(dt);
-            if(col.checkCollision(simObj,Border)){
+            //if(col.checkCollision(simObj,Border)){
                 //col.collide(simObj);
-                std::cout<<"YOOOOOO";
-            }
+                //std::cout<<"YOOOOOO";
+            //}
         }
     }
 }

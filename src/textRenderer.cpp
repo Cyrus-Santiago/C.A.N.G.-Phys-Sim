@@ -45,7 +45,7 @@ void TextRenderer::Init() {
         Character('.', glm::vec2(charPositions[27].x, charPositions[27].y)));
 }
 
-void TextRenderer::NewSentence(SpriteRenderer &renderer, std::string newSentence,
+void TextRenderer::NewSentence(std::string newSentence,
     glm::vec2 position, unsigned int fontSize) {
     // here we check to see if the sentence we're trying to add already exists,
     // that way we don't add it twice if we don't have to
@@ -74,6 +74,7 @@ void TextRenderer::NewSentence(SpriteRenderer &renderer, std::string newSentence
             }
         }
     }
+
     // now we declare our struct, storing some important information about
     // the text we render so we don't have to ask again
     CharactersArray charArray = {Characters, position, fontSize, 0.0f};

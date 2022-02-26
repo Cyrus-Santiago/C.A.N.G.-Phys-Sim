@@ -17,14 +17,17 @@ public:
     // constructor
     Simulation() { }
 
+    // destuctor
+    ~Simulation();
+
     // used to draw each individual simulation object
     void Draw(SpriteRenderer &renderer);
 
     // used to create a simulation object and add it to the array
     SimulationObject Create(glm::vec2 position, glm::vec4 color = glm::vec4(1.0f),
-                glm::vec2 size = glm::vec2(5),
-                Texture2D texture = ResourceManager::GetTexture("button2"),
-                glm::vec2 velocity = glm::vec2(0.0f));
+        glm::vec2 size = glm::vec2(5),
+        Texture2D texture = ResourceManager::GetTexture("button2"),
+        glm::vec2 velocity = glm::vec2(0.0f));
             
     SimulationObject Create(SimulationObject simObj);
     // used to mark a simulation object as destroyed, so it's storage space can be

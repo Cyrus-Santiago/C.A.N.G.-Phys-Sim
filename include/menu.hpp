@@ -29,6 +29,10 @@ public:
         
     // constructor
     Menu() { }
+
+    // destructor
+    ~Menu();
+
     // rendering menu
     static void Draw(SpriteRenderer &renderer);
 

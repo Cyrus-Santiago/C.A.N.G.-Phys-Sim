@@ -77,7 +77,7 @@ int main()
 
         // here we have a click object that holds position data, and we get that data
         // from the input class
-        Click mousePosData = Input::getLastMouseClickPos();
+
         // set background color based on mouse position data (to demonstrate that it works)
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

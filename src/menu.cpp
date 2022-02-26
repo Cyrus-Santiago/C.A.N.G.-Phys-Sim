@@ -19,13 +19,19 @@ std::string Menu::elementTypes[ELEMENT_NUM];
 
 std::map<std::string, Menu::Element> Menu::Types;
 
+// destructor
+Menu::~Menu() {
+    Menu::Buttons.clear();
+    Menu::Types.clear();
+}
+
 void Menu::Draw(SpriteRenderer &spriteRenderer) {
     // gets button data from input (in case the color changed or sum)
     Buttons = Input::giveButtonData();
     // draws every single button
     for (Button &button : Buttons) {
-        TextRenderer::NewSentence(spriteRenderer, button.Type, 
-            glm::vec2(button.Position.x + 10, button.Position.y + 18), 14);
+        TextRenderer::NewSentence(button.Type, glm::vec2(button.Position.x + 10,
+            button.Position.y + 18), 14);
         button.Draw(spriteRenderer);
     }
 }
