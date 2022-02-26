@@ -58,9 +58,9 @@ void Game::Init() {
   spriteRenderer = new SpriteRenderer(myShader);
 
   // initialize menu
-  Menu::init(6, 5, Width, Height);
-  parea.init(Width, Height);
-  pborder.init(Width,Height);
+  Menu::init(6, 5, Width*0.85, Height);
+  parea.init(Width*0.85, Height);
+  pborder.init(Width*0.85,Height);
 
   // retrieve button data
   Buttons = Menu::Buttons;
