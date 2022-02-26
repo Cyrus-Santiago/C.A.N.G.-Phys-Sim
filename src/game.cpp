@@ -21,6 +21,7 @@ playBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
+ECS::Entity entity1 = ecs.CreateEntity();
 std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -94,7 +95,6 @@ void Game::Render() {
     }
   }
 
-  ECS::Entity entity1 = ecs.CreateEntity();
   entity1 = ecs.AddComponent(entity1, DIMENSIONID);
   if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
     spriteRenderer->DrawSprite(texture,
