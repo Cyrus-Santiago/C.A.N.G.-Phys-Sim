@@ -25,27 +25,27 @@ public:
         std::bitset<COMPONENTMAX> ComponentBitMask;
     } Entity;
 
-    struct Dimension {
-        uint16_t xPos;
-        uint16_t yPos;
+    typedef struct {
+        float xPos;
+        float yPos;
         uint8_t xSize;
         uint8_t ySize;
         std::string texture;
-    };
+    } Dimension;
 
-    struct Gravity {
-        float gravity;
-    };
+    typedef struct {
+        float mass;
+    } Physics;
 
     typedef struct {
         Dimension dimension;
-        Gravity gravity;
+        Physics physics;
     } Components;
 
     // list of usable entity IDs
-    static std::queue<Entity> AvailableEntityIDs;
+    std::queue<Entity> AvailableEntityIDs;
 
-    static std::map<uint32_t, Components> EntityToComponents;
+    std::map<uint32_t, Components> EntityToComponents;
 
     // initializes entire EntityID array
     ECS();

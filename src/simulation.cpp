@@ -1,3 +1,4 @@
+/* DEPRECATED */
 // This code was written by Nate
 
 #include "../include/simulation.hpp"
