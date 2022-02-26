@@ -16,7 +16,7 @@ public: glm::vec2 Position, Tail, Size, Velocity;
         Texture2D Texture;
 
         /* Default Constructor */
-        Ray(glm::vec2 position, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {500,10},
+        Ray(glm::vec2 position, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {250,10},
             Texture2D texture = ResourceManager::GetTexture("laser"),
             glm::vec2 velocity = glm::vec2(0.0f),
             float mass = 0, bool Destroyed = 0) :
@@ -29,7 +29,7 @@ public: glm::vec2 Position, Tail, Size, Velocity;
             }
 
         /* Methods */
-        void printRayCoords();
+        void printRayStats();
         glm::vec2 setPosition(double, double);
         glm::vec2 setTail(double, double);
         void setSize(glm::vec2, glm::vec2);

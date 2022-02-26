@@ -32,6 +32,8 @@ public:
     static Texture2D GetTexture(std::string name);
     // free the memory!
     static void Clear();
+    /* Loads all files needed in game file */
+    static void initializeResources();
 private:
     ResourceManager() { }
     // load and gen shader from a file
