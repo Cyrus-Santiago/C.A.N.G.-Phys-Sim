@@ -4,7 +4,6 @@
 #define SIMULATION_H
 
 #include "../include/collision.hpp"
-#include "../include/playBorder.hpp"
 #include <vector>
 
 // this class keeps track of all the objects in the game. It draws them, destroys them,
@@ -13,7 +12,7 @@ class Simulation {
 private:
     // array of every object in the simulation
     std::vector<SimulationObject> SimulationObjects;
-    std::vector<Background> Border; //Cyrus adding Border collisions :)
+    std::vector<SimulationObject> Border; //Cyrus adding Border collisions :)
 public:
     // constructor
     Simulation() { }
@@ -35,7 +34,7 @@ public:
     // used to give time to simulation objects so they can move
     void Update(float dt);
     //Get Border information to check for collisions - Cyrus
-    void getBorder(std::vector<Background> Border);
+    void getBorder(std::vector<SimulationObject> Border);
 };
 
 #endif

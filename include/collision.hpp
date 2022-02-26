@@ -2,7 +2,7 @@
 #define COLLISION_H
 
 #include "../include/simulationObject.hpp"
-#include "../include/background.hpp"
+#include <vector>
 
 class Collision{
 public:
@@ -10,7 +10,7 @@ public:
     Collision(){};
     //Calculates whether a collision occured
     bool detector(SimulationObject &obj1, SimulationObject &obj2);
-    bool borderDet(SimulationObject &obj, Background &border);
+    bool checkCollision(SimulationObject &obj, std::vector<SimulationObject> Border);
 
     void collide(SimulationObject &obj);
 

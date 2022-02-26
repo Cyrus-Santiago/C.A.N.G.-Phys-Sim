@@ -10,14 +10,14 @@ bool Collision::detector(SimulationObject &obj1, SimulationObject &obj2){
     return colX && colY;
 }
 
-bool Collision::borderDet(SimulationObject &obj, Background &border){
-    colX = obj.Position.x + obj.Size.x >= border.Position.x && 
-        border.Position.x + border.Size.x >= obj.Position.x;
-    
-    colY = obj.Position.y + obj.Size.y >= border.Position.y && 
-        border.Position.y + border.Size.y >= obj.Position.y;
+bool Collision::checkCollision(SimulationObject &obj, std::vector<SimulationObject> Border){
+    for(SimulationObject &border : Border){
+        if(detector(obj,border)){
+            return true;
+        }
+    }
 
-    return colX && colY;
+    return false;
 }
 
 void Collision::collide(SimulationObject &obj){

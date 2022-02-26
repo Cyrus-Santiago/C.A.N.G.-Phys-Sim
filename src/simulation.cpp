@@ -68,13 +68,14 @@ void Simulation::Update(float dt) {
     for (SimulationObject &simObj : this->SimulationObjects) {
         if (!simObj.Destroyed) {
             simObj.Move(dt);
-            //if(col.borderDet(simObj,)){ I'm going to put border collision detection somewhere else - Cyrus
-            //    col.collide(simObj);
-            //}
+            if(col.checkCollision(simObj,Border)){
+                //col.collide(simObj);
+                std::cout<<"YOOOOOO";
+            }
         }
     }
 }
 
-void Simulation::getBorder(std::vector<Background> border){
+void Simulation::getBorder(std::vector<SimulationObject> border){
     Border = border;
 }

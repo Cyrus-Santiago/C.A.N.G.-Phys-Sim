@@ -20,6 +20,7 @@ PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 std::vector<Button> Buttons;
+std::vector<SimulationObject> Border;
 
 Game::Game(unsigned int width, unsigned int height) 
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -62,9 +63,11 @@ void Game::Init() {
 
   // retrieve button data
   Buttons = Menu::Buttons;
+  // retrieve border data
+  Border = pborder.Border;
   // give the button data to input class
   Input::getButtonData(Buttons);
-
+  simulation.getBorder(Border);
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
   simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
