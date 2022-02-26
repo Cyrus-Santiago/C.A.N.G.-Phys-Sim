@@ -15,7 +15,8 @@ public: int beamWidth = 0;
     Beam(){}
 
     /* Methods */
-    void setBeamWidth();
+    void incBeamWidth();
+    void clear();
     void init();
 };
 #endif

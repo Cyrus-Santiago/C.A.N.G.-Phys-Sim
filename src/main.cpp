@@ -17,7 +17,7 @@ and it should not count towards his 1000 lines. */
 #include <cmath>
 
 // settings
-const unsigned int SCR_WIDTH = 860;
+const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 860;
 const char* menuTitle = "C.A.N.G. Physics Simulator";
 

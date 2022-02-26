@@ -22,12 +22,15 @@ PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
+Click newMouseClick, oldMouseClick;
+Input input;
+
+ECS::Entity entity1 = ecs.CreateEntity();
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
 
-Game::Game(unsigned int width, unsigned int height) 
+Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Width(width), Height(height) {
-
 }
 
 Game::~Game() {
@@ -35,22 +38,13 @@ Game::~Game() {
 }
 
 void Game::Init() {
-  // load in shader files and name them sprite
-  ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
-
-  // load our image as a texture
-  ResourceManager::LoadTexture("textures/button2.png", true, "button2");
-  ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
-  ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
-  ResourceManager::LoadTexture("textures/laser.png", true, "laser");
-  ResourceManager::LoadTexture("textures/font2.png", true, "font2");
+  ResourceManager::initializeResources(); /* This will load all textures and shaders */
 
   // set projection matrix based on dimensions of screen (that way we can provide
   // our coordinates in easy to decipher pixel coordinates)
   glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
     static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
-  // tell the shader we're going to be providing an image
-  ResourceManager::GetShader("sprite").Use().SetInt("image", 0);
+
   // provide the shader with the projection matrix
   ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
   Shader myShader;
@@ -59,18 +53,22 @@ void Game::Init() {
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
 
-  // initialize menu
-  Menu::init(6, 5, Width, Height);
-  parea.init(Width, Height);
-  pborder.init(Width,Height);
-
+  // initialize menu, play area, play border, and input dimensions
+  Menu::init(6, 5, Width*0.85, Height);
+  parea.init(Width*0.85, Height);
+  pborder.init(Width*0.85,Height);
+  Input::screenWidth=Width*0.85;
+  Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
   Border = pborder.Border;
   // give the button data to input class
   Input::getButtonData(Buttons);
+<<<<<<< HEAD
   simulation.getBorder(Border);
+=======
+>>>>>>> fd0f0764ad649546d49cd7fc2af15134cf1f5238
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
   simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -82,18 +80,20 @@ void Game::Init() {
   simulation.Destroy(simObj2);
   simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
   simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-
 }
-
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
+  newMouseClick = input.getLastMouseClickPos();
+  //If there is a new mouse click
+  if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
+    Input::determineAreaPressed(newMouseClick.xPos, newMouseClick.yPos);
+    oldMouseClick=newMouseClick;
+  }
 }
-
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Ray ray({100,100});
@@ -112,11 +112,10 @@ void Game::Render() {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
-  
-  ECS::Entity entity1 = ecs.CreateEntity();
+
   entity1 = ecs.AddComponent(entity1, DIMENSIONID);
   if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
-    spriteRenderer->DrawSprite(texture, 
+    spriteRenderer->DrawSprite(texture,
       glm::vec2(ECS::EntityToComponents.at(entity1.ID).dimension.xPos,
         ECS::EntityToComponents.at(entity1.ID).dimension.yPos));
   }

@@ -4,6 +4,7 @@
 #include "../include/menu.hpp"
 #include "../include/input.hpp"
 #include <glm/fwd.hpp>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -56,7 +57,8 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.4f, 0.35f, 0.4f,1.0f),
         glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
     };
-
+    Element shapesButtonColor[] = {glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),
+        glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),glm::vec4(0.5f, 0.3f, 0.0f, 1.0f)};
     std::string elementTypes[] = {
         "WATER", "POTASSIUM", "HYDROGEN", "HELIUM", "OXYGEN", "MERCURY", "IRON",
         "CARBON", "NITROGEN", "CHLORINE", "COBALT", "GOLD", "TIN", "TITANIUM",
@@ -64,7 +66,11 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         "NEON", "FLUORINE", "ARGON", "MAGNESIUM", "PLATINUM", "TUNGSTEN",
         "BROMINE", "BISMUTH", "URANIUM"
     };
-
+    std::string shapeTypes[] = { "SQUARE", "TRIANGLE", "RECTANGLE" };
+    for (int i=0; i<SHAPE_NUM; i++) {
+        Types.insert(std::pair<std::string, Element>(shapeTypes[i],
+        shapesButtonColor[i]));
+    }
     for (int i = 0; i < ELEMENT_NUM; i++) {
         Types.insert(std::pair<std::string, Element>(elementTypes[i],
             elementDataArray[i]));
@@ -73,25 +79,32 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     int i = 0;
     // very messy and stupid calculations that makes buttons evenly spaced in
     // a specific area
+    float edgeGap=0.025*scrWidth;  //About 20 pixels for a width of 1000
+    float scrHeightGap=((scrHeight * 0.4) / menuHeight);
+    float widthGapBetweenBoxes=((scrWidth - edgeGap) / menuWidth);
+    float shrunkScrHeight=scrHeight * 0.6;
+    glm::vec2 buttonSize(int(scrWidth / menuWidth) - edgeGap,
+                scrHeightGap - edgeGap);
+    //For loop of initializing element buttons
     for (int x = 0; x < menuWidth; ++x) {
         for (int y = 0; y < menuHeight; ++y) {
-
-            glm::vec2 pos(20 + (x * ((scrWidth - 20) / menuWidth)),
-                (scrHeight * 0.6) + (y * (scrHeight * 0.4) / menuHeight));
-
-            glm::vec2 size((scrWidth / menuWidth) - 20,
-                ((scrHeight * 0.4) / menuHeight) - 20);
-
+            glm::vec2 pos(edgeGap + (x * widthGapBetweenBoxes),
+                shrunkScrHeight + (y * scrHeightGap));
             assert(Menu::Types.find(elementTypes[i]) != Menu::Types.end());
-
-            std::string type = elementTypes[i];
-
             // load info into Button object
-            Button obj(pos, size, ResourceManager::GetTexture("button2"),
+            Button obj(pos,buttonSize, ResourceManager::GetTexture("button2"),
                        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i]);
             i++;
             // add button object to Buttons array
             Buttons.push_back(obj);
         }
+    }
+    //For loop of initializing shape buttons
+    for(int y=0; y<SHAPE_NUM; ++y){
+        //May change shrunkScrHeight to full screen height if need more buttons
+        glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
+        Button boxObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y]);
+        Buttons.push_back(boxObj);
     }
 }

@@ -6,8 +6,10 @@
 #include <cmath>
 
     /* Print the contents of the rayOrigin array */
-    void Ray::printRayCoords(){
-        std::cout <<"Ray Origin: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
+    void Ray::printRayStats(){
+        std::cout <<"Origin: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
+        std::cout <<"Tail: (" << Tail[0] << ", " << Tail[1] << ")" << std::endl;
+        std::cout <<"Size: " << fabsf(Tail[0]-Position[0]) << " x " << Size[1] << std::endl;
     }
 
     /* Set position of the ray origin */
@@ -28,13 +30,13 @@
     /* Ray Dimensions (length, width) */
     void Ray::setSize(glm::vec2 position, glm::vec2 tail){
         Size[0] = fabsf(tail[0]-position[0]);
-        Size[1] = 0.01;
+        Size[1] = 10;
     }
 
     void Ray::successfulDraw(int x){
         if(x == 1){
             std::cout << "Successfully placed light ray" << std::endl;
-            printRayCoords();
+            printRayStats();
         }
         else
             std::cout << "Light ray could not be placed" << std::endl;
@@ -48,4 +50,14 @@
         Velocity = {0, 0};
         Move(0);
         Destroyed = false;
+    }
+
+    void Ray::clear(){
+        Position = {0, 0};
+        Tail = {0, 0};
+        setSize(Position, Tail);
+        Texture = ResourceManager::GetTexture("laser");
+        Velocity = {0, 0};
+        Move(0);
+        Destroyed = true;
     }
