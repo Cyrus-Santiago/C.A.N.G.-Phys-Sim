@@ -1,3 +1,4 @@
+/* DEPRECATED */
 // this code was written by Nate
 
 #include <glm/fwd.hpp>

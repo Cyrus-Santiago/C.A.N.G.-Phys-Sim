@@ -22,10 +22,14 @@ PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
+<<<<<<< HEAD
 Click newMouseClick, oldMouseClick;
 Input input;
 
 ECS::Entity entity1 = ecs.CreateEntity();
+=======
+ECS::Entity entity1, entity2, entity3, entity4;
+>>>>>>> 8345fa9952124937e604874276a335a046337df9
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
 
@@ -71,28 +75,51 @@ void Game::Init() {
 >>>>>>> fd0f0764ad649546d49cd7fc2af15134cf1f5238
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
-  simulation.Create(glm::vec2(50, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-  simulation.Create(glm::vec2(100, 100), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-  SimulationObject simObj1 = simulation.Create(glm::vec2(150, 100));
-  SimulationObject simObj2 = simulation.Create(glm::vec2(200, 100));
-  simulation.Create(glm::vec2(250, 100), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-  simulation.Destroy(simObj1);
-  simulation.Destroy(simObj2);
-  simulation.Create(glm::vec2(150, 100), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-  simulation.Create(glm::vec2(200, 100), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
+  entity1 = ecs.CreateEntity();
+  entity1 = ecs.AddComponent(entity1, DIMENSIONID);
+  entity1 = ecs.AddComponent(entity1, GRAVITYID);
+  entity2 = ecs.CreateEntity();
+  entity2 = ecs.AddComponent(entity2, DIMENSIONID);
+  ecs.EntityToComponents.at(entity2.ID).dimension.xPos = 100;
+  entity3 = ecs.CreateEntity();
+  entity3 = ecs.AddComponent(entity3, DIMENSIONID);
+  entity3 = ecs.AddComponent(entity3, GROWID);
+  ecs.EntityToComponents.at(entity3.ID).dimension.xPos = 150;
+  entity4 = ecs.CreateEntity();
+  entity4 = ecs.AddComponent(entity4, DIMENSIONID);
+  entity4 = ecs.AddComponent(entity4, GROWID);
+  entity4 = ecs.AddComponent(entity4, GRAVITYID);
+  ecs.EntityToComponents.at(entity4.ID).dimension.xPos = 200;
 }
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
+<<<<<<< HEAD
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     Input::determineAreaPressed(newMouseClick.xPos, newMouseClick.yPos);
     oldMouseClick=newMouseClick;
   }
+=======
+  if (ecs.EntityHasComponent(entity1, GRAVITYID)) {
+    ecs.EntityToComponents.at(entity1.ID).dimension.yPos += dt * 45;
+  }
+  if (ecs.EntityHasComponent(entity3, GROWID)) {
+    ecs.EntityToComponents.at(entity3.ID).dimension.xSize *= 1.001;
+    ecs.EntityToComponents.at(entity3.ID).dimension.ySize *= 1.001;
+  }
+  if (ecs.EntityHasComponent(entity4, GROWID) &&
+    ecs.EntityHasComponent(entity4, GRAVITYID)) {
+    ecs.EntityToComponents.at(entity4.ID).dimension.yPos += dt * 45;
+    ecs.EntityToComponents.at(entity4.ID).dimension.xSize *= 1.001;
+    ecs.EntityToComponents.at(entity4.ID).dimension.ySize *= 1.001;
+  }
+
+>>>>>>> 8345fa9952124937e604874276a335a046337df9
 }
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
@@ -113,10 +140,28 @@ void Game::Render() {
     }
   }
 
-  entity1 = ecs.AddComponent(entity1, DIMENSIONID);
   if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
     spriteRenderer->DrawSprite(texture,
-      glm::vec2(ECS::EntityToComponents.at(entity1.ID).dimension.xPos,
-        ECS::EntityToComponents.at(entity1.ID).dimension.yPos));
+      glm::vec2(ecs.EntityToComponents.at(entity1.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity1.ID).dimension.yPos));
+  }
+  if (ecs.EntityHasComponent(entity2, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity2.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity2.ID).dimension.yPos));
+  }
+  if (ecs.EntityHasComponent(entity3, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity3.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity3.ID).dimension.yPos),
+      glm::vec2(ecs.EntityToComponents.at(entity3.ID).dimension.xSize,
+      ecs.EntityToComponents.at(entity3.ID).dimension.xSize));
+  }
+  if (ecs.EntityHasComponent(entity4, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity4.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity4.ID).dimension.yPos),
+      glm::vec2(ecs.EntityToComponents.at(entity4.ID).dimension.xSize,
+      ecs.EntityToComponents.at(entity4.ID).dimension.xSize));
   }
 }
