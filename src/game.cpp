@@ -21,7 +21,12 @@ playBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 ECS ecs;
+
 ECS::Entity entity1, entity2, entity3, entity4;
+
+Click newMouseClick, oldMouseClick;
+Input input;
+
 std::vector<Button> Buttons;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -48,11 +53,12 @@ void Game::Init() {
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
 
-  // initialize menu
+  // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
   pborder.init(Width*0.85,Height);
-
+  Input::screenWidth=Width*0.85;
+  Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // give the button data to input class
@@ -81,6 +87,7 @@ void Game::Init() {
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
+
   if (ecs.EntityHasComponent(entity1, GRAVITYID)) {
     ecs.EntityToComponents.at(entity1.ID).dimension.yPos += dt * 45;
   }
@@ -95,7 +102,13 @@ void Game::Update(float dt) {
     ecs.EntityToComponents.at(entity4.ID).dimension.ySize *= 1.001;
   }
 
+  newMouseClick = input.getLastMouseClickPos();
+  //If there is a new mouse click
+  if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
+    oldMouseClick=newMouseClick;
+  }
 }
+
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Ray ray({100,100});

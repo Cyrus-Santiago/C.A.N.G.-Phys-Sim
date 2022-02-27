@@ -18,5 +18,6 @@ public: int beamWidth = 0;
     void incBeamWidth();
     void clear();
     void init();
+    void setBeamDirection();
 };
 #endif

@@ -3,7 +3,6 @@
    Description: Handles all operations performed on light ray(s) within simulation environment. */
 
 #include "../include/ray.hpp"
-#include <cmath>
 
     /* Print the contents of the rayOrigin array */
     void Ray::printRayStats(){
@@ -43,8 +42,8 @@
     }
 
     void Ray::init(){
-        Position = {100, 100};
-        Tail = {500, 250};
+        Position = {250, 100};
+        Tail = {500, 500};
         setSize(Position, Tail);
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
@@ -61,3 +60,30 @@
         Move(0);
         Destroyed = true;
     }
+
+    void Ray::setDirection(){
+        /* This data will indicate if there is any difference in the y-coordinates */
+        glm::vec2 Position2 = {Position[0] + Size[0], Position[1] + Size[1]},
+        Tail2 = {Tail[0] + Size[0], Tail[1] + Size[1]};
+        /* Angle Logic */
+        if (Position[1] == Position2[1])
+            Direction[0] = 0.0f; /* 0 degree with x axis */
+        else if (Position2[0] == Tail2[0])
+            Direction[1] = 0.0f; /* 0 degree with y axis */
+        else{
+            float xSlope = Position2[0] - Position[1];
+            float ySlope = Position2[1] - Position[1];
+            Direction[0] = (float)atan(ySlope/xSlope);
+            Direction[1] = (float)atan(xSlope/ySlope);
+        }
+    }
+
+    void Ray::incident(){
+        /* Calcualtion for incident ray */
+    }
+
+    void Ray::refractive(){
+        /* Calcualtion for refractive ray */
+    }
+
+

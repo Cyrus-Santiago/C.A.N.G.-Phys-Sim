@@ -28,3 +28,8 @@
         rays[0].init();
     }
 
+    void Beam::setBeamDirection(){
+        for(int i = 0; i < beamWidth; i++)
+            rays[i].setDirection();
+    }
+

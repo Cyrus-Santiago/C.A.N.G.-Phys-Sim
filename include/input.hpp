@@ -16,6 +16,7 @@ class Click {
         Click(double x, double y) {
             xPos = x; yPos = y;
         }
+        Click(){}
 };
 
 // class that stores mouse click position, mouse position, and callback functions for
@@ -26,7 +27,11 @@ private:
     // these variables store where the mouse was clicked
     static double xClick, yClick;
     static std::vector<Button> Buttons;
+    
 public:
+    static int screenWidth, screenHeight;
+    //Called to check where the mouse was clicked. Activates any boxes if needed.
+    static bool determineAreaPressed(double xPos, double yPos);
     // called by glfw on mouse click
     static void mouseClickCallback(GLFWwindow * window, int button, int action, int mods);
     // called by glfw on moust move
