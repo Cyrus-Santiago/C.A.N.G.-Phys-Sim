@@ -8,7 +8,7 @@
 
 // constructor
 Button::Button(glm::vec2 position, glm::vec2 size, Texture2D texture,
-                     glm::vec4 color, std::string type, bool pressed) :
+                     glm::vec4 color, std::string type, bool pressed,  int id):
                      Position(position), Size(size), Type(type),
                      Color(color), Pressed(pressed), Texture(texture) { }
 

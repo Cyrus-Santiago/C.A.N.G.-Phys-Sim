@@ -77,6 +77,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     }
 
     int i = 0;
+     int idCounter=0;
     // very messy and stupid calculations that makes buttons evenly spaced in
     // a specific area
     float edgeGap=0.025*scrWidth;  //About 20 pixels for a width of 1000
@@ -93,8 +94,9 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             assert(Menu::Types.find(elementTypes[i]) != Menu::Types.end());
             // load info into Button object
             Button obj(pos,buttonSize, ResourceManager::GetTexture("button2"),
-                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i]);
+                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i], idCounter++);
             i++;
+          //  idCounter++;
             // add button object to Buttons array
             Buttons.push_back(obj);
         }
@@ -104,7 +106,8 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         //May change shrunkScrHeight to full screen height if need more buttons
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
         Button boxObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
-            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y]);
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], idCounter++);
         Buttons.push_back(boxObj);
+      //  idCounter++;
     }
 }

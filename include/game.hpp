@@ -36,6 +36,8 @@ class Game {
         // game loop
         void Update(float dt);
         void Render();
+    private:
+        static int determineGameState();
 };
 
 #endif

@@ -10,12 +10,15 @@ and it should not count towards his 1000 lines. */
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
 #include "../include/ecs.hpp"
+#include <cassert>
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
 #include <glm/fwd.hpp>
+#include <iterator>
 #include <vector>
 #include <memory>
-
+#include <algorithm>
+static int determineGameState();
 playArea parea;
 playBorder pborder;
 SpriteRenderer * spriteRenderer;
@@ -76,6 +79,7 @@ void Game::Init() {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
 }
+
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
@@ -83,8 +87,10 @@ void Game::Update(float dt) {
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
+    State=GameState(Game::determineGameState());
   }
 }
+
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Ray ray({100,100});
@@ -110,4 +116,29 @@ void Game::Render() {
       glm::vec2(ECS::EntityToComponents.at(entity1.ID).dimension.xPos,
         ECS::EntityToComponents.at(entity1.ID).dimension.yPos));
   }
+}
+
+//This function tells the game class which button is being pressed. The
+//game state is changed based on that
+int Game::determineGameState()  {
+    std::vector<Button> pressedButtons;  
+    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButtons),[](Button buttons){
+      return buttons.Pressed;
+    });
+    std::cout<<""<<pressedButtons.size()<<std::endl;
+    if(pressedButtons.size() != 0)  {
+      std::cout<<pressedButtons[0].id<<std::endl;
+      switch (pressedButtons[0].id) {
+        case 0:
+          std::cout<<"less goo" <<std::endl;
+          break;
+        default:
+          std::cout<<"less not goo" <<std::endl;
+          for (int i = 0; i < Buttons.size(); ++i) {
+    std::cout<<"foo"<<Buttons[i].id<<std::endl;
+  }
+      }
+      return 1;
+    }
+    else return 0;
 }
