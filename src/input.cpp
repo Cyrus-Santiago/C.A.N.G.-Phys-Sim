@@ -1,14 +1,18 @@
 // This code was written by Nate
 
 #include "../include/input.hpp"
+#include <map>
 #include <vector>
+#include <algorithm>
 
 double Input::xClick = 1;
 double Input::yClick = 1;
 int Input::screenHeight=1;
 int Input::screenWidth=1;
 std::vector<Button> Input::Buttons;
-
+//This function checks for the area in which a mouse click was made.
+//If a button was clicked, its state is set to "pressed". True is returned
+//a legal click is made. False is returned if no legal click is made.
 bool Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click was in the menu area
   if(yPos > screenHeight * 0.6){
@@ -25,8 +29,13 @@ bool Input::determineAreaPressed(double xPos, double yPos)  {
         // records button press so we can do something with it
         if (Buttons[i].Pressed)
           Buttons[i].Pressed = false;
-        else
+        else{
+          std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
+            button.Pressed=false;
+            return(button);
+          });
           Buttons[i].Pressed = true;
+        }
         //Returns true when a legal mouse click was made
         return true;
       }
