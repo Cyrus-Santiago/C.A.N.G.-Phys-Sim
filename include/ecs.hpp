@@ -13,9 +13,10 @@
 #include "../include/texture.hpp"
 
 #define ENTITYMAX 5000
-#define COMPONENTMAX 2
+#define COMPONENTMAX 3
 #define DIMENSIONID 1
 #define GRAVITYID 2
+#define GROWID 3
 
 class ECS {
 public: 
@@ -25,27 +26,27 @@ public:
         std::bitset<COMPONENTMAX> ComponentBitMask;
     } Entity;
 
-    struct Dimension {
-        uint16_t xPos;
-        uint16_t yPos;
-        uint8_t xSize;
-        uint8_t ySize;
+    typedef struct {
+        float xPos;
+        float yPos;
+        float xSize;
+        float ySize;
         std::string texture;
-    };
+    } Dimension;
 
-    struct Gravity {
-        float gravity;
-    };
+    typedef struct {
+        float mass;
+    } Physics;
 
     typedef struct {
         Dimension dimension;
-        Gravity gravity;
+        Physics physics;
     } Components;
 
     // list of usable entity IDs
-    static std::queue<Entity> AvailableEntityIDs;
+    std::queue<Entity> AvailableEntityIDs;
 
-    static std::map<uint32_t, Components> EntityToComponents;
+    std::map<uint32_t, Components> EntityToComponents;
 
     // initializes entire EntityID array
     ECS();

@@ -7,10 +7,10 @@
 #include <iostream>
 
 std::queue<ECS::Entity>
-ECS::AvailableEntityIDs;
+AvailableEntityIDs;
 
 std::map<uint32_t, ECS::Components>
-ECS::EntityToComponents;
+EntityToComponents;
 
 // constructor
 ECS::ECS() {
@@ -25,8 +25,9 @@ ECS::ECS() {
         // push the entity onto the queue
         ECS::AvailableEntityIDs.push(entity);
 
-        ECS::Dimension dimension = {50, 50, 10, 10, "button2"};
-        ECS::Components componentList = {dimension};
+        ECS::Dimension dimension = {50, 150, 10, 10, "button2"};
+        ECS::Physics physics = {true};
+        ECS::Components componentList = {dimension, physics};
 
         ECS::EntityToComponents.insert(
             std::pair<uint32_t,

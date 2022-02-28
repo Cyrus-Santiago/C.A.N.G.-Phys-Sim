@@ -1,18 +1,21 @@
-class Shape {
+//Made by Griffen
+#include "../include/simulationObject.hpp"
+
+class Shape{
 //----------Fields---------------
     private:
-        float shapeLength;
-        float shapeWidth;
+        unsigned int shapeWidth;
+        unsigned int shapeHeight;
 //----------Constructor----------
     public:
-        explicit Shape(float length, float width):
-        shapeLength(length), shapeWidth(width){}
+        explicit Shape(unsigned int width, unsigned int height):
+        shapeWidth(width), shapeHeight(height){}
 //----------Methods--------------
     public:
-        float getLength()   {
-            return shapeLength;
+        unsigned int getHeight()   {
+            return shapeHeight;
         }
-        float getWidth()    {
+        unsigned int getWidth()    {
             return shapeWidth;
         }
     
