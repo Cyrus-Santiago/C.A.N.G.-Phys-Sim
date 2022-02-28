@@ -21,6 +21,9 @@ and it should not count towards his 1000 lines. */
 #include <vector>
 #include <memory>
 #include <algorithm>
+
+#define GRAVITY 9.17
+
 static int determineGameState();
 Menu menu;
 PlayArea parea;
@@ -122,6 +125,12 @@ void Game::Update(float dt) {
         }
         break;
     }
+  }
+  auto view = reg->view<Physics>();
+  for (auto entity : view) {
+    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+    });
   }
 }
 
