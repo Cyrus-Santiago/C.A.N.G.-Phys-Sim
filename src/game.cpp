@@ -11,12 +11,16 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulation.hpp"
 #include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
+#include <cassert>
+#include <cstddef>
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
 #include <glm/fwd.hpp>
+#include <iterator>
 #include <vector>
 #include <memory>
-
+#include <algorithm>
+static int determineGameState();
 Menu menu;
 PlayArea parea;
 PlayBorder pborder;
@@ -91,6 +95,15 @@ void Game::Update(float dt) {
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
+    switch(input.validClick){
+      case 0:
+        //Alters the game state based on button pressed
+        State=Game::determineGameState();
+        break;
+      case 1:
+        std::cout<<"pretend something just got drawn"<<std::endl;
+        break;
+    }
   }
 }
 
@@ -122,4 +135,35 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.position,
     maestro.registry.get(entity1).renderable.size
   );*/
+}
+
+//This function tells the game class which button is being pressed. The
+//game state is changed based on that
+GameState Game::determineGameState()  {
+    std::vector<Button> pressedButton;
+    //Update button list
+    Buttons=Input::giveButtonData();
+    //Copies the button that was pressed
+    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
+      return buttons.Pressed;   });
+    //If a button WAS pressed
+    if(pressedButton.size()!=0) {
+      //If the button pressed is an element
+      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
+        std::cout<<"element mode" <<std::endl;
+        return GAME_DRAW_ELEMENT;
+      }
+      //If the button pressed is a shape
+      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
+        std::cout<<"shape mode"<<std::endl;
+          return GAME_DRAW_SHAPE;
+      }
+        //If the button pressed is light feature
+      else if(pressedButton[0].ID < 35) { 
+          std::cout<<"light mode"<<std::endl;
+          return GAME_DRAW_LIGHT;
+      }
+    }
+    std::cout<<"idle mode" <<std::endl;
+    return GAME_ACTIVE;
 }

@@ -17,7 +17,9 @@ and it should not count towards his 1000 lines. */
 // represents the state of the game
 enum GameState {
     GAME_ACTIVE,
-    GAME_PAUSE
+    GAME_DRAW_ELEMENT,
+    GAME_DRAW_SHAPE,
+    GAME_DRAW_LIGHT,
 };
 
 // class to hold a lot of the game logic so we can decouple it from
@@ -39,10 +41,10 @@ class Game {
         // game loop
         void Update(float dt);
         void Render();
-
         entt::entity createEntity();
 
     private:
+        static GameState determineGameState();
         entt::registry registry;
 
     friend class Maestro;
