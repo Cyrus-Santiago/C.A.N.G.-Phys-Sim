@@ -21,10 +21,7 @@ std::string Menu::elementTypes[ELEMENT_NUM];
 std::map<std::string, Menu::Element> Menu::Types;
 
 // destructor
-Menu::~Menu() {
-    Menu::Buttons.clear();
-    Menu::Types.clear();
-}
+Menu::~Menu() { }
 
 void Menu::Draw(SpriteRenderer &spriteRenderer) {
     // gets button data from input (in case the color changed or sum)
@@ -85,6 +82,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     } /* */
 
     int i = 0;
+     int idCounter=0;
     // very messy and stupid calculations that makes buttons evenly spaced in
     // a specific area
     float edgeGap=0.025*scrWidth;  //About 20 pixels for a width of 1000
@@ -101,8 +99,9 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             assert(Menu::Types.find(elementTypes[i]) != Menu::Types.end());
             // load info into Button object
             Button obj(pos,buttonSize, ResourceManager::GetTexture("button2"),
-                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i]);
+                glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i],false, idCounter);
             i++;
+            idCounter++;
             // add button object to Buttons array
             Buttons.push_back(obj);
         }
@@ -111,15 +110,17 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     for(int y=0; y<SHAPE_NUM; ++y){
         //May change shrunkScrHeight to full screen height if need more buttons
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
-        Button boxObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
-            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y]);
-        Buttons.push_back(boxObj);
+        Button shapeObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], false, idCounter);
+        Buttons.push_back(shapeObj);
+        idCounter++;
     }
     /* Initializing Ray Buttons - This was written by Amethyst */
     for(int z = 0; z < RAY_NUM; ++z){
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + ((z+3) * scrHeightGap));
         Button rayObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
-            glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z]);
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z], false, idCounter);
         Buttons.push_back(rayObj);
+        idCounter++;
     }
 }

@@ -16,6 +16,7 @@ class Click {
         Click(double x, double y) {
             xPos = x; yPos = y;
         }
+        //Placeholder constructor
         Click(){}
 };
 
@@ -29,6 +30,9 @@ private:
     static std::vector<Button> Buttons;
     
 public:
+    //This is set when a click has been made. =0 is a button press. =1 is a 
+    //play area press. =-1 is invalid.
+    static int validClick;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
     static bool determineAreaPressed(double xPos, double yPos);

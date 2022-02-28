@@ -94,7 +94,7 @@ int main()
     }
 
 		// free memory and exit graciously
-    ResourceManager::Clear();
+    //ResourceManager::Clear();
     glfwTerminate();
     return 0;
 }
