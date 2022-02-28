@@ -6,6 +6,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     auto entity = reg.create();
     reg.emplace<Renderable>(entity, "button1", position.x, position.y, 10, 10,
         0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Physics>(entity, 10);
     return entity;
 }
 

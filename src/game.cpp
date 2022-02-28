@@ -21,6 +21,9 @@ and it should not count towards his 1000 lines. */
 #include <vector>
 #include <memory>
 #include <algorithm>
+
+#define GRAVITY 9.17
+
 static int determineGameState();
 Menu menu;
 PlayArea parea;
@@ -106,10 +109,16 @@ void Game::Update(float dt) {
         break;
       case 1:   //Mouse click on play area
         //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
-        factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
-          (int) newMouseClick.yPos), glm::vec4(1.0f));
+        factory.makeParticle(* reg, glm::vec2(newMouseClick.xPos,
+          newMouseClick.yPos), glm::vec4(1.0f));
         break;
     }
+  }
+  auto view = reg->view<Physics>();
+  for (auto entity : view) {
+    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+    });
   }
 }
 

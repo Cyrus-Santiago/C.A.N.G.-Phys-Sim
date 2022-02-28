@@ -7,10 +7,14 @@
 
 struct Renderable {
     std::string texture;
-    int xPos, yPos;
+    float xPos, yPos;
     int xSize, ySize;
     float rotate;
     float colorR, colorG, colorB, colorA;
+};
+
+struct Physics {
+    int mass;
 };
 
 class Factory {
