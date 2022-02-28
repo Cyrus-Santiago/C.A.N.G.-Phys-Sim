@@ -16,14 +16,16 @@ public:
     glm::vec4 Color;
     std::string Type;
     bool Pressed;
-     int id;
     Texture2D Texture;
+    int ID;
 
     // constructor! by default the color is the same as the original texture,
     // it's for a chemcial and it's not pressed
     Button(glm::vec2 position, glm::vec2 size, Texture2D sprite,
-              glm::vec4 color = glm::vec4(1.0f), std::string type = "CHEMICAL", bool pressed = false,  int=0);
-
+              glm::vec4 color = glm::vec4(1.0f), std::string type = "CHEMICAL", 
+              bool pressed = false,  int ID =0);
+    //Placeholder Button
+    Button(){}
     // here we set the color, add the text, and pass the button to the sprite renderer
     virtual void Draw(SpriteRenderer &spriteRenderer);
 };

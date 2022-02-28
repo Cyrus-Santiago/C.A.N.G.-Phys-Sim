@@ -9,10 +9,11 @@ double Input::xClick = 1;
 double Input::yClick = 1;
 int Input::screenHeight=1;
 int Input::screenWidth=1;
+int Input::validClick=-1;
 std::vector<Button> Input::Buttons;
 //This function checks for the area in which a mouse click was made.
-//If a button was clicked, its state is set to "pressed". True is returned
-//a legal click is made. False is returned if no legal click is made.
+//If a button was clicked, its state is set to "pressed". 0,1 is returned
+//a legal click is made. -1 is returned if no legal click is made.
 bool Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click was in the menu area
   if(yPos > screenHeight * 0.6){
@@ -37,17 +38,17 @@ bool Input::determineAreaPressed(double xPos, double yPos)  {
           Buttons[i].Pressed = true;
         }
         //Returns true when a legal mouse click was made
-        return true;
+        return 0;
       }
     }
   }
   //If the click is in the play area
   else if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
     (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
-    std::cout<<"less goo"<<std::endl;
-    return true;
+    //std::cout<<"in play area"<<std::endl;
+    return 1;
   }
-  return false;
+  return -1;
 }
 
 // This function is called by glfw whenever a mouse click occurs
@@ -60,8 +61,7 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     double xPos, yPos;
     // call glfw to give us mouse position data
     glfwGetCursorPos(window, &xPos, &yPos);
-    Input::determineAreaPressed(xPos,yPos);
-    
+    Input::validClick=Input::determineAreaPressed(xPos,yPos);
   }
 }
 

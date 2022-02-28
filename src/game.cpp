@@ -11,6 +11,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulation.hpp"
 #include "../include/ecs.hpp"
 #include <cassert>
+#include <cstddef>
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
 #include <glm/fwd.hpp>
@@ -87,7 +88,15 @@ void Game::Update(float dt) {
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
-    State=GameState(Game::determineGameState());
+    switch(input.validClick){
+      case 0:
+        //Alters the game state based on button pressed
+        State=Game::determineGameState();
+        break;
+      case 1:
+        std::cout<<"pretend something just got drawn"<<std::endl;
+        break;
+    }
   }
 }
 
@@ -120,25 +129,31 @@ void Game::Render() {
 
 //This function tells the game class which button is being pressed. The
 //game state is changed based on that
-int Game::determineGameState()  {
-    std::vector<Button> pressedButtons;  
-    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButtons),[](Button buttons){
-      return buttons.Pressed;
-    });
-    std::cout<<""<<pressedButtons.size()<<std::endl;
-    if(pressedButtons.size() != 0)  {
-      std::cout<<pressedButtons[0].id<<std::endl;
-      switch (pressedButtons[0].id) {
-        case 0:
-          std::cout<<"less goo" <<std::endl;
-          break;
-        default:
-          std::cout<<"less not goo" <<std::endl;
-          for (int i = 0; i < Buttons.size(); ++i) {
-    std::cout<<"foo"<<Buttons[i].id<<std::endl;
-  }
+GameState Game::determineGameState()  {
+    std::vector<Button> pressedButton;
+    //Update button list
+    Buttons=Input::giveButtonData();
+    //Copies the button that was pressed
+    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
+      return buttons.Pressed;   });
+    //If a button WAS pressed
+    if(pressedButton.size()!=0) {
+      //If the button pressed is an element
+      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
+        std::cout<<"element mode" <<std::endl;
+        return GAME_DRAW_ELEMENT;
       }
-      return 1;
+      //If the button pressed is a shape
+      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
+        std::cout<<"shape mode"<<std::endl;
+          return GAME_DRAW_SHAPE;
+      }
+        //If the button pressed is light feature
+      else if(pressedButton[0].ID < 35) { 
+          std::cout<<"light mode"<<std::endl;
+          return GAME_DRAW_LIGHT;
+      }
     }
-    else return 0;
+    std::cout<<"idle mode" <<std::endl;
+    return GAME_ACTIVE;
 }

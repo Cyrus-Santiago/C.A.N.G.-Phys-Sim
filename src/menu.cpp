@@ -102,9 +102,9 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             assert(Menu::Types.find(elementTypes[i]) != Menu::Types.end());
             // load info into Button object
             Button obj(pos,buttonSize, ResourceManager::GetTexture("button2"),
-                       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i], idCounter++);
+                glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i],false, idCounter);
             i++;
-          //  idCounter++;
+            idCounter++;
             // add button object to Buttons array
             Buttons.push_back(obj);
         }
@@ -113,16 +113,17 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     for(int y=0; y<SHAPE_NUM; ++y){
         //May change shrunkScrHeight to full screen height if need more buttons
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
-        Button boxObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
-            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], idCounter++);
-        Buttons.push_back(boxObj);
-      //  idCounter++;
+        Button shapeObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], false, idCounter);
+        Buttons.push_back(shapeObj);
+        idCounter++;
     }
     /* Initializing Ray Buttons - This was written by Amethyst */
     for(int z = 0; z < RAY_NUM; ++z){
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + ((z+3) * scrHeightGap));
         Button rayObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
-            glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z]);
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z], false, idCounter);
         Buttons.push_back(rayObj);
+        idCounter++;
     }
 }
