@@ -109,7 +109,6 @@ void Game::Update(float dt) {
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
-    Input::determineAreaPressed(newMouseClick.xPos, newMouseClick.yPos);
     oldMouseClick=newMouseClick;
   }
 

@@ -7,9 +7,10 @@
 #include "../include/simulationObject.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
+#include <cmath>
 
 class Ray : public SimulationObject{
-public: glm::vec2 Position, Tail, Size, Velocity;
+public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         glm::vec4 Color;
         bool Destroyed;
         float Mass;
@@ -36,5 +37,8 @@ public: glm::vec2 Position, Tail, Size, Velocity;
         void successfulDraw(int);
         void init();
         void clear();
+        void setDirection();
+        Ray incident();
+        Ray refractive();
 };
 #endif
