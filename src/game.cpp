@@ -30,7 +30,7 @@ Simulation simulation;
 Click newMouseClick, oldMouseClick;
 Input input;
 Factory factory;
-entt::registry reg;
+entt::registry * reg;
 
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
@@ -43,6 +43,7 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game() {
   delete spriteRenderer;
+  delete reg;
 }
 
 void Game::Init() {
@@ -60,6 +61,7 @@ void Game::Init() {
   myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
+  reg = new entt::registry();
 
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
@@ -86,7 +88,7 @@ void Game::Init() {
   maestro.addComponent(entity1, "physics");
   maestro.addComponent(entity1,"renderable");*/
 
-  entity = factory.makeParticle(reg, glm::vec2(50, 50), glm::vec4(1.0f));
+  entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 
 }
 
@@ -138,11 +140,7 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.size
   );*/
 
-  factory.drawParticle(reg, entity, * spriteRenderer);
-  int xPos = newMouseClick.xPos;
-  int yPos = newMouseClick.yPos;
-  reg.emplace_or_replace<Renderable>(entity, xPos, yPos, 10, 10, 0.0f, 1.0f,
-    1.0f, 1.0f, 1.0f);
+  factory.drawParticle(* reg, entity, * spriteRenderer);
 }
 
 //This function tells the game class which button is being pressed. The
