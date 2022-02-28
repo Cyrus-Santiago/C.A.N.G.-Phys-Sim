@@ -11,7 +11,6 @@ and it should not count towards his 1000 lines. */
 
 #include "../include/resourceManager.hpp"
 #include "../include/spriteRenderer.hpp"
-#include "../include/entityMaestro.hpp"
 #include "../include/textRenderer.hpp"
 
 // represents the state of the game
@@ -40,14 +39,11 @@ class Game {
 
         // game loop
         void Update(float dt);
+
         void Render();
-        entt::entity createEntity();
 
     private:
         static GameState determineGameState();
-        entt::registry registry;
-
-    friend class Maestro;
 };
 
 #endif
