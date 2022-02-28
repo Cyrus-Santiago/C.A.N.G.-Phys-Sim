@@ -72,6 +72,7 @@ public:
     private:
         entt::entity m_EntityHandle{0};
         Game* game = nullptr;
+        entt::registry registry;
 };
 
 #endif
