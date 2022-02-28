@@ -38,7 +38,7 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         void init();
         void clear();
         void setDirection();
-        void incident();
-        void refractive();
+        Ray incident();
+        Ray refractive();
 };
 #endif

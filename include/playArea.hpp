@@ -5,10 +5,10 @@
 #include "../include/background.hpp"
 #include <vector>
 
-class playArea{
+class PlayArea{
     public:
         //Constructor for playArea
-        playArea(){};
+        PlayArea(){};
         //Renders the play area background
         void Draw(SpriteRenderer &renderer);
         //Calculates local variables for rendering

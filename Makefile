@@ -1,6 +1,6 @@
 CC := g++
 DBGFLAGS := -g
-CCOBJFLAGS := -c
+CCOBJFLAGS := -c -std=c++1z
 CCCOMPFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
 # stores compiled code

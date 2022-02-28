@@ -2,18 +2,18 @@
 #ifndef PLAYBORDER_H
 #define PLAYBORDER_H
 
-#include "../include/background.hpp"
+#include "../include/simulationObject.hpp"
 #include "../include/playArea.hpp"
 #include <vector>
 
-class playBorder : public playArea{
+class PlayBorder : public PlayArea{
     public:
         //Constructor
-        playBorder(){};
+        PlayBorder(){};
         //Draw each line in the border
         void Draw(SpriteRenderer &renderer);
         //Array of Borders for each side
-        std::vector<Background> Border;
+        std::vector<SimulationObject> Border;
     private:
         int x=0; //for the purposes of counting 
         unsigned int PosX, PosY, sizeX, sizeY;

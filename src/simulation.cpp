@@ -72,6 +72,14 @@ void Simulation::Update(float dt) {
     for (SimulationObject &simObj : this->SimulationObjects) {
         if (!simObj.Destroyed) {
             simObj.Move(dt);
+            //if(col.checkCollision(simObj,Border)){
+                //col.collide(simObj);
+                //std::cout<<"YOOOOOO";
+            //}
         }
     }
+}
+
+void Simulation::getBorder(std::vector<SimulationObject> border){
+    Border = border;
 }
