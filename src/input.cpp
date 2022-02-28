@@ -1,10 +1,12 @@
 // This code was written mostly by Nate, with contributions from the rest of us
 
 #include "../include/input.hpp"
+#include "../include/audio.hpp"
 #include <map>
 #include <vector>
 #include <algorithm>
 
+Audio audio;
 double Input::xClick = 1;
 double Input::yClick = 1;
 int Input::screenHeight=1;
@@ -26,6 +28,7 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
         // records click
         xClick = xPos; yClick = yPos;
         // debug
+        audio.playAudio();
         std::cout << "Button " << i << " pressed!" << std::endl;
         // records button press so we can do something with it
         if (Buttons[i].Pressed) Buttons[i].Pressed = false;

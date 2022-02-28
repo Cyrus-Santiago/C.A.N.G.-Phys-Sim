@@ -1,7 +1,8 @@
 CC := g++
 DBGFLAGS := -g
 CCOBJFLAGS := -c -std=c++1z
-CCCOMPFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+CCCOMPFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -pthread
+OPTS = -L"lib" lib/linux-gcc-64/libIrrKlang.so
 
 # stores compiled code
 OBJ_PATH := obj
@@ -39,7 +40,7 @@ debug: makedir dbg
 # non-phony targets
 # called with standard make, creates executable from object files
 $(TARGET): $(OBJ)
-	$(CC) -o $@ $(OBJ) $(CCCOMPFLAGS)
+	$(CC) -o  $@ $(OBJ) $(OPTS) $(CCCOMPFLAGS)
 # creates object files
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CC) $(CCOBJFLAGS) -o $@ $<
