@@ -62,28 +62,54 @@
     }
 
     void Ray::setDirection(){
-        /* This data will indicate if there is any difference in the y-coordinates */
-        glm::vec2 Position2 = {Position[0] + Size[0], Position[1] + Size[1]},
-        Tail2 = {Tail[0] + Size[0], Tail[1] + Size[1]};
+        float posX2 = Position[0] + Size[0],
+              posY2 = Position[1] + Size[1],
+              tailX2 = Tail[0] + Size[0],
+              tailY2 = Tail[1] + Size[1];
+
+        glm::vec2 Position2 = {posX2, posY2},
+                  Tail2 = {tailX2, tailY2};
         /* Angle Logic */
         if (Position[1] == Position2[1])
             Direction[0] = 0.0f; /* 0 degree with x axis */
         else if (Position2[0] == Tail2[0])
             Direction[1] = 0.0f; /* 0 degree with y axis */
         else{
-            float xSlope = Position2[0] - Position[1];
-            float ySlope = Position2[1] - Position[1];
+            float xSlope = Position2[0] - Position[1],
+                  ySlope = Position2[1] - Position[1];
             Direction[0] = (float)atan(ySlope/xSlope);
             Direction[1] = (float)atan(xSlope/ySlope);
         }
     }
 
-    void Ray::incident(){
-        /* Calcualtion for incident ray */
+    /* Physical calcualtion for incident ray */
+    Ray Ray::incident(){
+        Ray newRay(Tail); /* Position of previous tail is new Origin */
+        /* For incidence on x-axis - i.e. no angle on y-axis */
+        if (Direction[1] == 0){
+            float theta1 = Direction[0],
+                theta2 = 90 - theta1;
+            newRay.Tail[0] = Position[0] + (Position[0] * sinf(theta1/theta2));
+            newRay.Tail[1] = Position[1]; /* keep y-coord */
+        }
+        /* For incidence on y-axis - i.e. no angle on x-axis */
+        else if(Direction[0] == 0){
+            float theta3 = Direction[1],
+                theta4 = 90 - theta3;
+            newRay.Tail[0] = Position[0]; /* Keep x-coord */
+            newRay.Tail[1] = Position[1] + (Position[1] * sinf(theta3/theta4));
+        }
+        return(newRay);
     }
 
-    void Ray::refractive(){
-        /* Calcualtion for refractive ray */
+    /* Physical calcualtion for refractive ray */
+    Ray Ray::refractive(){
+        Ray newRay = incident();
+        if(Direction[1] == 0)
+            newRay.Tail[1] *= (-1);
+        else if (Direction[0] == 0)
+            newRay.Tail[0] *= (-1);
+        return(newRay);
     }
 
 

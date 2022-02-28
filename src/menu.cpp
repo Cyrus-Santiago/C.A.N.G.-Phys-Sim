@@ -57,8 +57,6 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.4f, 0.35f, 0.4f,1.0f),
         glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
     };
-    Element shapesButtonColor[] = {glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),
-        glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),glm::vec4(0.5f, 0.3f, 0.0f, 1.0f)};
     std::string elementTypes[] = {
         "WATER", "POTASSIUM", "HYDROGEN", "HELIUM", "OXYGEN", "MERCURY", "IRON",
         "CARBON", "NITROGEN", "CHLORINE", "COBALT", "GOLD", "TIN", "TITANIUM",
@@ -66,15 +64,25 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         "NEON", "FLUORINE", "ARGON", "MAGNESIUM", "PLATINUM", "TUNGSTEN",
         "BROMINE", "BISMUTH", "URANIUM"
     };
-    std::string shapeTypes[] = { "SQUARE", "TRIANGLE", "RECTANGLE" };
-    for (int i=0; i<SHAPE_NUM; i++) {
-        Types.insert(std::pair<std::string, Element>(shapeTypes[i],
-        shapesButtonColor[i]));
-    }
     for (int i = 0; i < ELEMENT_NUM; i++) {
         Types.insert(std::pair<std::string, Element>(elementTypes[i],
             elementDataArray[i]));
     }
+    /* Written by Griffen */
+    Element shapesButtonColor[] = {glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),
+        glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),glm::vec4(0.5f, 0.3f, 0.0f, 1.0f)};
+    std::string shapeTypes[] = { "SQUARE", "TRIANGLE", "RECTANGLE" };
+    for (int i=0; i<SHAPE_NUM; i++) {
+        Types.insert(std::pair<std::string, Element>(shapeTypes[i],
+        shapesButtonColor[i]));
+    } /* */
+    /* Written by Amethyst */
+    Element rayButtonColor[] = {glm::vec4(0.6f, 0.1f, 0.9f, 1.0f),glm::vec4 (0.6f, 0.1f, 0.9f, 1.0f)};
+    std::string rayTypes[] = {"RAY", "BEAM"};
+    for (int i=0; i<RAY_NUM; i++) {
+        Types.insert(std::pair<std::string, Element>(rayTypes[i],
+        rayButtonColor[i]));
+    } /* */
 
     int i = 0;
      int idCounter=0;
@@ -101,7 +109,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             Buttons.push_back(obj);
         }
     }
-    //For loop of initializing shape buttons
+    //For loop of initializing shape buttons - This was written by Griffen
     for(int y=0; y<SHAPE_NUM; ++y){
         //May change shrunkScrHeight to full screen height if need more buttons
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
@@ -109,5 +117,12 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
             glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], idCounter++);
         Buttons.push_back(boxObj);
       //  idCounter++;
+    }
+    /* Initializing Ray Buttons - This was written by Amethyst */
+    for(int z = 0; z < RAY_NUM; ++z){
+        glm::vec2 boxPos(scrWidth, shrunkScrHeight + ((z+3) * scrHeightGap));
+        Button rayObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+            glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z]);
+        Buttons.push_back(rayObj);
     }
 }
