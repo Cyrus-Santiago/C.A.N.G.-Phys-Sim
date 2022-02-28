@@ -88,8 +88,7 @@ void Game::Init() {
   maestro.addComponent(entity1, "physics");
   maestro.addComponent(entity1,"renderable");*/
 
-  entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
-
+  //entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 }
 
 void Game::Update(float dt) {
@@ -97,7 +96,8 @@ void Game::Update(float dt) {
   TextRenderer::Update(dt);
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
-  if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
+  if((newMouseClick.xPos != oldMouseClick.xPos) ||
+    (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
     switch(Input::validClick){
       case 0:   //Button Press
@@ -105,6 +105,9 @@ void Game::Update(float dt) {
         State=Game::determineGameState();
         break;
       case 1:   //Mouse click on play area
+        //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
+        factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+          (int) newMouseClick.yPos), glm::vec4(1.0f));
         break;
     }
   }
@@ -139,7 +142,10 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.size
   );*/
 
-  factory.drawParticle(* reg, entity, * spriteRenderer);
+  auto view = reg->view<Renderable>();
+  for (auto entity : view) {
+    factory.draw(* reg, entity, * spriteRenderer);
+  }
 }
 
 //This function tells the game class which button is being pressed. The
