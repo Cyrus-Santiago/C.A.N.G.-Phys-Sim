@@ -99,13 +99,12 @@ void Game::Update(float dt) {
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
-    switch(input.validClick){
-      case 0:
+    switch(Input::validClick){
+      case 0:   //Button Press
         //Alters the game state based on button pressed
         State=Game::determineGameState();
         break;
-      case 1:
-        std::cout<<"pretend something just got drawn"<<std::endl;
+      case 1:   //Mouse click on play area
         break;
     }
   }

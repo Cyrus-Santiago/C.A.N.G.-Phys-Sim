@@ -14,22 +14,21 @@ std::vector<Button> Input::Buttons;
 //This function checks for the area in which a mouse click was made.
 //If a button was clicked, its state is set to "pressed". 0,1 is returned
 //a legal click is made. -1 is returned if no legal click is made.
-bool Input::determineAreaPressed(double xPos, double yPos)  {
+int Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click was in the menu area
   if(yPos > screenHeight * 0.6){
     for (int i = 0; i < Buttons.size(); ++i) {
+      int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
+      int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
       // checks bounds of current button and compares that to click data
-      if ((xPos > Buttons[i].Position.x) &&
-        (xPos < Buttons[i].Position.x + Buttons[i].Size.x) &&
-        (yPos > Buttons[i].Position.y) &&
-        (yPos < Buttons[i].Position.y + Buttons[i].Size.y)) {
+      if ((xPos > Buttons[i].Position.x) && (xPos < upperBoundX) &&
+        (yPos > Buttons[i].Position.y) && (yPos < upperBoundY)) {
         // records click
         xClick = xPos; yClick = yPos;
         // debug
         std::cout << "Button " << i << " pressed!" << std::endl;
         // records button press so we can do something with it
-        if (Buttons[i].Pressed)
-          Buttons[i].Pressed = false;
+        if (Buttons[i].Pressed) Buttons[i].Pressed = false;
         else{
           std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
             button.Pressed=false;
@@ -37,7 +36,7 @@ bool Input::determineAreaPressed(double xPos, double yPos)  {
           });
           Buttons[i].Pressed = true;
         }
-        //Returns true when a legal mouse click was made
+        //Returns 0 when a legal mouse click was made
         return 0;
       }
     }
@@ -45,9 +44,11 @@ bool Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click is in the play area
   else if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
     (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
-    //std::cout<<"in play area"<<std::endl;
+    std::cout<<"in play area"<<std::endl;
+    xClick = xPos; yClick = yPos;
     return 1;
   }
+  std::cout<<"out of bounds"<<std::endl;
   return -1;
 }
 
