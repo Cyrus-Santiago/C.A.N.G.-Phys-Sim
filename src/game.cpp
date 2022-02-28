@@ -109,8 +109,20 @@ void Game::Update(float dt) {
         break;
       case 1:   //Mouse click on play area
         //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
-        factory.makeParticle(* reg, glm::vec2(newMouseClick.xPos,
-          newMouseClick.yPos), glm::vec4(1.0f));
+        //Determines what to do based on the game state
+        switch(int(State)) {
+          case GAME_DRAW_ELEMENT:
+            factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+              (int) newMouseClick.yPos), glm::vec4(1.0f));
+            break;
+          case GAME_DRAW_SHAPE:
+            factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+              (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+            break;
+          case GAME_DRAW_LIGHT:
+            //factory.makeRay //TODO Amethyst
+            break;
+        }
         break;
     }
   }

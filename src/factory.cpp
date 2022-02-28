@@ -10,6 +10,14 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     return entity;
 }
 
+entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
+    glm::vec4 color) {
+    auto entity = reg.create();
+    reg.emplace<Renderable>(entity, "skyBackground", position.x, position.y, 30, 30,
+        0.0f, color.x, color.y, color.z, color.w);
+    return entity;
+}
+
 void Factory::draw(entt::registry &reg, entt::entity entity,
     SpriteRenderer &spriteRenderer) {
     Texture2D texture =
