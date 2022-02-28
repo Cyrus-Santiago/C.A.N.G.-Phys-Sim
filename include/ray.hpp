@@ -40,5 +40,7 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         void setDirection();
         Ray incident();
         Ray refractive();
+        float rotateLeft();
+        float rotateRight();
 };
 #endif
