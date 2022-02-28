@@ -23,15 +23,19 @@ and it should not count towards his 1000 lines. */
 #include <algorithm>
 static int determineGameState();
 Menu menu;
+PlayArea parea;
+PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
+Simulation simulation;
 Click newMouseClick, oldMouseClick;
 Input input;
-entt::registry reg;
 Factory factory;
-entt::entity entity;
+entt::registry reg;
 
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
+entt::entity entity;
+ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -59,25 +63,36 @@ void Game::Init() {
 
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
+  parea.init(Width*0.85, Height);
+  pborder.init(Width*0.85,Height);
   Input::screenWidth=Width*0.85;
   Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
+  Border = pborder.Border;
   // give the button data to input class
   Input::getButtonData(Buttons);
+  simulation.getBorder(Border);
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-  
+  /*entity1 = registry.create();
+  registry.emplace<dimensions>(entity1, 50, 50, 10, 10);
+  registry.emplace<physics>(entity1);*/
+  /*maestro.addComponent(entity1, );
+  maestro.addComponent(entity1, "physics");
+  maestro.addComponent(entity1,"renderable");*/
+
   entity = factory.makeParticle(reg, glm::vec2(50, 50), glm::vec4(1.0f));
+
 }
 
 void Game::Update(float dt) {
+  simulation.Update(dt);
   TextRenderer::Update(dt);
-
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
@@ -95,10 +110,15 @@ void Game::Update(float dt) {
 }
 
 void Game::Render() {
+  Texture2D texture = ResourceManager::GetTexture("button2");
+  Ray ray({100,100});
+  simulation.Create(ray);
   Buttons = Input::giveButtonData();
-
+  parea.Draw(*spriteRenderer);
+  pborder.Draw(*spriteRenderer);
+  // draws all the buttons
   Menu::Draw(*spriteRenderer);
-
+  simulation.Draw(*spriteRenderer);
   for (Button &button : Buttons) {
     if (button.Pressed) {
       TextRenderer::Draw(*spriteRenderer, button.Type + " ",
@@ -107,6 +127,17 @@ void Game::Render() {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
+  /*auto group = registry.group<dimensions>(entt::get<physics>);
+  for(auto entity : group){
+    auto& [dims, phys] = group.get<dimensions,physics>(entity);
+
+  }
+  //maestro.setRenderable(entity1,texture);
+  spriteRenderer->DrawSprite(maestro.registry.get(entity1).renderable.texture,
+    maestro.registry.get(entity1).renderable.position,
+    maestro.registry.get(entity1).renderable.size
+  );*/
+
   factory.drawParticle(reg, entity, * spriteRenderer);
   int xPos = newMouseClick.xPos;
   int yPos = newMouseClick.yPos;

@@ -1,5 +1,3 @@
-// This code was written by Cyrus
-
 #ifndef ENTITYMAESTRO_H
 #define ENTITYMAESTRO_H
 
@@ -10,23 +8,25 @@
 #include "../include/glm/glm.hpp"
 #include "../include/texture.hpp"
 
-struct Physics {
+typedef struct{
     float mass = 1.00; //Default to 1 kg (Are we using kg or lbs?)
-};
+}physics;
 
-struct Dimensions {
+typedef struct{
+    float xPos = 50;
+    float yPos = 50;
     float xSize = 10;
     float ySize = 10;
-};
+}dimensions;
 //Can change based on what we want to store
     
-struct Renderable {
-    //std::string texture;
-    int xPos, yPos;
-    int xSize, ySize;
-    float rotate;
-    float colorR, colorG, colorB, colorA;
-};
+typedef struct{
+    Texture2D &texture;
+    glm::vec2 position;
+    glm::vec2 size = glm::vec2(10.f,10.0f);
+    float rotate = 0.0f;
+    glm::vec4 color = glm::vec4(1.0f);
+}renderable;
 
 struct TagComponent{
     std::string Tag;
@@ -43,12 +43,11 @@ class Maestro{
 public:
     //constructors
     Maestro() = default;
-    Maestro(entt::entity handle);
-    //Maestro(const Maestro& other) = default;
+    Maestro(entt::entity handle, Game* game);
+    Maestro(const Maestro& other) = default;
 
     //create and destroy entities
     entt::entity createEntity();
-
     void destroyEntity(entt::entity entity);
     
     //add or remove components to an entity
@@ -66,15 +65,9 @@ public:
     bool hasComponent();
 
     //Modify Specific Components
-    void setDimensions(entt::entity entity, float xSize, float ySize);
-    
+    void setDimensions(entt::entity entity, float xPos, float yPos, float xSize, float ySize);
     void setPhysics(entt::entity entity, float mass);
-    
-    void setRenderable(entt::entity entity, std::string texture,
-    glm::vec2 position, glm::vec2 size = glm::vec2(10.f,10.0f),
-    float rotate = 0.0f, glm::vec4 color = glm::vec4(1.0f));
-
-    void Draw(entt::entity entity, SpriteRenderer &spriteRenderer);
+    //void setRenderable(entt::entity entity, Texture2D &texture);    
 
     private:
         entt::entity m_EntityHandle{0};
