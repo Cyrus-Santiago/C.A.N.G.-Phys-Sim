@@ -21,10 +21,7 @@ std::string Menu::elementTypes[ELEMENT_NUM];
 std::map<std::string, Menu::Element> Menu::Types;
 
 // destructor
-Menu::~Menu() {
-    Menu::Buttons.clear();
-    Menu::Types.clear();
-}
+Menu::~Menu() { }
 
 void Menu::Draw(SpriteRenderer &spriteRenderer) {
     // gets button data from input (in case the color changed or sum)
