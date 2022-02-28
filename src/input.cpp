@@ -1,4 +1,4 @@
-// This code was written by Nate
+// This code was written mostly by Nate, with contributions from the rest of us
 
 #include "../include/input.hpp"
 #include <vector>

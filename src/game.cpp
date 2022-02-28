@@ -9,6 +9,8 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
+#include "../include/entityMaestro.hpp"
+#include "../include/components.hpp"
 #include "../include/ecs.hpp"
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
@@ -21,15 +23,9 @@ PlayArea parea;
 PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
-ECS ecs;
-<<<<<<< HEAD
 Click newMouseClick, oldMouseClick;
 Input input;
 
-ECS::Entity entity1 = ecs.CreateEntity();
-=======
-ECS::Entity entity1, entity2, entity3, entity4;
->>>>>>> 8345fa9952124937e604874276a335a046337df9
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
 
@@ -69,16 +65,17 @@ void Game::Init() {
   Border = pborder.Border;
   // give the button data to input class
   Input::getButtonData(Buttons);
-<<<<<<< HEAD
   simulation.getBorder(Border);
-=======
->>>>>>> fd0f0764ad649546d49cd7fc2af15134cf1f5238
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-  entity1 = ecs.CreateEntity();
+
+  /*maestro.addComponent(entity1, );
+  maestro.addComponent(entity1, "physics");
+  maestro.addComponent(entity1,"renderable");*/
+  /*entity1 = ecs.CreateEntity();
   entity1 = ecs.AddComponent(entity1, DIMENSIONID);
   entity1 = ecs.AddComponent(entity1, GRAVITYID);
   entity2 = ecs.CreateEntity();
@@ -93,20 +90,31 @@ void Game::Init() {
   entity4 = ecs.AddComponent(entity4, GROWID);
   entity4 = ecs.AddComponent(entity4, GRAVITYID);
   ecs.EntityToComponents.at(entity4.ID).dimension.xPos = 200;
+  //Bottom Border
+  entity5 = ecs.CreateEntity();
+  entity5 = ecs.AddComponent(entity5, DIMENSIONID);
+  ecs.EntityToComponents.at(entity5.ID).dimension.xPos = (Width*0.05)+1;
+  ecs.EntityToComponents.at(entity5.ID).dimension.yPos = (Height*0.05)+(Height*0.4);
+  ecs.EntityToComponents.at(entity5.ID).dimension.ySize = (Width*0.9)-2;
+  ecs.EntityToComponents.at(entity5.ID).dimension.ySize = 3;*/
 }
+
+entt::entity Game::createEntity(){
+  return registry.create();
+}
+
 void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
-<<<<<<< HEAD
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
   if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
     Input::determineAreaPressed(newMouseClick.xPos, newMouseClick.yPos);
     oldMouseClick=newMouseClick;
   }
-=======
-  if (ecs.EntityHasComponent(entity1, GRAVITYID)) {
-    ecs.EntityToComponents.at(entity1.ID).dimension.yPos += dt * 45;
+
+  /*if (ecs.EntityHasComponent(entity1, GRAVITYID)) {
+    ecs.EntityToComponents.at(entity1.ID).dimension.yPos += dt *45;
   }
   if (ecs.EntityHasComponent(entity3, GROWID)) {
     ecs.EntityToComponents.at(entity3.ID).dimension.xSize *= 1.001;
@@ -117,9 +125,8 @@ void Game::Update(float dt) {
     ecs.EntityToComponents.at(entity4.ID).dimension.yPos += dt * 45;
     ecs.EntityToComponents.at(entity4.ID).dimension.xSize *= 1.001;
     ecs.EntityToComponents.at(entity4.ID).dimension.ySize *= 1.001;
-  }
+  }*/
 
->>>>>>> 8345fa9952124937e604874276a335a046337df9
 }
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
@@ -139,8 +146,13 @@ void Game::Render() {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
-
-  if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
+  
+  //maestro.setRenderable(entity1,texture);
+  /*spriteRenderer->DrawSprite(maestro.registry.get(entity1).renderable.texture,
+    maestro.registry.get(entity1).renderable.position,
+    maestro.registry.get(entity1).renderable.size
+  );*/
+  /*if (ecs.EntityHasComponent(entity1, DIMENSIONID)) {
     spriteRenderer->DrawSprite(texture,
       glm::vec2(ecs.EntityToComponents.at(entity1.ID).dimension.xPos,
       ecs.EntityToComponents.at(entity1.ID).dimension.yPos));
@@ -164,4 +176,11 @@ void Game::Render() {
       glm::vec2(ecs.EntityToComponents.at(entity4.ID).dimension.xSize,
       ecs.EntityToComponents.at(entity4.ID).dimension.xSize));
   }
+  if (ecs.EntityHasComponent(entity5, DIMENSIONID)) {
+    spriteRenderer->DrawSprite(texture,
+      glm::vec2(ecs.EntityToComponents.at(entity5.ID).dimension.xPos,
+      ecs.EntityToComponents.at(entity5.ID).dimension.yPos),
+      glm::vec2(ecs.EntityToComponents.at(entity5.ID).dimension.xSize,
+      ecs.EntityToComponents.at(entity5.ID).dimension.xSize));
+  }*/
 }
