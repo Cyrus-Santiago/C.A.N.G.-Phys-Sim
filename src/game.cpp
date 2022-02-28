@@ -126,8 +126,12 @@ void Game::Update(float dt) {
         break;
     }
   }
+  // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
+  // loop through each entity in the view
   for (auto entity : view) {
+    // patch each entities Renderable component with a new y position to
+    // simulate gravity
     reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
       renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
     });
@@ -143,12 +147,17 @@ void Game::Render() {
   pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
+  // draws every simulation object
   simulation.Draw(*spriteRenderer);
+  // for each button, calls the text renderer to display the button type upon
+  // the button being pressed
   for (Button &button : Buttons) {
     if (button.Pressed) {
+      // pass button type to textRenderer so it can be drawn
       TextRenderer::Draw(*spriteRenderer, button.Type + " ",
         Menu::Types.at(button.Type).color);
     } else {
+      // turns the opacity of text to zero
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
@@ -163,8 +172,11 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.size
   );*/
 
+  // creates view of all entities with the renderable component
   auto view = reg->view<Renderable>();
+  // loops through each entity in the view we just created
   for (auto entity : view) {
+    // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
 }
