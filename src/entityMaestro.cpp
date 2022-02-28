@@ -1,5 +1,4 @@
 #include "../include/entityMaestro.hpp"
-#include "../include/components.hpp"
 
 Maestro::Maestro(entt::entity handle, Game* game)
     : m_EntityHandle(handle), game(game){};

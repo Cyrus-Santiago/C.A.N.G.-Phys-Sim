@@ -10,7 +10,6 @@ and it should not count towards his 1000 lines. */
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
 #include "../include/entityMaestro.hpp"
-#include "../include/components.hpp"
 #include "../include/ecs.hpp"
 #include <glm/detail/qualifier.hpp>
 #include <iostream>
@@ -28,6 +27,7 @@ Input input;
 
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
+entt::entity entity1, entity2, entity3;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -71,7 +71,9 @@ void Game::Init() {
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-
+  /*entity1 = registry.create();
+  registry.emplace<dimensions>(entity1, 50, 50, 10, 10);
+  registry.emplace<physics>(entity1);*/
   /*maestro.addComponent(entity1, );
   maestro.addComponent(entity1, "physics");
   maestro.addComponent(entity1,"renderable");*/
@@ -145,7 +147,11 @@ void Game::Render() {
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
-  
+  /*auto group = registry.group<dimensions>(entt::get<physics>);
+  for(auto entity : group){
+    auto& [dims, phys] = group.get<dimensions,physics>(entity);
+
+  }
   //maestro.setRenderable(entity1,texture);
   /*spriteRenderer->DrawSprite(maestro.registry.get(entity1).renderable.texture,
     maestro.registry.get(entity1).renderable.position,
