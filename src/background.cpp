@@ -6,5 +6,5 @@ Background::Background(glm::vec2 position, glm::vec2 size, Texture2D bgsprite, g
                      bgSprite(bgsprite), Color(color) {}
 
 void Background::Draw(SpriteRenderer &renderer){
-    renderer.DrawSprite(this->bgSprite, this->Position, this->Size);
+    renderer.DrawSprite(this->bgSprite, this->Position, this->Size, 0.0f);
 }

@@ -2,14 +2,14 @@
 #include "../include/resourceManager.hpp"
 #include "../include/playArea.hpp"
 
-void playArea::Draw(SpriteRenderer &renderer){
+void PlayArea::Draw(SpriteRenderer &renderer){
     glm::vec2 pos(scrWidth*0.05, scrHeight*0.05);
     glm::vec2 size(areaWidth,areaHeight);
     Background obj(pos, size, ResourceManager::GetTexture("skyBackground"), glm::vec3(1.0f, 1.0f, 1.0f));
     obj.Draw(renderer);
 }
 
-void playArea::init(unsigned int Width, unsigned int Height){
+void PlayArea::init(unsigned int Width, unsigned int Height){
     scrWidth=Width;
     scrHeight=Height;
     areaWidth=scrWidth*0.9;
