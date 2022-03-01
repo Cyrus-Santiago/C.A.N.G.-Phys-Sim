@@ -1,18 +1,22 @@
 #include "../include/collision.hpp"
+#include "../include/factory.hpp"
 
-bool Collision::detector(SimulationObject &obj1, SimulationObject &obj2){
-    colX = obj1.Position.x + obj1.Size.x >= obj2.Position.x && 
-        obj2.Position.x + obj2.Size.x >= obj1.Position.x;
+bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
+    colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
+        reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
+        reg.get<Renderable>(obj2).xSize >= reg.get<Renderable>(obj1).xPos;
     
-    colY = obj1.Position.y + obj1.Size.y >= obj2.Position.y && 
-        obj2.Position.y + obj2.Size.y >= obj1.Position.y;
+    colY = reg.get<Renderable>(obj1).yPos + reg.get<Renderable>(obj1).ySize >= 
+        reg.get<Renderable>(obj2).yPos && reg.get<Renderable>(obj2).yPos + 
+        reg.get<Renderable>(obj2).ySize >= reg.get<Renderable>(obj1).yPos;
 
     return colX && colY;
 }
 
-bool Collision::checkCollision(SimulationObject &obj, std::vector<SimulationObject> Border){
-    for(SimulationObject &border : Border){
-        if(detector(obj,border)){
+bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
+    auto view = reg.view<Renderable>();
+    for(auto Entity : view){
+        if(detector(entity, Entity, reg)){
             return true;
         }
     }

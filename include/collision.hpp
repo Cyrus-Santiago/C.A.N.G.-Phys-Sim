@@ -2,6 +2,7 @@
 #define COLLISION_H
 
 #include "../include/simulationObject.hpp"
+#include "../include/entt.hpp"
 #include <vector>
 
 class Collision{
@@ -9,8 +10,8 @@ public:
     //constructor
     Collision(){};
     //Calculates whether a collision occured
-    bool detector(SimulationObject &obj1, SimulationObject &obj2);
-    bool checkCollision(SimulationObject &obj, std::vector<SimulationObject> Border);
+    bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
+    bool checkCollision(entt::entity entity, entt::registry &reg);
 
     void collide(SimulationObject &obj);
 

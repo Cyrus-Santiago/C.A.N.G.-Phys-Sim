@@ -7,9 +7,12 @@
 
 #include "../include/glm/glm.hpp"
 #include "../include/texture.hpp"
-
+//Contains everything for physics calculations
 typedef struct{
     float mass = 1.00; //Default to 1 kg (Are we using kg or lbs?)
+    float area;
+    float xVel;
+    float yVel;
 }physics;
 
 typedef struct{
