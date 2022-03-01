@@ -30,6 +30,10 @@ public:
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
         glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
 
+    /* Used to create a new ray entity */
+    entt::entity makeRay(entt::registry &reg, glm::vec2 position =
+        glm::vec2(250, 10), glm::vec4 color = glm::vec4(1.0f));
+
     // used to draw an entity of any type
     void draw(entt::registry &reg, entt::entity entity,
         SpriteRenderer &spriteRenderer);
