@@ -113,15 +113,16 @@ void Game::Update(float dt) {
         std::vector<Button> pressedButtonVector=Input::getButtonPressed();
         if(pressedButtonVector.size() != 0)  {
           Button pressedButton=pressedButtonVector[0];
+          glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
           //Determines what to do based on the game state
           switch(int(State)) {
             case GAME_DRAW_ELEMENT:
               factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
-                (int) newMouseClick.yPos), glm::vec4(1.0f));
+                (int) newMouseClick.yPos), buttonColor);
               break;
             case GAME_DRAW_SHAPE:
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+                (int)newMouseClick.yPos), buttonColor);
               break;
             case GAME_DRAW_LIGHT:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
