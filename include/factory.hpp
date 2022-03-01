@@ -25,6 +25,8 @@ public:
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
         glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
 
+    void makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color = glm::vec4(1.0f));
+
     void draw(entt::registry &reg, entt::entity entity,
         SpriteRenderer &spriteRenderer);
 };

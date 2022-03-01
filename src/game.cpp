@@ -27,7 +27,7 @@ and it should not count towards his 1000 lines. */
 static int determineGameState();
 Menu menu;
 PlayArea parea;
-PlayBorder pborder;
+//PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 Click newMouseClick, oldMouseClick;
@@ -36,7 +36,7 @@ Factory factory;
 entt::registry * reg;
 
 std::vector<Button> Buttons;
-std::vector<SimulationObject> Border;
+//std::vector<SimulationObject> Border;
 entt::entity entity;
 ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
@@ -69,16 +69,17 @@ void Game::Init() {
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
-  pborder.init(Width*0.85,Height);
+  //pborder.init(Width*0.85,Height);
   Input::screenWidth=Width*0.85;
   Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
-  Border = pborder.Border;
+  //Border = pborder.Border;
+  factory.makeBorder(*reg,Width*0.85,Height);
   // give the button data to input class
   Input::getButtonData(Buttons);
-  simulation.getBorder(Border);
+  //simulation.getBorder(Border);
   // initialize the text renderer (actually manager)
   TextRenderer::Init();
   for (Button &button : Buttons) {
@@ -140,7 +141,7 @@ void Game::Render() {
   simulation.Create(ray);
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
-  pborder.Draw(*spriteRenderer);
+  //pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
   simulation.Draw(*spriteRenderer);

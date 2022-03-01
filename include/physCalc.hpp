@@ -25,6 +25,7 @@ public:
 
 private:
     float theta=0.00;
+    float CORThreshold=0.5f;
 };
 
 #endif

@@ -18,6 +18,23 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     return entity;
 }
 
+void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
+    int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
+    auto entity1 = reg.create(); //Top Line
+    reg.emplace<Renderable>(entity1, "button1", (scrWidth*0.05)+1, scrHeight*0.05, 
+        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
+    auto entity2 = reg.create(); //Bottom Line
+    reg.emplace<Renderable>(entity2, "button1", (scrWidth*0.05)+1, (scrHeight*0.05)+areaHeight, 
+        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
+    auto entity3 = reg.create(); //Left Line
+    reg.emplace<Renderable>(entity3, "button1", (scrWidth*0.05)-1, scrHeight*0.05, 
+        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
+    auto entity4 = reg.create(); //Right Line
+    reg.emplace<Renderable>(entity4, "button1", (scrWidth*0.05+areaWidth)-1, scrHeight*0.05, 
+        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
+    return;
+};
+
 void Factory::draw(entt::registry &reg, entt::entity entity,
     SpriteRenderer &spriteRenderer) {
     Texture2D texture =
