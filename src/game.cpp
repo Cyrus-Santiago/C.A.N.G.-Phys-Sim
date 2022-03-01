@@ -109,19 +109,24 @@ void Game::Update(float dt) {
         break;
       case 1:   //Mouse click on play area
         //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
-        //Determines what to do based on the game state
-        switch(int(State)) {
-          case GAME_DRAW_ELEMENT:
-            factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
-              (int) newMouseClick.yPos), glm::vec4(1.0f));
-            break;
-          case GAME_DRAW_SHAPE:
-            factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-              (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
-            break;
-          case GAME_DRAW_LIGHT:
-            //factory.makeRay //TODO Amethyst
-            break;
+        //Determine color of particle based on button being pressed.
+        std::vector<Button> pressedButtonVector=Input::getButtonPressed();
+        if(pressedButtonVector.size() != 0)  {
+          Button pressedButton=pressedButtonVector[0];
+          //Determines what to do based on the game state
+          switch(int(State)) {
+            case GAME_DRAW_ELEMENT:
+              factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+                (int) newMouseClick.yPos), glm::vec4(1.0f));
+              break;
+            case GAME_DRAW_SHAPE:
+              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+              break;
+            case GAME_DRAW_LIGHT:
+              //factory.makeRay //TODO Amethyst
+              break;
+          }
         }
         break;
     }
@@ -184,12 +189,7 @@ void Game::Render() {
 //This function tells the game class which button is being pressed. The
 //game state is changed based on that
 GameState Game::determineGameState()  {
-    std::vector<Button> pressedButton;
-    //Update button list
-    Buttons=Input::giveButtonData();
-    //Copies the button that was pressed
-    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
-      return buttons.Pressed;   });
+    std::vector<Button> pressedButton=Input::getButtonPressed();
     //If a button WAS pressed
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
