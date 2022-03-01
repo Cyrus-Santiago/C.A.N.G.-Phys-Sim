@@ -28,7 +28,7 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
         // records click
         xClick = xPos; yClick = yPos;
         // debug
-        audio.playAudio();
+        audio.playAudio("audio/click.wav");
         std::cout << "Button " << i << " pressed!" << std::endl;
         // records button press so we can do something with it
         if (Buttons[i].Pressed) Buttons[i].Pressed = false;
@@ -82,8 +82,10 @@ Click Input::getLastMouseClickPos() {
 }
 
 void Input::getButtonData(std::vector<Button> buttons) {
+  // get new data on buttons
   Buttons = buttons;
 }
 std::vector<Button> Input::giveButtonData() {
+  // provide our data on the buttons
   return Buttons;
 }

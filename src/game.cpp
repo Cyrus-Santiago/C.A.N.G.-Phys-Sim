@@ -59,9 +59,8 @@ void Game::Init() {
 
   // provide the shader with the projection matrix
   ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-  Shader myShader;
   // retrieve the shader we loaded earlier from storage
-  myShader = ResourceManager::GetShader("sprite");
+  Shader myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
   reg = new entt::registry();
@@ -121,14 +120,19 @@ void Game::Update(float dt) {
               (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
             break;
           case GAME_DRAW_LIGHT:
-            //factory.makeRay //TODO Amethyst
+            factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+              (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
             break;
         }
         break;
     }
   }
+  // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
+  // loop through each entity in the view
   for (auto entity : view) {
+    // patch each entities Renderable component with a new y position to
+    // simulate gravity
     reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
       renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
     });
@@ -137,19 +141,22 @@ void Game::Update(float dt) {
 
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
-  Ray ray({100,100});
-  simulation.Create(ray);
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   //pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
+  // draws every simulation object
   simulation.Draw(*spriteRenderer);
+  // for each button, calls the text renderer to display the button type upon
+  // the button being pressed
   for (Button &button : Buttons) {
     if (button.Pressed) {
+      // pass button type to textRenderer so it can be drawn
       TextRenderer::Draw(*spriteRenderer, button.Type + " ",
         Menu::Types.at(button.Type).color);
     } else {
+      // turns the opacity of text to zero
       TextRenderer::Hide(*spriteRenderer, button.Type + " ");
     }
   }
@@ -164,8 +171,11 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.size
   );*/
 
+  // creates view of all entities with the renderable component
   auto view = reg->view<Renderable>();
+  // loops through each entity in the view we just created
   for (auto entity : view) {
+    // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
 }
@@ -192,7 +202,7 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID < 35) { 
+      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 35) {
           std::cout<<"light mode"<<std::endl;
           return GAME_DRAW_LIGHT;
       }
