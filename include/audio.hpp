@@ -21,7 +21,11 @@ public: ISoundEngine* engine;
         int playAudio(const char *);
         int playAudioLoop(const char *);
         void dropAudioEngine();
+        int adjustVolume(bool IncOrDec);
+        int pauseResumeAudio();
 
+private:
+        bool paused;
 };
 
 #endif

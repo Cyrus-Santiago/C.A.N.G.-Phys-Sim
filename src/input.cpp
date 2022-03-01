@@ -72,7 +72,13 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
 // function takes in user input and responds accordingly
 void Input::processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+      glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
+      audio.adjustVolume(true);
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
+      audio.adjustVolume(false);
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+      audio.pauseResumeAudio();
 }
 
 // allows us to access mouse position data without using global variables
