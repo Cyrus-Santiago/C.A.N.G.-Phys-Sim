@@ -35,7 +35,7 @@ public:
     static int validClick;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
-    static bool determineAreaPressed(double xPos, double yPos);
+    static int determineAreaPressed(double xPos, double yPos);
     // called by glfw on mouse click
     static void mouseClickCallback(GLFWwindow * window, int button, int action, int mods);
     // called by glfw on moust move
@@ -44,6 +44,8 @@ public:
     static void processInput(GLFWwindow *window);
     // does exactly what it says
     static Click getLastMouseClickPos();
+    //Get valid click
+    static int getValidClick();
     // these are here so we can give/get button data from the menu
     static void getButtonData(std::vector<Button> Buttons);
     static std::vector<Button> giveButtonData();

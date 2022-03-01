@@ -21,6 +21,9 @@ and it should not count towards his 1000 lines. */
 #include <vector>
 #include <memory>
 #include <algorithm>
+
+#define GRAVITY 9.17
+
 static int determineGameState();
 Menu menu;
 PlayArea parea;
@@ -30,7 +33,7 @@ Simulation simulation;
 Click newMouseClick, oldMouseClick;
 Input input;
 Factory factory;
-entt::registry reg;
+entt::registry * reg;
 
 std::vector<Button> Buttons;
 std::vector<SimulationObject> Border;
@@ -43,6 +46,7 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game() {
   delete spriteRenderer;
+  delete reg;
 }
 
 void Game::Init() {
@@ -60,6 +64,7 @@ void Game::Init() {
   myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
+  reg = new entt::registry();
 
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
@@ -86,8 +91,7 @@ void Game::Init() {
   maestro.addComponent(entity1, "physics");
   maestro.addComponent(entity1,"renderable");*/
 
-  entity = factory.makeParticle(reg, glm::vec2(50, 50), glm::vec4(1.0f));
-
+  //entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 }
 
 void Game::Update(float dt) {
@@ -95,17 +99,38 @@ void Game::Update(float dt) {
   TextRenderer::Update(dt);
   newMouseClick = input.getLastMouseClickPos();
   //If there is a new mouse click
-  if((newMouseClick.xPos != oldMouseClick.xPos) || (newMouseClick.yPos != oldMouseClick.yPos))  {
+  if((newMouseClick.xPos != oldMouseClick.xPos) ||
+    (newMouseClick.yPos != oldMouseClick.yPos))  {
     oldMouseClick=newMouseClick;
-    switch(input.validClick){
-      case 0:
+    switch(Input::validClick){
+      case 0:   //Button Press
         //Alters the game state based on button pressed
         State=Game::determineGameState();
         break;
-      case 1:
-        std::cout<<"pretend something just got drawn"<<std::endl;
+      case 1:   //Mouse click on play area
+        //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
+        //Determines what to do based on the game state
+        switch(int(State)) {
+          case GAME_DRAW_ELEMENT:
+            factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+              (int) newMouseClick.yPos), glm::vec4(1.0f));
+            break;
+          case GAME_DRAW_SHAPE:
+            factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+              (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+            break;
+          case GAME_DRAW_LIGHT:
+            //factory.makeRay //TODO Amethyst
+            break;
+        }
         break;
     }
+  }
+  auto view = reg->view<Physics>();
+  for (auto entity : view) {
+    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+    });
   }
 }
 
@@ -138,11 +163,10 @@ void Game::Render() {
     maestro.registry.get(entity1).renderable.size
   );*/
 
-  factory.drawParticle(reg, entity, * spriteRenderer);
-  int xPos = newMouseClick.xPos;
-  int yPos = newMouseClick.yPos;
-  reg.emplace_or_replace<Renderable>(entity, xPos, yPos, 10, 10, 0.0f, 1.0f,
-    1.0f, 1.0f, 1.0f);
+  auto view = reg->view<Renderable>();
+  for (auto entity : view) {
+    factory.draw(* reg, entity, * spriteRenderer);
+  }
 }
 
 //This function tells the game class which button is being pressed. The
