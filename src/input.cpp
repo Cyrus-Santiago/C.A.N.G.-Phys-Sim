@@ -82,8 +82,10 @@ Click Input::getLastMouseClickPos() {
 }
 
 void Input::getButtonData(std::vector<Button> buttons) {
+  // get new data on buttons
   Buttons = buttons;
 }
 std::vector<Button> Input::giveButtonData() {
+  // provide our data on the buttons
   return Buttons;
 }

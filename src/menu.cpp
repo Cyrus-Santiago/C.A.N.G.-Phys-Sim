@@ -37,6 +37,7 @@ void Menu::Draw(SpriteRenderer &spriteRenderer) {
 void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
                 unsigned int scrWidth, unsigned int scrHeight) {
 
+    // stores the color data of the elements
     Element elementDataArray[] = {
         glm::vec4(0.4f, 0.4f, 1.0f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f),
         glm::vec4(0.6f, 0.6f, 1.0f, 1.0f), glm::vec4(0.6f, 0.6f, 0.6f, 1.0f),
@@ -54,6 +55,8 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.4f, 0.35f, 0.4f,1.0f),
         glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
     };
+
+    // stores the element names
     std::string elementTypes[] = {
         "WATER", "POTASSIUM", "HYDROGEN", "HELIUM", "OXYGEN", "MERCURY", "IRON",
         "CARBON", "NITROGEN", "CHLORINE", "COBALT", "GOLD", "TIN", "TITANIUM",
@@ -61,10 +64,13 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         "NEON", "FLUORINE", "ARGON", "MAGNESIUM", "PLATINUM", "TUNGSTEN",
         "BROMINE", "BISMUTH", "URANIUM"
     };
+
+    // merges the element names and colors together in the map
     for (int i = 0; i < ELEMENT_NUM; i++) {
         Types.insert(std::pair<std::string, Element>(elementTypes[i],
             elementDataArray[i]));
     }
+
     /* Written by Griffen */
     Element shapesButtonColor[] = {glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),
         glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),glm::vec4(0.5f, 0.3f, 0.0f, 1.0f)};
@@ -82,7 +88,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     } /* */
 
     int i = 0;
-     int idCounter=0;
+    int idCounter=0;
     // very messy and stupid calculations that makes buttons evenly spaced in
     // a specific area
     float edgeGap=0.025*scrWidth;  //About 20 pixels for a width of 1000

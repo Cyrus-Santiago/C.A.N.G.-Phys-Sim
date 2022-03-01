@@ -17,6 +17,7 @@ public:
     // for storing array of buttons
     static std::vector<Button> Buttons;
 
+    // used to map an element type string to it's color
     struct Element {
         glm::vec4 color;
     };
