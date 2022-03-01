@@ -19,7 +19,16 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
 entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     auto entity = reg.create();
-    reg.emplace<Renderable>(entity, "skyBackground", position.x, position.y, 30, 30,
+    reg.emplace<Renderable>(entity, "button1", position.x, position.y, 30, 30,
+        0.0f, color.x, color.y, color.z, color.w);
+    return entity;
+}
+
+entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
+    glm::vec4 color) {
+    auto entity = reg.create();
+
+    reg.emplace<Renderable>(entity, "laser", position.x, position.y, 250, 10,
         0.0f, color.x, color.y, color.z, color.w);
     return entity;
 }

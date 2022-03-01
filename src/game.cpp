@@ -59,9 +59,8 @@ void Game::Init() {
 
   // provide the shader with the projection matrix
   ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-  Shader myShader;
   // retrieve the shader we loaded earlier from storage
-  myShader = ResourceManager::GetShader("sprite");
+  Shader myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
   reg = new entt::registry();
@@ -124,8 +123,8 @@ void Game::Update(float dt) {
                 (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
               break;
             case GAME_DRAW_LIGHT:
-              //factory.makeRay //TODO Amethyst
-              break;
+              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));              break;
           }
         }
         break;
@@ -145,8 +144,6 @@ void Game::Update(float dt) {
 
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
-  Ray ray({100,100});
-  simulation.Create(ray);
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
   pborder.Draw(*spriteRenderer);
@@ -203,7 +200,7 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID < 35) { 
+      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 35) {
           std::cout<<"light mode"<<std::endl;
           return GAME_DRAW_LIGHT;
       }
