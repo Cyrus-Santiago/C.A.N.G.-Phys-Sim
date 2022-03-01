@@ -12,6 +12,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/input.hpp"
 #include "../include/resourceManager.hpp"
 #include "../include/game.hpp"
+#include "../include/audio.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -63,6 +64,10 @@ int main()
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
+    Audio gameAudio;
+    const char *gameMusic = "audio/playMusic2.wav";
+    gameAudio.playAudio(gameMusic);
+
     /* RENDER LOOP */
     while (!glfwWindowShouldClose(window))
     {
@@ -96,6 +101,7 @@ int main()
 		// free memory and exit graciously
     //ResourceManager::Clear();
     glfwTerminate();
+    gameAudio.dropAudioEngine();
     return 0;
 }
 
