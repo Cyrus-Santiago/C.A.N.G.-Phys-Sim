@@ -30,7 +30,7 @@ PlayArea parea;
 //PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
-Click newMouseClick, oldMouseClick;
+Click newMouseClick;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -98,10 +98,8 @@ void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
   newMouseClick = input.getLastMouseClickPos();
-  //If there is a new mouse click
-  if((newMouseClick.xPos != oldMouseClick.xPos) ||
-    (newMouseClick.yPos != oldMouseClick.yPos))  {
-    oldMouseClick=newMouseClick;
+    //If there is a new mouse click
+  if(Input::mousePressed) {
     switch(Input::validClick){
       case 0:   //Button Press
         //Alters the game state based on button pressed
@@ -130,7 +128,8 @@ void Game::Update(float dt) {
           }
         }
         break;
-    }
+    }//Needed so that multiple clicks are not registered in one spot
+    Input::resetValidClick();
   }
   // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
