@@ -59,9 +59,8 @@ void Game::Init() {
 
   // provide the shader with the projection matrix
   ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-  Shader myShader;
   // retrieve the shader we loaded earlier from storage
-  myShader = ResourceManager::GetShader("sprite");
+  Shader myShader = ResourceManager::GetShader("sprite");
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
   reg = new entt::registry();
