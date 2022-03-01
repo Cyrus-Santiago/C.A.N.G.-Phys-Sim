@@ -32,6 +32,7 @@ private:
 public:
     //This is set when a click has been made. =0 is a button press. =1 is a 
     //play area press. =-1 is invalid.
+    static bool mousePressed;
     static int validClick;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
@@ -44,8 +45,8 @@ public:
     static void processInput(GLFWwindow *window);
     // does exactly what it says
     static Click getLastMouseClickPos();
-    //Get valid click
-    static int getValidClick();
+    //Reset the valid click variable
+    static void resetValidClick();
     // these are here so we can give/get button data from the menu
     static void getButtonData(std::vector<Button> Buttons);
     static std::vector<Button> giveButtonData();
