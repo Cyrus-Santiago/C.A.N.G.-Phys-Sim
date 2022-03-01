@@ -89,3 +89,13 @@ std::vector<Button> Input::giveButtonData() {
   // provide our data on the buttons
   return Buttons;
 }
+
+std::vector<Button> Input::getButtonPressed()  {
+  std::vector<Button> pressedButton;
+    //Update button list
+    Input::giveButtonData();
+    //Copies the button that was pressed
+    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
+      return buttons.Pressed;   });
+    return pressedButton;
+}

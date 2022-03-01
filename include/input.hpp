@@ -49,6 +49,8 @@ public:
     // these are here so we can give/get button data from the menu
     static void getButtonData(std::vector<Button> Buttons);
     static std::vector<Button> giveButtonData();
+    static std::vector<Button> getButtonPressed();
+
 };
 
 #endif
