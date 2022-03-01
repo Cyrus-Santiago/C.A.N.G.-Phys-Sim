@@ -120,7 +120,8 @@ void Game::Update(float dt) {
               (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
             break;
           case GAME_DRAW_LIGHT:
-            //factory.makeRay //TODO Amethyst
+            factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+              (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
             break;
         }
         break;
@@ -201,7 +202,7 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID < 35) { 
+      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 35) {
           std::cout<<"light mode"<<std::endl;
           return GAME_DRAW_LIGHT;
       }
