@@ -35,7 +35,7 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         glm::vec2 setTail(double, double);
         void setSize(glm::vec2, glm::vec2);
         void successfulDraw(int);
-        void init();
+        void init(double, double);
         void clear();
         void setDirection();
         Ray incident();

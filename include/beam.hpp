@@ -5,19 +5,22 @@
 #define BEAM_H
 
 #include "../include/ray.hpp"
+#include <vector>
 
 class Beam{
     /* Fields */
 public: int beamWidth = 0;
-        Ray rays[];
+        std::vector<Ray> rays;
 
     /* Constructor */
-    Beam(){}
+    Beam(double xPos, double yPos){
+        rays[0].init(xPos, yPos);
+    }
 
     /* Methods */
-    void incBeamWidth();
+    void incBeamWidth(double, double);
     void clear();
-    void init();
+    void init(double, double);
     void setBeamDirection();
 };
 #endif
