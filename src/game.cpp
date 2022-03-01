@@ -122,9 +122,14 @@ void Game::Update(float dt) {
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), buttonColor);
               break;
-            case GAME_DRAW_LIGHT:
+            case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));              break;
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              break;
+            case GAME_DRAW_BEAM:
+            factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+              (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              break;
           }
         }
         break;
@@ -201,9 +206,13 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 35) {
-          std::cout<<"light mode"<<std::endl;
-          return GAME_DRAW_LIGHT;
+      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
+          std::cout<<"ray mode"<<std::endl;
+          return GAME_DRAW_RAY;
+      }
+      else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
+          std::cout<<"beam mode"<<std::endl;
+          return GAME_DRAW_BEAM;
       }
     }
     std::cout<<"idle mode" <<std::endl;

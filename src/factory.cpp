@@ -1,5 +1,7 @@
 
 #include "../include/factory.hpp"
+#include "../include/ray.hpp"
+#include "../include/beam.hpp"
 
 entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
@@ -26,9 +28,22 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
 
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
+    Ray ray({position.x, position.y});
+    ray.init(position.x, position.y);
     auto entity = reg.create();
 
-    reg.emplace<Renderable>(entity, "laser", position.x, position.y, 250, 10,
+    reg.emplace<Renderable>(entity, "laser", position.x, position.y, ray.Size[0], ray.Size[1],
+        0.0f, color.x, color.y, color.z, color.w);
+    ray.printRayStats();
+    return entity;
+}
+
+entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
+    glm::vec4 color) {
+    Beam beam({position.x, position.y});
+    auto entity = reg.create();
+
+    reg.emplace<Renderable>(entity, "laser", position.x, position.y, beam.rays[0].Size[0], beam.rays[0].Size[1],
         0.0f, color.x, color.y, color.z, color.w);
     return entity;
 }
