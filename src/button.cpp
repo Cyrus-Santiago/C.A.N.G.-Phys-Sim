@@ -16,8 +16,8 @@ Button::Button(glm::vec2 position, glm::vec2 size, Texture2D texture,
 void Button::Draw(SpriteRenderer &spriteRenderer) {
     assert(Menu::Types.find(this->Type) != Menu::Types.end());
     glm::vec4 color = Menu::Types.at(this->Type).color;
+    
     // this makes the button darker when it's pressed
-
     if (this->Pressed) {
         color *= glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     }

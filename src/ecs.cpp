@@ -6,9 +6,11 @@
 #include <cstdint>
 #include <iostream>
 
+// queue of available entity IDs
 std::queue<ECS::Entity>
 AvailableEntityIDs;
 
+// map from entity ID to it's components
 std::map<uint32_t, ECS::Components>
 EntityToComponents;
 
@@ -25,10 +27,12 @@ ECS::ECS() {
         // push the entity onto the queue
         ECS::AvailableEntityIDs.push(entity);
 
+        // intialize components for entity
         ECS::Dimension dimension = {50, 150, 10, 10, "button2"};
         ECS::Physics physics = {true};
         ECS::Components componentList = {dimension, physics};
 
+        // map entity to it's components
         ECS::EntityToComponents.insert(
             std::pair<uint32_t,
             ECS::Components>(entity.ID, componentList));
