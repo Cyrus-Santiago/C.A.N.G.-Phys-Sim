@@ -10,6 +10,7 @@
 #define ELEMENT_NUM 30
 #define SHAPE_NUM 3
 #define RAY_NUM 2
+#define TOOLBAR_NUM 2
 // this class is mainly here just to own the buttons. It figures out the layout
 // based on screen width/height and maintains an array of all the buttons
 class Menu {
@@ -28,6 +29,7 @@ public:
     static std::string rayTypes[RAY_NUM];
     static std::string shapesTypes[SHAPE_NUM];
     static std::string elementTypes[ELEMENT_NUM];
+    static std::string toolbarTypes[TOOLBAR_NUM];
 
     // this is the elegant way I thought of storing the different elements
     static std::map<std::string, Element> Types;

@@ -127,8 +127,12 @@ void Game::Update(float dt) {
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
             case GAME_DRAW_BEAM:
-            factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-              (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              break;
+            case GAME_DRAW_EXPLOSION:
+              factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
+               (int)newMouseClick.yPos), buttonColor);
               break;
           }
         }
@@ -213,6 +217,10 @@ GameState Game::determineGameState()  {
       else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
           std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
+      }
+      else if(pressedButton[0].ID ==35) {
+          std::cout<<"explosion mode"<<std::endl;
+          return GAME_DRAW_EXPLOSION;
       }
     }
     std::cout<<"idle mode" <<std::endl;
