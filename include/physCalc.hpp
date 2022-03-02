@@ -31,10 +31,13 @@ public:
     float calcCORDrop(float bounceHeight, float dropHeight);
     //Calculate the angle an object is moving
     float calcAngle(float xVel, float yVel);
+    //Calculate bounce height after collision
+    float calcBounceHeight(float initialHeight, float time);
 
 private:
     float pi = 3.14;
     float theta=0.00;
+    float gravity = 9.81;
     float CORThreshold=1.0f;
 };
 

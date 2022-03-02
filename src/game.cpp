@@ -11,6 +11,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulation.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
+#include "../include/physCalc.hpp"
 #include <cassert>
 #include <cstddef>
 #include <glm/detail/qualifier.hpp>
@@ -31,6 +32,7 @@ Simulation simulation;
 Click newMouseClick, oldMouseClick;
 Input input;
 Factory factory;
+PhysCalc phys;
 entt::registry * reg;
 
 std::vector<Button> Buttons;
@@ -71,6 +73,7 @@ void Game::Init() {
   Buttons = Menu::Buttons;
   // retrieve border data
   factory.makeBorder(*reg,Width*0.85,Height);
+  bottomBorder=(Height*0.05+Height*0.4);
   // give the button data to input class
   Input::getButtonData(Buttons);
   //simulation.getBorder(Border);
@@ -120,9 +123,11 @@ void Game::Update(float dt) {
   for (auto entity : view) {
     // patch each entities Renderable component with a new y position to
     // simulate gravity
-    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
-      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
-    });
+    if((reg->get<Renderable>(entity).yPos+reg->get<Renderable>(entity).ySize) <= bottomBorder){
+      reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+        renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+      });
+    }
   }
 }
 
@@ -130,7 +135,6 @@ void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
-  //pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
   // draws every simulation object

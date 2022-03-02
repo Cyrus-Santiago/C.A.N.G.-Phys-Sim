@@ -10,8 +10,8 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     reg.emplace<Renderable>(entity, "button1", position.x, position.y, 10, 10,
         0.0f, color.x, color.y, color.z, color.w);
 
-    // give the particle a mass of 10 and turn on physics
-    reg.emplace<Physics>(entity, 10);
+    // give the particle a mass of 10 and turn on physics, setting it's initial height
+    reg.emplace<Physics>(entity, 10, position.y+10);
 
     return entity;
 }
@@ -21,6 +21,8 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     auto entity = reg.create();
     reg.emplace<Renderable>(entity, "button1", position.x, position.y, 30, 30,
         0.0f, color.x, color.y, color.z, color.w);
+
+    reg.emplace<Physics>(entity, 10, position.y+30);
     return entity;
 }
 

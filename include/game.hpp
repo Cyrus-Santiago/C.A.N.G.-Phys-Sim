@@ -44,6 +44,7 @@ class Game {
 
     private:
         static GameState determineGameState();
+        int bottomBorder;
 };
 
 #endif
