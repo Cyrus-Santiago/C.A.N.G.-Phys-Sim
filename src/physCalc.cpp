@@ -110,3 +110,7 @@ float PhysCalc::getVelInelastic(float m1, float m2, float u1, float u2, bool vel
 float PhysCalc::calcAngle(float xVel, float yVel){
     return atan(yVel/xVel);
 }
+
+float PhysCalc::calcBounceHeight(float initialHeight, float time){
+    return (initialHeight-(0.5*gravity*pow(time,2.00)));
+}

@@ -9,9 +9,9 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
-//#include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
+#include "../include/physCalc.hpp"
 #include <cassert>
 #include <cstddef>
 #include <glm/detail/qualifier.hpp>
@@ -27,16 +27,15 @@ and it should not count towards his 1000 lines. */
 static int determineGameState();
 Menu menu;
 PlayArea parea;
-//PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 Click newMouseClick;
 Input input;
 Factory factory;
+PhysCalc phys;
 entt::registry * reg;
 
 std::vector<Button> Buttons;
-//std::vector<SimulationObject> Border;
 entt::entity entity;
 ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
@@ -68,14 +67,13 @@ void Game::Init() {
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
-  //pborder.init(Width*0.85,Height);
   Input::screenWidth=Width*0.85;
   Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
-  //Border = pborder.Border;
   factory.makeBorder(*reg,Width*0.85,Height);
+  bottomBorder=(Height*0.05+Height*0.4);
   // give the button data to input class
   Input::getButtonData(Buttons);
   //simulation.getBorder(Border);
@@ -84,14 +82,6 @@ void Game::Init() {
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-  /*entity1 = registry.create();
-  registry.emplace<dimensions>(entity1, 50, 50, 10, 10);
-  registry.emplace<physics>(entity1);*/
-  /*maestro.addComponent(entity1, );
-  maestro.addComponent(entity1, "physics");
-  maestro.addComponent(entity1,"renderable");*/
-
-  //entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 }
 
 void Game::Update(float dt) {
@@ -142,9 +132,11 @@ void Game::Update(float dt) {
   for (auto entity : view) {
     // patch each entities Renderable component with a new y position to
     // simulate gravity
-    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
-      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
-    });
+    if((reg->get<Renderable>(entity).yPos+reg->get<Renderable>(entity).ySize) <= bottomBorder){
+      reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+        renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+      });
+    }
   }
 }
 
@@ -152,7 +144,6 @@ void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
-  //pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
   // draws every simulation object

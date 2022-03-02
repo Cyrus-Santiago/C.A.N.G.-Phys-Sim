@@ -16,7 +16,7 @@ struct Renderable {
 
 // component for holding all data needed to enable physics properties for an entity
 struct Physics {
-    int mass;
+    int mass, initialHeight;
     float xVel = 0.00, yVel = 0.00;
     float friction = 0.5;
 };
