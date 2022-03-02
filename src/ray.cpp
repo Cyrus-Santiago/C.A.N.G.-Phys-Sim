@@ -44,9 +44,9 @@
     }
 
 /* Initial Stats upon inserting a ray */
-    void Ray::init(){
-        Position = {250, 100};
-        Tail = {500, 500};
+    void Ray::init(double xPos, double yPos){
+        Position = {(float)xPos, (float)yPos};
+        Tail = {425, 300};
         setSize(Position, Tail);
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
@@ -58,7 +58,7 @@
     void Ray::clear(){
         Position = {0, 0};
         Tail = {0, 0};
-        setSize(Position, Tail);
+        Size = {0,0};
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
         Move(0);

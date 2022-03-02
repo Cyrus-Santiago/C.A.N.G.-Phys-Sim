@@ -7,11 +7,12 @@
 #include <algorithm>
 
 Audio audio;
+bool Input::mousePressed=false;
 double Input::xClick = 1;
 double Input::yClick = 1;
 int Input::screenHeight=1;
 int Input::screenWidth=1;
-int Input::validClick=-1;
+int Input::validClick=2;
 std::vector<Button> Input::Buttons;
 //This function checks for the area in which a mouse click was made.
 //If a button was clicked, its state is set to "pressed". 0,1 is returned
@@ -58,14 +59,20 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
 // This function is called by glfw whenever a mouse click occurs
 void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int mods) {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+      mousePressed=true;
     // debug statement
     //std::cout << "X=" << xPos << ", Y=" << yPos << std::endl;
     // we record the mouse click in the input class as a public variable
     // declare variables that glfw will store mouse position data in
     double xPos, yPos;
     // call glfw to give us mouse position data
+    //std::cout<<"mouse is clicking"<<std::endl;
     glfwGetCursorPos(window, &xPos, &yPos);
     Input::validClick=Input::determineAreaPressed(xPos,yPos);
+  }
+  else if (action==GLFW_RELEASE)  {
+    mousePressed=false;
+    //std::cout<<"mouse not clicking"<<std::endl;
   }
 }
 
@@ -104,4 +111,9 @@ std::vector<Button> Input::getButtonPressed()  {
     std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
       return buttons.Pressed;   });
     return pressedButton;
+}
+//This simply sets the validClick to 2, meaning it's been reset. This is needed
+//So only one click is registered in game per click.
+void Input::resetValidClick(){
+  Input::validClick=2;
 }

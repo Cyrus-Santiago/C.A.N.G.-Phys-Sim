@@ -18,7 +18,8 @@ enum GameState {
     GAME_ACTIVE,
     GAME_DRAW_ELEMENT,
     GAME_DRAW_SHAPE,
-    GAME_DRAW_LIGHT,
+    GAME_DRAW_RAY,
+    GAME_DRAW_BEAM,
 };
 
 // class to hold a lot of the game logic so we can decouple it from
@@ -44,6 +45,7 @@ class Game {
 
     private:
         static GameState determineGameState();
+        int bottomBorder;
 };
 
 #endif
