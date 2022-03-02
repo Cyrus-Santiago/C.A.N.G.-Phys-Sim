@@ -126,7 +126,8 @@ void Game::Update(float dt) {
               break;
             case GAME_DRAW_LIGHT:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));              break;
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+                break;
           }
         }
         break;
@@ -138,9 +139,11 @@ void Game::Update(float dt) {
   for (auto entity : view) {
     // patch each entities Renderable component with a new y position to
     // simulate gravity
-    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
-      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
-    });
+    if (reg->get<Renderable>(entity).yPos <= ((Height * 0.05) + (Height * 0.4) - 10)) {
+      reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
+        renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+      });
+    }
   }
 }
 
