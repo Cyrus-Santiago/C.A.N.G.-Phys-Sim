@@ -24,7 +24,6 @@ and it should not count towards his 1000 lines. */
 
 #define GRAVITY 9.17
 
-static int determineGameState();
 Menu menu;
 PlayArea parea;
 //PlayBorder pborder;
