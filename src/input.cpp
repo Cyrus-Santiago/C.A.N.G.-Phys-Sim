@@ -2,6 +2,7 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
+#include <cstddef>
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -19,7 +20,7 @@ std::vector<Button> Input::Buttons;
 //a legal click is made. -1 is returned if no legal click is made.
 int Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click was in the menu area
-  if(yPos > screenHeight * 0.6){
+  if(yPos > screenHeight * 0.5){
     for (int i = 0; i < Buttons.size(); ++i) {
       int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
       int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
@@ -107,7 +108,7 @@ std::vector<Button> Input::getButtonPressed()  {
   std::vector<Button> pressedButton;
     //Update button list
     Input::giveButtonData();
-    //Copies the button that was pressed
+    //Functional Operator "filter" that copies the button that was pressed
     std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
       return buttons.Pressed;   });
     return pressedButton;

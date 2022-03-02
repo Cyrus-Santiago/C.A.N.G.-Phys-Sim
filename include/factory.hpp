@@ -16,8 +16,13 @@ struct Renderable {
 
 // component for holding all data needed to enable physics properties for an entity
 struct Physics {
+<<<<<<< HEAD
+    float mass;
+=======
     int mass, initialHeight;
+>>>>>>> cf3bbc3eab58ebfd8a7ce0fcc1bbed75096746d5
     float xVel = 0.00, yVel = 0.00;
+    float xAccel=0.00, yAccel=0.00;
     float friction = 0.5;
 };
 
@@ -25,7 +30,7 @@ class Factory {
 public:
     // used to create a new particle entity
     entt::entity makeParticle(entt::registry &reg, glm::vec2 position =
-        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
+        glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f));
 
     // used to create a new shape entity
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
@@ -42,6 +47,9 @@ public:
     /* Used to create a new beam entity */
     entt::entity makeBeam(entt::registry &reg, glm::vec2 position =
         glm::vec2(250, 10), glm::vec4 color = glm::vec4(1.0f));
+    //Creates a force vector entity
+    entt::entity makeForceVector(entt:: registry &reg, glm::vec2 position =
+        glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f));
 
     // used to draw an entity of any type
     void draw(entt::registry &reg, entt::entity entity,

@@ -50,6 +50,14 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     return entity;
 }
 
+entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
+    glm::vec4 color) {
+    auto entity = reg.create();
+    reg.emplace<Renderable>(entity, "forceWave", position.x, position.y, 15, 15,
+        0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Physics>(entity, 0.01f);
+    return entity;
+}
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
     int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
     int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
