@@ -29,7 +29,7 @@ Menu menu;
 PlayArea parea;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
-Click newMouseClick, oldMouseClick;
+Click newMouseClick;
 Input input;
 Factory factory;
 PhysCalc phys;
@@ -88,10 +88,8 @@ void Game::Update(float dt) {
   simulation.Update(dt);
   TextRenderer::Update(dt);
   newMouseClick = input.getLastMouseClickPos();
-  //If there is a new mouse click
-  if((newMouseClick.xPos != oldMouseClick.xPos) ||
-    (newMouseClick.yPos != oldMouseClick.yPos))  {
-    oldMouseClick=newMouseClick;
+    //If there is a new mouse click
+  if(Input::mousePressed) {
     switch(Input::validClick){
       case 0:   //Button Press
         //Alters the game state based on button pressed
@@ -99,23 +97,34 @@ void Game::Update(float dt) {
         break;
       case 1:   //Mouse click on play area
         //reg->replace<Renderable>(entity, (int) newMouseClick.xPos, (int) newMouseClick.yPos);
-        //Determines what to do based on the game state
-        switch(int(State)) {
-          case GAME_DRAW_ELEMENT:
-            factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
-              (int) newMouseClick.yPos), glm::vec4(1.0f));
-            break;
-          case GAME_DRAW_SHAPE:
-            factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-              (int)newMouseClick.yPos), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
-            break;
-          case GAME_DRAW_LIGHT:
+        //Determine color of particle based on button being pressed.
+        std::vector<Button> pressedButtonVector=Input::getButtonPressed();
+        if(pressedButtonVector.size() != 0)  {
+          Button pressedButton=pressedButtonVector[0];
+          glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
+          //Determines what to do based on the game state
+          switch(int(State)) {
+            case GAME_DRAW_ELEMENT:
+              factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+                (int) newMouseClick.yPos), buttonColor);
+              break;
+            case GAME_DRAW_SHAPE:
+              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), buttonColor);
+              break;
+            case GAME_DRAW_RAY:
+              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              break;
+            case GAME_DRAW_BEAM:
             factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
               (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
-            break;
+              break;
+          }
         }
         break;
-    }
+    }//Needed so that multiple clicks are not registered in one spot
+    Input::resetValidClick();
   }
   // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
@@ -174,12 +183,7 @@ void Game::Render() {
 //This function tells the game class which button is being pressed. The
 //game state is changed based on that
 GameState Game::determineGameState()  {
-    std::vector<Button> pressedButton;
-    //Update button list
-    Buttons=Input::giveButtonData();
-    //Copies the button that was pressed
-    std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
-      return buttons.Pressed;   });
+    std::vector<Button> pressedButton=Input::getButtonPressed();
     //If a button WAS pressed
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
@@ -193,9 +197,13 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 35) {
-          std::cout<<"light mode"<<std::endl;
-          return GAME_DRAW_LIGHT;
+      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
+          std::cout<<"ray mode"<<std::endl;
+          return GAME_DRAW_RAY;
+      }
+      else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
+          std::cout<<"beam mode"<<std::endl;
+          return GAME_DRAW_BEAM;
       }
     }
     std::cout<<"idle mode" <<std::endl;

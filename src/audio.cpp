@@ -1,11 +1,11 @@
 /* Audio Class Methods
- * Written by Amethyst Skye */
+ * Written by Amethyst Skye and Griffen Agnello */
 
 #include "../include/audio.hpp"
 #include <string.h>
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
-
+bool paused=false;
 /* Initializes audio engine */
     int Audio::engineStartup(){
         engine = createIrrKlangDevice();
@@ -19,7 +19,7 @@
 /* Will play audio for one cycle */
     int Audio::playAudio(const char *audioClip){
         if(engineStartup() == -1) return -1;
-        engine->play2D(audioClip);
+        engine->play2D(audioClip,false,false,false,ESM_AUTO_DETECT,true);
         return 0;
     }
 
@@ -34,4 +34,41 @@
 /* Removes audio engine from use */
     void Audio::dropAudioEngine(){
         engine->drop();
+    }
+    //Adjusts the volume based on the pressing '-' or '+'. //TODO does not work yet
+    //A "true" (+) passed increments the volume. "false" (-) decrements it.
+    int Audio::adjustVolume(bool IncOrDec)   {
+        if(engineStartup() == -1) return -1;
+        std::cout<<"yup"<<std::endl;
+        ik_f32 volume=engine->getSoundVolume();
+        //If true, increase volume
+        if(IncOrDec)    {
+            if(volume==1)   {
+                std::cout<<"Volume already at maximum (1.0)"<<std::endl;
+                return 0;
+            }
+            else    volume+=0.1f;
+        }
+        else    {
+            if(volume==0)   {
+                std::cout<<"Volume already at minimum (0.0)"<<std::endl;
+                return 0;
+            }    
+            else    volume-=0.1f;
+        }
+        engine->setSoundVolume(volume);
+        std::cout<<"volume="<<engine->getSoundVolume()<<std::endl;
+        engine->update();
+        std::cout<<"done"<<std::endl;
+        return 0;
+    }
+    //Pauses all audio when the pressing 'p'. A boolean bit is flipped
+    //after pausing or resuming the audio. //TODO does not work yet
+    int Audio::pauseResumeAudio() {
+        if(engineStartup() == -1) return -1;
+        //If passed true, pause all sounds. If false, resume
+        engine->setAllSoundsPaused(paused);
+        paused=!paused; //flip paused bit
+        std::cout<<"done"<<std::endl;
+        return 0;
     }
