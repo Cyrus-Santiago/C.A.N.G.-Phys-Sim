@@ -9,7 +9,6 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
-//#include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
 #include <cassert>
@@ -27,7 +26,6 @@ and it should not count towards his 1000 lines. */
 static int determineGameState();
 Menu menu;
 PlayArea parea;
-//PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 Click newMouseClick, oldMouseClick;
@@ -36,7 +34,6 @@ Factory factory;
 entt::registry * reg;
 
 std::vector<Button> Buttons;
-//std::vector<SimulationObject> Border;
 entt::entity entity;
 ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
@@ -68,13 +65,11 @@ void Game::Init() {
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
-  //pborder.init(Width*0.85,Height);
   Input::screenWidth=Width*0.85;
   Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
-  //Border = pborder.Border;
   factory.makeBorder(*reg,Width*0.85,Height);
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -84,14 +79,6 @@ void Game::Init() {
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
-  /*entity1 = registry.create();
-  registry.emplace<dimensions>(entity1, 50, 50, 10, 10);
-  registry.emplace<physics>(entity1);*/
-  /*maestro.addComponent(entity1, );
-  maestro.addComponent(entity1, "physics");
-  maestro.addComponent(entity1,"renderable");*/
-
-  //entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 }
 
 void Game::Update(float dt) {
