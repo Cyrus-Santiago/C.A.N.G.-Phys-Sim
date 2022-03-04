@@ -35,6 +35,8 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
         // records button press so we can do something with it
         if (Buttons[i].Pressed) Buttons[i].Pressed = false;
         else{
+          //functional operator "map" that changes all the values of "pressed" 
+          //to false in the vector
           std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
             button.Pressed=false;
             return(button);

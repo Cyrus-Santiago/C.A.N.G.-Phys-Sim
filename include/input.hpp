@@ -32,8 +32,9 @@ private:
 public:
     //This is set when a click has been made. =0 is a button press. =1 is a 
     //play area press. =-1 is invalid.
-    static bool mousePressed;
     static int validClick;
+    //Used to register a mouse click
+    static bool mousePressed;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
     static int determineAreaPressed(double xPos, double yPos);
@@ -50,6 +51,7 @@ public:
     // these are here so we can give/get button data from the menu
     static void getButtonData(std::vector<Button> Buttons);
     static std::vector<Button> giveButtonData();
+    //Acquires a vector of (hopefully) size =1 with one button that is pressed.
     static std::vector<Button> getButtonPressed();
 
 };
