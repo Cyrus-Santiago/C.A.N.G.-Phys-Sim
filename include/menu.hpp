@@ -26,6 +26,7 @@ public:
     static Element elementDataArray[ELEMENT_NUM];
     static Element shapesButtonColor[SHAPE_NUM];
     static Element rayButtonColor[RAY_NUM];
+    static Element toolbarButtonColor[TOOLBAR_NUM];
     static std::string rayTypes[RAY_NUM];
     static std::string shapesTypes[SHAPE_NUM];
     static std::string elementTypes[ELEMENT_NUM];

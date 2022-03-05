@@ -66,7 +66,7 @@ int main()
 
     Audio gameAudio;
     const char *gameMusic = "audio/playMusic2.wav";
-    gameAudio.playAudio(gameMusic);
+    //gameAudio.playAudio(gameMusic);
 
     /* RENDER LOOP */
     while (!glfwWindowShouldClose(window))
