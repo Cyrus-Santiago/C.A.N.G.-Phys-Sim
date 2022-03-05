@@ -9,6 +9,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
+#include "../include/explosion.hpp"
 //#include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
@@ -130,8 +131,11 @@ void Game::Update(float dt) {
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
             case GAME_DRAW_EXPLOSION:
-              factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
-               (int)newMouseClick.yPos), buttonColor);
+              for(int i=0; i<8; i++)  {
+                factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
+                  (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 
+                  glm::vec2(Explosion::velocityArrayX[i], Explosion::velocityArrayY[i]));
+              }
               break;
           }
         }
@@ -139,6 +143,7 @@ void Game::Update(float dt) {
     }//Needed so that multiple clicks are not registered in one spot
     Input::resetValidClick();
   }
+  Explosion::updateForcePositions(reg, dt);
   // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
   // loop through each entity in the view
@@ -147,7 +152,9 @@ void Game::Update(float dt) {
     // simulate gravity
     reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
       renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
+      //renderable.xPos += dt
     });
+    
   }
 }
 

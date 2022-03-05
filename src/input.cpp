@@ -31,7 +31,7 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
         xClick = xPos; yClick = yPos;
         // debug
         audio.playAudio("audio/click.wav");
-        std::cout << "Button " << i << " pressed!" << std::endl;
+        //std::cout << "Button " << i << " pressed!" << std::endl;
         // records button press so we can do something with it
         if (Buttons[i].Pressed) Buttons[i].Pressed = false;
         else{
@@ -51,11 +51,11 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click is in the play area
   else if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
     (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
-    std::cout<<"in play area"<<std::endl;
+    //std::cout<<"in play area"<<std::endl;
     xClick = xPos; yClick = yPos;
     return 1;
   }
-  std::cout<<"out of bounds"<<std::endl;
+  //std::cout<<"out of bounds"<<std::endl;
   return -1;
 }
 
