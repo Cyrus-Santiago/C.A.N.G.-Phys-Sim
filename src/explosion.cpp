@@ -1,5 +1,6 @@
 #include "../include/explosion.hpp"
 #include "../include/factory.hpp"
+#include <iostream>
 /*explosion physics notes
     -Total momentum is conserved
     -Total momentum is 0 (50 units forward, 50 backward)
@@ -20,19 +21,31 @@ float Explosion::rotation[]={-90,-45,0,45,90,135,180,225};
 void Explosion::updateForcePositions(entt::registry *reg, float dt)    {
     auto view =reg->view<Forcewave>();
     for (auto entity: view) {
+        //Changes position of the force vectors
         reg->patch<Renderable>(entity, [dt, reg, entity](auto &renderable) {
             renderable.yPos += (dt* reg->get<Forcewave>(entity).yVel);
             renderable.xPos += (dt* reg->get<Forcewave>(entity).xVel);
         });
+        //Decrease x and y velocities over time
         reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force) {
             force.xVel -= (0.7 * dt * force.xVel);
             force.yVel -= (0.7 * dt * force.yVel);
         });
+
     }
 }
-//there's also registery.clear that destroys all entities in a component
-//? Might change later depending on how to determine collisions? //TODO
-void Explosion::removeForceVector(entt::registry *reg, entt::entity entity)  {
-    reg->destroy(entity);
+//TODO maybe program seg faults because it's not deleting properly? Maybe set deleted flag?
+void Explosion::updateTimeActive(entt::registry *reg, float dt)  {
+    auto view =reg->view<Forcewave>();
+    for(auto entity: view)  {
+        if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME){
+            //std::cout<<"destroying entity"<<std::endl;
+            reg->destroy(entity);
+        }
+        else    reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force){
+                    force.timeActive+=dt;
+                });
+    }
 }
+
 
