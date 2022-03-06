@@ -156,6 +156,7 @@ void Game::Update(float dt) {
     });
     
   }
+  Explosion::updateTimeActive(reg, dt);
 }
 
 void Game::Render() {
