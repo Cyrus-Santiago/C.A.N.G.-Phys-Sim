@@ -13,6 +13,7 @@ and it should not count towards his 1000 lines. */
 //#include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
+#include "../include/audio.hpp"
 #include <cassert>
 #include <cstddef>
 #include <glm/detail/qualifier.hpp>
@@ -27,6 +28,7 @@ and it should not count towards his 1000 lines. */
 
 Menu menu;
 PlayArea parea;
+Audio sfxAudio;
 //PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
@@ -131,6 +133,7 @@ void Game::Update(float dt) {
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
             case GAME_DRAW_EXPLOSION:
+              sfxAudio.playAudio("audio/blast.wav");
               for(int i=0; i<8; i++)  {
                 factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
                   (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 

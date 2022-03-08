@@ -24,7 +24,8 @@ struct Physics {
 };
 // component used for explosions
 struct Forcewave{
-    float xVel, yVel, timeActive;
+    float xVel, yVel;
+    float timeActive=0.0f;
 };
 
 class Factory {
