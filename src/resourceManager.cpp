@@ -101,6 +101,7 @@ void ResourceManager::initializeResources(){
     /* This will load our sprite shaders */
   ResourceManager::LoadShader("src/shaders/sprite.vs", "src/shaders/sprite.fs", "sprite");
   /* Load our images as textures */
+  ResourceManager::LoadTexture("textures/triangle.png", true, "triangle");
   ResourceManager::LoadTexture("textures/forceWave.png", true, "forceWave");
   ResourceManager::LoadTexture("textures/button2.png", true, "button2");
   ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");

@@ -2,6 +2,7 @@
 #include "../include/factory.hpp"
 #include "../include/ray.hpp"
 #include "../include/beam.hpp"
+#include <string>
 
 entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
@@ -19,10 +20,13 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
 }
 
 entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
-    glm::vec4 color) {
+    glm::vec4 color, glm::vec2 dimensions, std::string type) {
     auto entity = reg.create();
-    reg.emplace<Renderable>(entity,"shape", "button2", position.x, position.y, 30, 30,
-        0.0f, color.x, color.y, color.z, color.w);
+    std::string shapeTexture;
+    if(type=="TRIANGLE")    shapeTexture="triangle";
+    else    shapeTexture="button2";
+    reg.emplace<Renderable>(entity,type, shapeTexture, position.x, position.y, 
+        dimensions.x, dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
 
     reg.emplace<Physics>(entity, 10, position.y+30);
     return entity;
@@ -53,7 +57,7 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
 entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position, 
     float rotation,glm::vec4 color, glm::vec2 velocity) {
     auto entity = reg.create();
-    reg.emplace<Renderable>(entity, "force", "forceWave", position.x, position.y, 15, 15,
+    reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 15, 15,
         rotation, color.x, color.y, color.z, color.w);
     reg.emplace<Forcewave>(entity, velocity.x, velocity.y);
     return entity;

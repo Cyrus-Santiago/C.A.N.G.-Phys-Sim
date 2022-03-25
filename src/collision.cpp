@@ -27,3 +27,4 @@ bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
 void Collision::collide(SimulationObject &obj){
     obj.Velocity = glm::vec2 (0.0f,0.0f);
 }
+

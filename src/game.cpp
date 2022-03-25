@@ -114,6 +114,11 @@ void Game::Update(float dt) {
         if(pressedButtonVector.size() != 0)  {
           Button pressedButton=pressedButtonVector[0];
           glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
+          //Default shape is a square. For some reason I'm not allowed to put this
+          //declaration inside the shape case.
+          assert(Width>0);
+          assert(Height>0);
+          glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
           //Determines what to do based on the game state
           switch(int(State)) {
             case GAME_DRAW_ELEMENT:
@@ -121,8 +126,11 @@ void Game::Update(float dt) {
                 (int) newMouseClick.yPos), buttonColor);
               break;
             case GAME_DRAW_SHAPE:
+              //Double length if shape is a rectangle
+              if(pressedButton.Type=="RECTANGLE")
+                shapeDimensions.x*=2;
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), buttonColor);
+                (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
               break;
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,

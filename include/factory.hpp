@@ -4,6 +4,7 @@
 #include "../include/spriteRenderer.hpp"
 #include "../include/resourceManager.hpp"
 #include <glm/fwd.hpp>
+#include <string>
 
 // component for holding all data needed to render an entity
 struct Renderable {
@@ -36,7 +37,8 @@ public:
 
     // used to create a new shape entity
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
-        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
+        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f), glm::vec2 dimensions=
+        glm::vec2(30), std::string type="shape");
 
     //used to create the borders of the simulation area
     void makeBorder(entt::registry &reg, int scrWidth, int scrHeight, 

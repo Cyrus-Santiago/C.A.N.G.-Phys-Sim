@@ -16,8 +16,10 @@
 //up,upright,right,downright,down,downleft,left,upleft
 float Explosion::velocityArrayX[]={0,100,100,100,0,-100,-100,-100};
 float Explosion::velocityArrayY[]={-100,-100,0,100,100,100,0,-100};
-float Explosion::rotation[]={-90,-45,0,45,90,135,180,225};
+float Explosion::rotation[]={0,45,90,135,180,225,270,3153,};
 
+//This function updates the position of the force vectors. 
+//The velocity of the vectors is decreased based on the duration.
 void Explosion::updateForcePositions(entt::registry *reg, float dt)    {
     auto view =reg->view<Forcewave>();
     for (auto entity: view) {
@@ -31,21 +33,24 @@ void Explosion::updateForcePositions(entt::registry *reg, float dt)    {
             force.xVel -= (0.7 * dt * force.xVel);
             force.yVel -= (0.7 * dt * force.yVel);
         });
-
     }
 }
 //TODO maybe program seg faults because it's not deleting properly? Maybe set deleted flag?
+//This function calculates how long a force vector from an explosion has been
+// on the screen. After 3.5 seconds, the velocity vectors will be deleted.
 void Explosion::updateTimeActive(entt::registry *reg, float dt)  {
+    //Get all force vector entities
     auto view =reg->view<Forcewave>();
     for(auto entity: view)  {
+        //If the force vector has been surpassed the maximum time, delete it.
         if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME){
-            //std::cout<<"destroying entity"<<std::endl;
+            std::cout<<reg->get<Renderable>(entity).xPos<<" "<<reg->get<Renderable>(entity).yPos<<std::endl;
             reg->destroy(entity);
         }
+        //Else, update the time it's active.
         else    reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force){
                     force.timeActive+=dt;
                 });
     }
 }
-
-
+//TODO make collision for triangle, gotta do lame calculations
