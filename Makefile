@@ -1,7 +1,7 @@
 CC := g++
 DBGFLAGS := -g
 CCOBJFLAGS := -c -std=c++1z
-CCCOMPFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -pthread
+CCCOMPFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -pthread 
 OPTS = -L"lib" lib/linux-gcc-64/libIrrKlang.so
 
 # stores compiled code
