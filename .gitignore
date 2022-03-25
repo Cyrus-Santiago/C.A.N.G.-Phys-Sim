@@ -3,3 +3,4 @@
 vgcore.*
 compile_flags.txt
 .vscode/settings.json
+src/test.cpp
