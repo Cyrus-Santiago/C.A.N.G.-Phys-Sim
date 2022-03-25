@@ -20,7 +20,7 @@ SpriteRenderer::~SpriteRenderer() {
 void SpriteRenderer::initRenderData() {
     unsigned int VBO;
     float vertices[] = {
-        // pos      // tex
+        // position      // texture
         0.0f, 1.0f, 0.0f, 1.0f,
         1.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f, 
@@ -51,6 +51,7 @@ void SpriteRenderer::initRenderData() {
     glBindVertexArray(0);
 }
 
+//TODO Need to make different sprite for triangle shape. Can't be a square
 void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, 
   glm::vec2 size, float rotate, glm::vec4 color, glm::vec2 texZoom, glm::vec2 texPos)
 {

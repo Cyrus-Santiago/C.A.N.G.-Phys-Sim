@@ -2,6 +2,7 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
+#include <cstddef>
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -19,7 +20,7 @@ std::vector<Button> Input::Buttons;
 //a legal click is made. -1 is returned if no legal click is made.
 int Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click was in the menu area
-  if(yPos > screenHeight * 0.6){
+  if(yPos > screenHeight * 0.5){
     for (int i = 0; i < Buttons.size(); ++i) {
       int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
       int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
@@ -30,10 +31,12 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
         xClick = xPos; yClick = yPos;
         // debug
         audio.playAudio("audio/click.wav");
-        std::cout << "Button " << i << " pressed!" << std::endl;
+        //std::cout << "Button " << i << " pressed!" << std::endl;
         // records button press so we can do something with it
         if (Buttons[i].Pressed) Buttons[i].Pressed = false;
         else{
+          //functional operator "map" that changes all the values of "pressed" 
+          //to false in the vector
           std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
             button.Pressed=false;
             return(button);
@@ -48,11 +51,11 @@ int Input::determineAreaPressed(double xPos, double yPos)  {
   //If the click is in the play area
   else if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
     (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
-    std::cout<<"in play area"<<std::endl;
+    //std::cout<<"in play area"<<std::endl;
     xClick = xPos; yClick = yPos;
     return 1;
   }
-  std::cout<<"out of bounds"<<std::endl;
+  //std::cout<<"out of bounds"<<std::endl;
   return -1;
 }
 
@@ -107,7 +110,7 @@ std::vector<Button> Input::getButtonPressed()  {
   std::vector<Button> pressedButton;
     //Update button list
     Input::giveButtonData();
-    //Copies the button that was pressed
+    //Functional Operator "filter" that copies the button that was pressed
     std::copy_if(Buttons.begin(), Buttons.end(), std::back_inserter(pressedButton),[](Button buttons){
       return buttons.Pressed;   });
     return pressedButton;

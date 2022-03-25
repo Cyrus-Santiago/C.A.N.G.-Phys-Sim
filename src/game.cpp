@@ -9,9 +9,11 @@ and it should not count towards his 1000 lines. */
 #include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
 #include "../include/simulation.hpp"
+#include "../include/explosion.hpp"
+//#include "../include/entityMaestro.hpp"
 #include "../include/ecs.hpp"
 #include "../include/factory.hpp"
-#include "../include/physCalc.hpp"
+#include "../include/audio.hpp"
 #include <cassert>
 #include <cstddef>
 #include <glm/detail/qualifier.hpp>
@@ -24,18 +26,19 @@ and it should not count towards his 1000 lines. */
 
 #define GRAVITY 9.17
 
-static int determineGameState();
 Menu menu;
 PlayArea parea;
+Audio sfxAudio;
+//PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
 Simulation simulation;
 Click newMouseClick;
 Input input;
 Factory factory;
-PhysCalc phys;
 entt::registry * reg;
 
 std::vector<Button> Buttons;
+//std::vector<SimulationObject> Border;
 entt::entity entity;
 ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
@@ -67,13 +70,14 @@ void Game::Init() {
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
   parea.init(Width*0.85, Height);
+  //pborder.init(Width*0.85,Height);
   Input::screenWidth=Width*0.85;
   Input::screenHeight=Height;
   // retrieve button data
   Buttons = Menu::Buttons;
   // retrieve border data
+  //Border = pborder.Border;
   factory.makeBorder(*reg,Width*0.85,Height);
-  bottomBorder=(Height*0.05+Height*0.4);
   // give the button data to input class
   Input::getButtonData(Buttons);
   //simulation.getBorder(Border);
@@ -82,6 +86,14 @@ void Game::Init() {
   for (Button &button : Buttons) {
     TextRenderer::NewSentence(button.Type + " ", glm::vec2(40, 20), 20);
   }
+  /*entity1 = registry.create();
+  registry.emplace<dimensions>(entity1, 50, 50, 10, 10);
+  registry.emplace<physics>(entity1);*/
+  /*maestro.addComponent(entity1, );
+  maestro.addComponent(entity1, "physics");
+  maestro.addComponent(entity1,"renderable");*/
+
+  //entity = factory.makeParticle(* reg, glm::vec2(50, 50), glm::vec4(1.0f));
 }
 
 void Game::Update(float dt) {
@@ -117,8 +129,16 @@ void Game::Update(float dt) {
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
             case GAME_DRAW_BEAM:
-            factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-              (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              break;
+            case GAME_DRAW_EXPLOSION:
+              sfxAudio.playAudio("audio/blast.wav");
+              for(int i=0; i<8; i++)  {
+                factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
+                  (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 
+                  glm::vec2(Explosion::velocityArrayX[i], Explosion::velocityArrayY[i]));
+              }
               break;
           }
         }
@@ -128,6 +148,7 @@ void Game::Update(float dt) {
     //Needed so that multiple clicks are not registered in one spot
     Input::resetValidClick();
   }
+  Explosion::updateForcePositions(reg, dt);
   // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
 
@@ -189,12 +210,14 @@ void Game::Update(float dt) {
       }
     }
   }
+  Explosion::updateTimeActive(reg, dt);
 }
 
 void Game::Render() {
   Texture2D texture = ResourceManager::GetTexture("button2");
   Buttons = Input::giveButtonData();
   parea.Draw(*spriteRenderer);
+  //pborder.Draw(*spriteRenderer);
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
   // draws every simulation object
@@ -255,6 +278,10 @@ GameState Game::determineGameState()  {
       else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
           std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
+      }
+      else if(pressedButton[0].ID ==35) {
+          std::cout<<"explosion mode"<<std::endl;
+          return GAME_DRAW_EXPLOSION;
       }
     }
     std::cout<<"idle mode" <<std::endl;

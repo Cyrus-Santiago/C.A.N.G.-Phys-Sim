@@ -78,7 +78,16 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     for (int i=0; i<SHAPE_NUM; i++) {
         Types.insert(std::pair<std::string, Element>(shapeTypes[i],
         shapesButtonColor[i]));
-    } /* */
+    }
+    /* */
+    Element toolbarButtonColor[]= {glm::vec4(1.0f,0.2f,0.1f,1.0f),
+        glm::vec4(1.0f,0.2f,0.1f,1.0f)};
+    std::string toolbarTypes[] = { "BOOM!", "PLACEHOLDER"};
+    for (int i=0; i<TOOLBAR_NUM; i++)   {
+        Types.insert(std::pair<std::string, Element>(toolbarTypes[i],
+        toolbarButtonColor[i]));
+    }
+
     /* Written by Amethyst */
     Element rayButtonColor[] = {glm::vec4(0.6f, 0.1f, 0.9f, 1.0f),glm::vec4 (0.6f, 0.1f, 0.9f, 1.0f)};
     std::string rayTypes[] = {"RAY", "BEAM"};
@@ -127,6 +136,14 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         Button rayObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
             glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z], false, idCounter);
         Buttons.push_back(rayObj);
+        idCounter++;
+    }
+    for(int x = 0; x < TOOLBAR_NUM; ++x)    {
+        glm::vec2 boxPos(edgeGap + (x * widthGapBetweenBoxes),
+            shrunkScrHeight-scrHeightGap);
+        Button toolbarObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+            glm::vec4(1.0f,1.0f,1.0f,1.0f), toolbarTypes[x], false, idCounter);
+        Buttons.push_back(toolbarObj);
         idCounter++;
     }
 }

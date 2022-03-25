@@ -7,6 +7,7 @@
 
 // component for holding all data needed to render an entity
 struct Renderable {
+    std::string type;
     std::string texture;
     float xPos, yPos;
     int xSize, ySize;
@@ -16,16 +17,22 @@ struct Renderable {
 
 // component for holding all data needed to enable physics properties for an entity
 struct Physics {
-    int mass, initialHeight;
+    float mass;
     float xVel = 0.00, yVel = 0.00;
+    float xAccel=0.00, yAccel=0.00;
     float friction = 0.5;
+};
+// component used for explosions
+struct Forcewave{
+    float xVel, yVel;
+    float timeActive=0.0f;
 };
 
 class Factory {
 public:
     // used to create a new particle entity
     entt::entity makeParticle(entt::registry &reg, glm::vec2 position =
-        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
+        glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f));
 
     // used to create a new shape entity
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
@@ -42,6 +49,10 @@ public:
     /* Used to create a new beam entity */
     entt::entity makeBeam(entt::registry &reg, glm::vec2 position =
         glm::vec2(250, 10), glm::vec4 color = glm::vec4(1.0f));
+    //Creates a force vector entity
+    entt::entity makeForceVector(entt:: registry &reg, glm::vec2 position =
+        glm::vec2(1, 1), float rotation=0.0f, glm::vec4 color = glm::vec4(1.0f),
+        glm::vec2 velocity = glm::vec2(100.0f));
 
     // used to draw an entity of any type
     void draw(entt::registry &reg, entt::entity entity,
