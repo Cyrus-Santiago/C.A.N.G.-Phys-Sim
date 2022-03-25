@@ -109,14 +109,18 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string name,
 }
 
 void TextRenderer::Hide(SpriteRenderer &renderer, std::string name) {
+
     // assert that the thing we're hiding actually exists
     assert(Sentences.find(name) != Sentences.end());
+
     // get the struct using the key on Sentences array
     CharactersArray charArray = Sentences.at(name);
+
     // we only want to draw if the opacity is above 0
     if (charArray.time > 0.0f) {
         // we update the time for a fadeout effect
         Sentences.at(name).time -= dt;
+        
         // I'd like to have this function just call draw, but the fade out
         // effect doesn't seem to work when I do that, so here's the code above
         // again.

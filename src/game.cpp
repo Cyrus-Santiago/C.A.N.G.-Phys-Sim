@@ -151,21 +151,72 @@ void Game::Update(float dt) {
           }
         }
         break;
-    }//Needed so that multiple clicks are not registered in one spot
+    }
+    
+    //Needed so that multiple clicks are not registered in one spot
     Input::resetValidClick();
   }
   Explosion::updateForcePositions(reg, dt);
   // create a view containing all the entities with the physics component
   auto view = reg->view<Physics>();
+
+  glm::vec2 horizontalRangeA, verticalRangeA, horizontalRangeB, verticalRangeB;
+
   // loop through each entity in the view
-  for (auto entity : view) {
+  for (auto entityA : view) {
+
+    horizontalRangeA = glm::vec2(reg->get<Renderable>(entityA).xPos,
+                                 reg->get<Renderable>(entityA).xPos +
+                                 (float)reg->get<Renderable>(entityA).xSize);
+
+    verticalRangeA = glm::vec2(reg->get<Renderable>(entityA).yPos,
+                               reg->get<Renderable>(entityA).yPos +
+                               (float)reg->get<Renderable>(entityA).ySize);
+    //std::cout << verticalRangeA.x << verticalRangeA.y << std::endl;
+
     // patch each entities Renderable component with a new y position to
     // simulate gravity
-    reg->patch<Renderable>(entity, [dt, entity](auto &renderable) {
-      renderable.yPos += dt * reg->get<Physics>(entity).mass * GRAVITY;
-      //renderable.xPos += dt
-    });
-    
+    if((reg->get<Renderable>(entityA).yPos+reg->get<Renderable>(entityA).ySize) <= bottomBorder){
+      reg->patch<Renderable>(entityA, [dt, entityA](auto &renderable) {
+        renderable.yPos += dt * reg->get<Physics>(entityA).mass * GRAVITY;
+      });
+    }
+    for (auto entityB : view) {
+      if (entityA != entityB) {
+        horizontalRangeB = glm::vec2(reg->get<Renderable>(entityB).xPos,
+                                      reg->get<Renderable>(entityB).xPos +
+                                      (float)reg->get<Renderable>(entityB).xSize);
+
+        verticalRangeB = glm::vec2(reg->get<Renderable>(entityB).yPos,
+                                    reg->get<Renderable>(entityB).yPos +
+                                    (float)reg->get<Renderable>(entityB).ySize);
+
+        if ((horizontalRangeB.x <= horizontalRangeA.x) &&
+            (horizontalRangeA.x <= horizontalRangeB.y) ||
+            (((horizontalRangeA.x <= horizontalRangeB.y) &&
+            (horizontalRangeB.y <= horizontalRangeA.y)))) {
+              //std::cout << "horizontal" << std::endl;
+          if ((verticalRangeB.x < verticalRangeA.y) &&
+              (verticalRangeA.y < verticalRangeB.y)) {
+            reg->patch<Renderable>(entityA, [dt, entityA](auto &renderable) {
+              renderable.yPos -= dt * reg->get<Physics>(entityA).mass * GRAVITY;
+            });
+          }
+        }
+        if (((horizontalRangeA.x <= horizontalRangeB.x) &&
+            (horizontalRangeB.x <= horizontalRangeA.y)) ||
+            (((horizontalRangeA.x <= horizontalRangeB.y) &&
+            (horizontalRangeB.y <= horizontalRangeA.y)))) {
+              //std::cout << "horizontal" << std::endl;
+          if ((verticalRangeA.x < verticalRangeB.y) &&
+              (verticalRangeB.y < verticalRangeA.y)) {
+            reg->patch<Renderable>(entityB, [dt, entityB](auto &renderable) {
+              renderable.yPos -= dt * reg->get<Physics>(entityB).mass * GRAVITY;
+            });
+          }
+        }
+      }
+    }
   }
   Explosion::updateTimeActive(reg, dt);
 }
