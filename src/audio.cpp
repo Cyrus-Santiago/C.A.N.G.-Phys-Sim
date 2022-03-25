@@ -6,6 +6,12 @@
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
 bool paused=false;
+
+/* Constructor */
+    Audio::Audio() {
+        engineStartup();
+    }
+
 /* Initializes audio engine */
     int Audio::engineStartup(){
         engine = createIrrKlangDevice();
@@ -18,8 +24,9 @@ bool paused=false;
 
 /* Will play audio for one cycle */
     int Audio::playAudio(const char *audioClip){
-        if(engineStartup() == -1) return -1;
-        engine->play2D(audioClip,false,false,false,ESM_AUTO_DETECT,true);
+        //if(engineStartup() == -1) return -1;
+        ISound * sound = engine->play2D(audioClip,false,false,false,ESM_AUTO_DETECT,true);
+        Sounds.push_back(sound);
         return 0;
     }
 
@@ -33,12 +40,19 @@ bool paused=false;
 
 /* Removes audio engine from use */
     void Audio::dropAudioEngine(){
-        engine->drop();
+        if (!Sounds.empty()) {
+            for (ISound * sound : Sounds) {
+                sound->drop();
+            }
+        }
+        if (engine) {
+            engine->drop();
+        }
     }
     //Adjusts the volume based on the pressing '-' or '+'. //TODO does not work yet
     //A "true" (+) passed increments the volume. "false" (-) decrements it.
     int Audio::adjustVolume(bool IncOrDec)   {
-        if(engineStartup() == -1) return -1;
+        //if(engineStartup() == -1) return -1;
         std::cout<<"yup"<<std::endl;
         ik_f32 volume=engine->getSoundVolume();
         //If true, increase volume
@@ -65,7 +79,7 @@ bool paused=false;
     //Pauses all audio when the pressing 'p'. A boolean bit is flipped
     //after pausing or resuming the audio. //TODO does not work yet
     int Audio::pauseResumeAudio() {
-        if(engineStartup() == -1) return -1;
+        //if(engineStartup() == -1) return -1;
         //If passed true, pause all sounds. If false, resume
         engine->setAllSoundsPaused(paused);
         paused=!paused; //flip paused bit

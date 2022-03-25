@@ -7,6 +7,7 @@
 #include "../include/irrKlang/irrKlang.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
 
@@ -16,7 +17,7 @@ class Audio{
 
 public: ISoundEngine* engine;
 
-        Audio(){}
+        Audio();
         int engineStartup();
         int playAudio(const char *);
         int playAudioLoop(const char *);
@@ -26,6 +27,7 @@ public: ISoundEngine* engine;
 
 private:
         bool paused;
+        std::vector<ISound *> Sounds;
 };
 
 #endif

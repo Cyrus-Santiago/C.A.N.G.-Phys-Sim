@@ -1,3 +1,3 @@
 #include "../include/program.hpp"
 
-//int main() { Program::program(); }
+int main() { Program::program(); }

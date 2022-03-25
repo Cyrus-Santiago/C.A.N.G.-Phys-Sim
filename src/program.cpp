@@ -99,7 +99,7 @@ int Program::program() {
     }
 
 		// free memory and exit graciously
-    //ResourceManager::Clear();
+    ResourceManager::Clear();
     glfwTerminate();
     gameAudio.dropAudioEngine();
     return 0;
