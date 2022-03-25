@@ -7,7 +7,7 @@
 #include <iostream>
 
 // constructor
-Button::Button(glm::vec2 position, glm::vec2 size, Texture2D texture,
+Button::Button(glm::vec2 position, glm::vec2 size, std::string texture,
                      glm::vec4 color, std::string type, bool pressed,  int id):
                      Position(position), Size(size), Type(type),
                      Color(color), Pressed(pressed), Texture(texture),ID(id) { }
@@ -22,7 +22,8 @@ void Button::Draw(SpriteRenderer &spriteRenderer) {
         color *= glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     }
     // tell the sprite renderer what to draw
-    spriteRenderer.DrawSprite(this->Texture, this->Position, this->Size, 0.0f,
+    Texture2D texture = ResourceManager::GetTexture(this->Texture);
+    spriteRenderer.DrawSprite(texture, this->Position, this->Size, 0.0f,
         color);
     // tell the text renderer what to write
     TextRenderer::Draw(spriteRenderer, this->Type, color * 
