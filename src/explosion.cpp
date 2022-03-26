@@ -16,7 +16,7 @@
 //up,upright,right,downright,down,downleft,left,upleft
 float Explosion::velocityArrayX[]={0,100,100,100,0,-100,-100,-100};
 float Explosion::velocityArrayY[]={-100,-100,0,100,100,100,0,-100};
-float Explosion::rotation[]={0,45,90,135,180,225,270,3153,};
+float Explosion::rotation[]={0,45,90,135,180,225,270,315};
 
 //This function updates the position of the force vectors. 
 //The velocity of the vectors is decreased based on the duration.
@@ -44,7 +44,7 @@ void Explosion::updateTimeActive(entt::registry *reg, float dt)  {
     for(auto entity: view)  {
         //If the force vector has been surpassed the maximum time, delete it.
         if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME){
-            std::cout<<reg->get<Renderable>(entity).xPos<<" "<<reg->get<Renderable>(entity).yPos<<std::endl;
+            //std::cout<<reg->get<Renderable>(entity).xPos<<" "<<reg->get<Renderable>(entity).yPos<<std::endl;
             reg->destroy(entity);
         }
         //Else, update the time it's active.

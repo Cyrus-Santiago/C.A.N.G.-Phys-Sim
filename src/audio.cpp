@@ -39,27 +39,27 @@ bool paused=false;
     //A "true" (+) passed increments the volume. "false" (-) decrements it.
     int Audio::adjustVolume(bool IncOrDec)   {
         if(engineStartup() == -1) return -1;
-        std::cout<<"yup"<<std::endl;
+        //std::cout<<"yup"<<std::endl;
         ik_f32 volume=engine->getSoundVolume();
         //If true, increase volume
         if(IncOrDec)    {
             if(volume==1)   {
-                std::cout<<"Volume already at maximum (1.0)"<<std::endl;
-                return 0;
+          //      std::cout<<"Volume already at maximum (1.0)"<<std::endl;
+                return 1;
             }
             else    volume+=0.1f;
         }
         else    {
             if(volume==0)   {
-                std::cout<<"Volume already at minimum (0.0)"<<std::endl;
-                return 0;
+            //    std::cout<<"Volume already at minimum (0.0)"<<std::endl;
+                return 2;
             }    
             else    volume-=0.1f;
         }
         engine->setSoundVolume(volume);
-        std::cout<<"volume="<<engine->getSoundVolume()<<std::endl;
+        //std::cout<<"volume="<<engine->getSoundVolume()<<std::endl;
         engine->update();
-        std::cout<<"done"<<std::endl;
+        //std::cout<<"done"<<std::endl;
         return 0;
     }
     //Pauses all audio when the pressing 'p'. A boolean bit is flipped
@@ -69,6 +69,6 @@ bool paused=false;
         //If passed true, pause all sounds. If false, resume
         engine->setAllSoundsPaused(paused);
         paused=!paused; //flip paused bit
-        std::cout<<"done"<<std::endl;
+        //std::cout<<"done"<<std::endl;
         return 0;
     }
