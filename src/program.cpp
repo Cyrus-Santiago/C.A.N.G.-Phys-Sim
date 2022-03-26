@@ -22,6 +22,7 @@ and it should not count towards his 1000 lines. */
 const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 860;
 const char* menuTitle = "C.A.N.G. Physics Simulator";
+GLFWwindow* window;
 
 Game physSim(SCR_WIDTH, SCR_HEIGHT);
 
@@ -39,7 +40,6 @@ int Program::program() {
 #endif
 
     // glfw window creation
-    GLFWwindow* window;
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, menuTitle, NULL, NULL);
     if (window == NULL)
@@ -99,7 +99,7 @@ int Program::program() {
     }
 
 		// free memory and exit graciously
-    //ResourceManager::Clear();
+    ResourceManager::Clear();
     glfwTerminate();
     gameAudio.dropAudioEngine();
     return 0;
@@ -111,4 +111,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     physSim.Width = width;
     physSim.Height = height;
+}
+
+void Program::endProgram() {
+  glfwSetWindowShouldClose(window, true);
 }

@@ -78,6 +78,12 @@ void Game::Init() {
   // retrieve border data
   //Border = pborder.Border;
   factory.makeBorder(*reg,Width*0.85,Height);
+  auto view = reg->view<Border>();
+  for (auto border : view) {
+    if (reg->get<Border>(border).position == "bottomBorder") {
+      bottomBorder = reg->get<Renderable>(border).yPos;
+    }
+  }
   // give the button data to input class
   Input::getButtonData(Buttons);
   //simulation.getBorder(Border);

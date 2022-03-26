@@ -23,10 +23,15 @@ struct Physics {
     float xAccel=0.00, yAccel=0.00;
     float friction = 0.5;
 };
+
 // component used for explosions
 struct Forcewave{
     float xVel, yVel;
     float timeActive=0.0f;
+};
+
+struct Border {
+    std::string position;
 };
 
 class Factory {

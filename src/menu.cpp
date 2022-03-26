@@ -113,7 +113,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
                 shrunkScrHeight + (y * scrHeightGap));
             assert(Menu::Types.find(elementTypes[i]) != Menu::Types.end());
             // load info into Button object
-            Button obj(pos,buttonSize, ResourceManager::GetTexture("button2"),
+            Button obj(pos,buttonSize, "button2",
                 glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), elementTypes[i],false, idCounter);
             i++;
             idCounter++;
@@ -125,7 +125,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     for(int y=0; y<SHAPE_NUM; ++y){
         //May change shrunkScrHeight to full screen height if need more buttons
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + (y * scrHeightGap));
-        Button shapeObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+        Button shapeObj(boxPos,buttonSize, "button2",
             glm::vec4(1.0f, 1.0f,1.0f,1.0f), shapeTypes[y], false, idCounter);
         Buttons.push_back(shapeObj);
         idCounter++;
@@ -133,7 +133,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     /* Initializing Ray Buttons - This was written by Amethyst */
     for(int z = 0; z < RAY_NUM; ++z){
         glm::vec2 boxPos(scrWidth, shrunkScrHeight + ((z+3) * scrHeightGap));
-        Button rayObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+        Button rayObj(boxPos,buttonSize, "button2",
             glm::vec4(1.0f, 1.0f,1.0f,1.0f), rayTypes[z], false, idCounter);
         Buttons.push_back(rayObj);
         idCounter++;
@@ -141,7 +141,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     for(int x = 0; x < TOOLBAR_NUM; ++x)    {
         glm::vec2 boxPos(edgeGap + (x * widthGapBetweenBoxes),
             shrunkScrHeight-scrHeightGap);
-        Button toolbarObj(boxPos,buttonSize, ResourceManager::GetTexture("button2"),
+        Button toolbarObj(boxPos,buttonSize, "button2",
             glm::vec4(1.0f,1.0f,1.0f,1.0f), toolbarTypes[x], false, idCounter);
         Buttons.push_back(toolbarObj);
         idCounter++;
