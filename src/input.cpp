@@ -2,10 +2,7 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
-#include <cstddef>
-#include <map>
-#include <vector>
-#include <algorithm>
+
 
 Audio audio;
 bool Input::mousePressed=false;

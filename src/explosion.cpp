@@ -1,7 +1,6 @@
 #include "../include/explosion.hpp"
 #include "../include/factory.hpp"
-#include <glm/fwd.hpp>
-#include <iostream>
+
 /*explosion physics notes
     -Total momentum is conserved
     -Total momentum is 0 (50 units forward, 50 backward)

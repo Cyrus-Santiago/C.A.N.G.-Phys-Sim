@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <string.h>
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
 

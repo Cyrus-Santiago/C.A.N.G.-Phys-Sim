@@ -1,8 +1,7 @@
 // this code was written by Nate
 
 #include "../include/character.hpp"
-#include <GLFW/glfw3.h>
-#include <cmath>
+
 
 // constructor
 Character::Character(const char character, glm::vec2 location) {

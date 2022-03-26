@@ -1,7 +1,5 @@
 //This is Cyrus's code to draw the borders for the background :D
-#include "../include/resourceManager.hpp"
 #include "../include/playBorder.hpp"
-#include "../include/glfw3.h"
 
 void PlayBorder::Draw(SpriteRenderer &renderer){
     createLine( (scrWidth*0.05)+1, scrHeight*0.05, areaWidth-2, 3); //Top Line

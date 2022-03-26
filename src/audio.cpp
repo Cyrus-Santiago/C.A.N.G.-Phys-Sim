@@ -2,7 +2,6 @@
  * Written by Amethyst Skye and Griffen Agnello */
 
 #include "../include/audio.hpp"
-#include <string.h>
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
 bool paused=false;

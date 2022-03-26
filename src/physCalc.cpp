@@ -1,5 +1,4 @@
 #include "../include/physCalc.hpp"
-#include <assert.h>
 
 bool PhysCalc::calcKineticEnergy(float m1, float m2, float u1, float u2){
     float preKE = 0.5*m1*pow(u1,2.0)+0.5*m2*pow(u2,2.0);

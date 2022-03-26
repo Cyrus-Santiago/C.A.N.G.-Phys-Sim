@@ -4,19 +4,11 @@ he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../include/glad.h"
-#include "../include/glfw3.h"
-#include "../include/stb_image.h"
 
 #include "../include/program.hpp"
-#include "../include/shader.hpp"
-#include "../include/input.hpp"
-#include "../include/resourceManager.hpp"
-#include "../include/game.hpp"
-#include "../include/audio.hpp"
+#include "../include/stb_image.h"
 
-#include <iostream>
-#include <cmath>
+
 
 // settings
 const unsigned int SCR_WIDTH = 1000;

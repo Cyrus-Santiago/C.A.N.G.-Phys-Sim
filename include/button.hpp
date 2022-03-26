@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 #include <string>
+#include <glm/fwd.hpp>
+#include <iostream>
 #include "../include/spriteRenderer.hpp"
 #include "game.hpp"
 

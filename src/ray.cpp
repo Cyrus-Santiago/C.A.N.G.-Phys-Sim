@@ -62,7 +62,7 @@
         Size = {0,0};
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
-        Move(0);
+//TODO        Move(0);
         Destroyed = true;
     }
 

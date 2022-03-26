@@ -16,13 +16,11 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         bool Destroyed;
         float Mass;
         Texture2D Texture;
-
         /* Default Constructor */
         Ray(glm::vec2 position, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {250,10},
             Texture2D texture = ResourceManager::GetTexture("laser"),
             glm::vec2 velocity = glm::vec2(0.0f),
-            float mass = 0, bool Destroyed = 0);// :
-//TODO See if everything still works ok
+            float mass = 0, bool Destroyed = 0){}// :
 /*
             SimulationObject(position, color, size,
             texture, velocity, mass, Destroyed) {

@@ -9,7 +9,10 @@ and it should not count towards his 1000 lines. */
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 class Shader {
 public:
 	// the program ID

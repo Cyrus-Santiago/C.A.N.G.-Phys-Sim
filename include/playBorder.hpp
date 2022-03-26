@@ -4,6 +4,9 @@
 
 //#include "../include/simulationObject.hpp"
 #include "../include/playArea.hpp"
+#include "../include/resourceManager.hpp"
+#include "../include/glfw3.h"
+
 #include <vector>
 
 class PlayBorder : public PlayArea{

@@ -3,6 +3,7 @@
 #define PLAYAREA_H
 
 #include "../include/background.hpp"
+#include "../include/resourceManager.hpp"
 #include <vector>
 
 class PlayArea{

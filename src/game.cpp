@@ -14,15 +14,7 @@ and it should not count towards his 1000 lines. */
 //#include "../include/ecs.hpp"
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
-#include <cassert>
-#include <cstddef>
-#include <glm/detail/qualifier.hpp>
-#include <iostream>
-#include <glm/fwd.hpp>
-#include <iterator>
-#include <vector>
-#include <memory>
-#include <algorithm>
+
 
 #define GRAVITY 9.17
 
@@ -137,7 +129,7 @@ void Game::Update(float dt) {
                 shapeDimensions.x*=2;
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
-              break;
+              break;            
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));

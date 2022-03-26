@@ -4,12 +4,9 @@ he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
 #include "../include/resourceManager.hpp"
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include "../include/stb_image.h"
+
+
 
 // arrays for storing shaders and textures (so we don't have to repeatedly load them)
 std::map<std::string, Shader> ResourceManager::Shaders;

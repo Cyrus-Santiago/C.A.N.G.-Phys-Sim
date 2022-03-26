@@ -7,7 +7,10 @@
 #include "../include/playArea.hpp"
 #include "../include/glfw3.h"
 #include <iostream>
-
+#include <cstddef>
+#include <map>
+#include <vector>
+#include <algorithm>
 // class only exists so we have an object that holds click data,
 // maybe I should've used a struct instead...
 class Click {

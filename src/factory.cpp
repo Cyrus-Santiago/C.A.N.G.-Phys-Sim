@@ -32,6 +32,7 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     reg.emplace<Physics>(entity, 10, position.y+30);
     return entity;
 }
+//TODO Amethyst, reimplement ray constructor
 
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
