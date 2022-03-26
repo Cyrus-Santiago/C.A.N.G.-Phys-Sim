@@ -4,6 +4,7 @@
 #include "../include/spriteRenderer.hpp"
 #include "../include/resourceManager.hpp"
 #include <glm/fwd.hpp>
+#include <string>
 
 // component for holding all data needed to render an entity
 struct Renderable {
@@ -29,6 +30,13 @@ struct Forcewave{
     float timeActive=0.0f;
 };
 
+// component used for explosions and for the triangle shape
+struct Triangle{
+    glm::vec2 vPosLeft;  //Vertice positions of a triangle
+    glm::vec2 vPosRight;
+    glm::vec2 vPosTop;
+};
+
 struct Border {
     std::string position;
 };
@@ -41,7 +49,8 @@ public:
 
     // used to create a new shape entity
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
-        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f));
+        glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f), glm::vec2 dimensions=
+        glm::vec2(30), std::string type="shape");
 
     //used to create the borders of the simulation area
     void makeBorder(entt::registry &reg, int scrWidth, int scrHeight, 

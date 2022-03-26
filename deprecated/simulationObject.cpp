@@ -1,4 +1,5 @@
-/* DEPRECATED */
+/*
+//DEPCRECATED, PLACE IN "src" DIRECTORY TO COMPILE
 // this code was written by Nate
 
 #include <glm/fwd.hpp>
@@ -26,3 +27,4 @@ void SimulationObject::Move(float dt) {
     this->Position += this->Velocity * dt;
     this->Position.y += GRAVITY * dt * 5 * this->Mass;
 }
+*/

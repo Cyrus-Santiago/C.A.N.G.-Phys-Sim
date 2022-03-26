@@ -1,5 +1,5 @@
 /* Audio Class
- * Written by Amethyst Skye */
+ * Written by Amethyst Skye and Griffen Agnello */
 
 #ifndef AUDIO_H
 #define AUDIO_H
@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <string.h>
 
 #pragma comment(lib, "irrKlang.lib") /* link with irrKlang.so */
 

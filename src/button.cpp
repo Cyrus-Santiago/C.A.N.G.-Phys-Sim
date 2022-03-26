@@ -2,9 +2,7 @@
 
 #include "../include/button.hpp"
 #include "../include/menu.hpp"
-#include <glm/fwd.hpp>
-#include <string>
-#include <iostream>
+
 
 // constructor
 Button::Button(glm::vec2 position, glm::vec2 size, std::string texture,

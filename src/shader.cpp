@@ -5,10 +5,7 @@ and it should not count towards his 1000 lines. */
 
 #include "../include/shader.hpp"
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+
 
 // this method is used to change the current shader being used
 Shader &Shader::Use() {

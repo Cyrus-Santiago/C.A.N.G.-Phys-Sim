@@ -1,3 +1,5 @@
+/*
+//DEPCRECATED, PLACE IN "include" DIRECTORY TO COMPILE
 // this code was written by Nate
 
 #ifndef ENTITYCOMPONENTSYSTEM_H
@@ -69,3 +71,4 @@ public:
 };
 
 #endif
+*/

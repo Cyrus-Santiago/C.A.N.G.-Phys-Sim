@@ -6,23 +6,15 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
-#include "../include/simulationObject.hpp"
+//#include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
-#include "../include/simulation.hpp"
+//#include "../include/simulation.hpp"
 #include "../include/explosion.hpp"
 //#include "../include/entityMaestro.hpp"
-#include "../include/ecs.hpp"
+//#include "../include/ecs.hpp"
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
-#include <cassert>
-#include <cstddef>
-#include <glm/detail/qualifier.hpp>
-#include <iostream>
-#include <glm/fwd.hpp>
-#include <iterator>
-#include <vector>
-#include <memory>
-#include <algorithm>
+
 
 #define GRAVITY 9.17
 
@@ -31,7 +23,7 @@ PlayArea parea;
 Audio sfxAudio;
 //PlayBorder pborder;
 SpriteRenderer * spriteRenderer;
-Simulation simulation;
+//Simulation simulation;
 Click newMouseClick;
 Input input;
 Factory factory;
@@ -40,7 +32,7 @@ entt::registry * reg;
 std::vector<Button> Buttons;
 //std::vector<SimulationObject> Border;
 entt::entity entity;
-ECS::Entity entity1, entity2, entity3, entity4, entity5;
+//ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Width(width), Height(height) {
@@ -103,7 +95,7 @@ void Game::Init() {
 }
 
 void Game::Update(float dt) {
-  simulation.Update(dt);
+//  simulation.Update(dt);
   TextRenderer::Update(dt);
   newMouseClick = input.getLastMouseClickPos();
     //If there is a new mouse click
@@ -120,6 +112,11 @@ void Game::Update(float dt) {
         if(pressedButtonVector.size() != 0)  {
           Button pressedButton=pressedButtonVector[0];
           glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
+          //Default shape is a square. For some reason I'm not allowed to put this
+          //declaration inside the shape case.
+          assert(Width>0);
+          assert(Height>0);
+          glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
           //Determines what to do based on the game state
           switch(int(State)) {
             case GAME_DRAW_ELEMENT:
@@ -127,9 +124,12 @@ void Game::Update(float dt) {
                 (int) newMouseClick.yPos), buttonColor);
               break;
             case GAME_DRAW_SHAPE:
+              //Double length if shape is a rectangle
+              if(pressedButton.Type=="RECTANGLE")
+                shapeDimensions.x*=2;
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), buttonColor);
-              break;
+                (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
+              break;            
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
@@ -227,7 +227,7 @@ void Game::Render() {
   // draws all the buttons
   Menu::Draw(*spriteRenderer);
   // draws every simulation object
-  simulation.Draw(*spriteRenderer);
+//  simulation.Draw(*spriteRenderer);
   // for each button, calls the text renderer to display the button type upon
   // the button being pressed
   for (Button &button : Buttons) {
@@ -268,25 +268,25 @@ GameState Game::determineGameState()  {
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
       if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
-        std::cout<<"element mode" <<std::endl;
+        //std::cout<<"element mode" <<std::endl;
         return GAME_DRAW_ELEMENT;
       }
       //If the button pressed is a shape
       else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
-        std::cout<<"shape mode"<<std::endl;
+          //std::cout<<"shape mode"<<std::endl;
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
       else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
-          std::cout<<"ray mode"<<std::endl;
+          //std::cout<<"ray mode"<<std::endl;
           return GAME_DRAW_RAY;
       }
       else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
-          std::cout<<"beam mode"<<std::endl;
+          //std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
       }
       else if(pressedButton[0].ID ==35) {
-          std::cout<<"explosion mode"<<std::endl;
+          //std::cout<<"explosion mode"<<std::endl;
           return GAME_DRAW_EXPLOSION;
       }
     }

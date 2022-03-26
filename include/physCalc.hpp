@@ -2,6 +2,7 @@
 #define PHYSCALC_H
 
 #include <math.h>
+#include <assert.h>
 
 class PhysCalc{
 public:

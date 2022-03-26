@@ -9,6 +9,8 @@
 #include "../include/spriteRenderer.hpp"
 #include "../include/resourceManager.hpp"
 #include <iostream>
+#include <GLFW/glfw3.h>
+#include <cmath>
 
 // this holds a single character, like text character. Couldn't think of a
 // better name sorry

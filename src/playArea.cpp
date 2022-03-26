@@ -1,5 +1,4 @@
 //Cyrus here, this one hurt emotionally, but it works now so yay!
-#include "../include/resourceManager.hpp"
 #include "../include/playArea.hpp"
 
 void PlayArea::Draw(SpriteRenderer &renderer){

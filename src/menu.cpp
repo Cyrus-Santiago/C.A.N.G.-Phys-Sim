@@ -3,10 +3,7 @@
 #include "../include/resourceManager.hpp"
 #include "../include/menu.hpp"
 #include "../include/input.hpp"
-#include <glm/fwd.hpp>
-#include <ostream>
-#include <string>
-#include <utility>
+
 
 std::vector<Button> Menu::Buttons;
 

@@ -2,10 +2,7 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
-#include <cstddef>
-#include <map>
-#include <vector>
-#include <algorithm>
+
 
 Audio audio;
 bool Input::mousePressed=false;
@@ -71,6 +68,7 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // call glfw to give us mouse position data
     //std::cout<<"mouse is clicking"<<std::endl;
     glfwGetCursorPos(window, &xPos, &yPos);
+            std::cout<<"x "<<xPos<<" y "<<yPos<<std::endl;
     Input::validClick=Input::determineAreaPressed(xPos,yPos);
   }
   else if (action==GLFW_RELEASE)  {

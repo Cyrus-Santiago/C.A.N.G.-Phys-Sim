@@ -10,6 +10,9 @@ and it should not count towards his 1000 lines. */
 #include <string>
 
 #include "../include/glad.h"
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 #include "shader.hpp"
 #include "texture.hpp"
