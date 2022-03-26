@@ -1,3 +1,5 @@
+/*
+//DEPCRECATED, PLACE IN "src" DIRECTORY TO COMPILE
 // this code was written by Nate
 
 #include "../include/ecs.hpp"
@@ -73,3 +75,4 @@ bool ECS::EntityHasComponent(Entity entity,
     // test to see if the specified component bit is 1
     return entity.ComponentBitMask.test(componentID - 1);
 }
+*/

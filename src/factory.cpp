@@ -2,6 +2,7 @@
 #include "../include/factory.hpp"
 #include "../include/ray.hpp"
 #include "../include/beam.hpp"
+#include <glm/fwd.hpp>
 #include <string>
 
 entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
@@ -57,9 +58,12 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
 entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position, 
     float rotation,glm::vec4 color, glm::vec2 velocity) {
     auto entity = reg.create();
-    reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 15, 15,
+    reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 20, 20,
         rotation, color.x, color.y, color.z, color.w);
     reg.emplace<Forcewave>(entity, velocity.x, velocity.y);
+    glm::vec2 vertices[3]={glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
+        glm::vec2(position.x+10,position.y+20)};
+    reg.emplace<Triangle>(entity, vertices[0],vertices[1],vertices[2]);
     return entity;
 }
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){

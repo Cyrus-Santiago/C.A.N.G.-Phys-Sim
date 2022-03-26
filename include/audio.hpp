@@ -1,5 +1,5 @@
 /* Audio Class
- * Written by Amethyst Skye */
+ * Written by Amethyst Skye and Griffen Agnello */
 
 #ifndef AUDIO_H
 #define AUDIO_H

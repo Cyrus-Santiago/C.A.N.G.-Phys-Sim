@@ -1,4 +1,5 @@
-/* DEPRECATED */
+/*
+//DEPCRECATED, PLACE IN "src" DIRECTORY TO COMPILE
 // This code was written by Nate
 
 #include "../include/simulation.hpp"
@@ -83,3 +84,4 @@ void Simulation::Update(float dt) {
 void Simulation::getBorder(std::vector<SimulationObject> border){
     Border = border;
 }
+*/

@@ -12,7 +12,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/resourceManager.hpp"
 #include "../include/spriteRenderer.hpp"
 #include "../include/textRenderer.hpp"
-
+#include "../include/entt.hpp"
 // represents the state of the game
 enum GameState {
     GAME_ACTIVE,

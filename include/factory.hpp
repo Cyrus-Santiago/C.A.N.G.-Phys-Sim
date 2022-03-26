@@ -30,6 +30,13 @@ struct Forcewave{
     float timeActive=0.0f;
 };
 
+// component used for explosions and for the triangle shape
+struct Triangle{
+    glm::vec2 vPosLeft;  //Vertice positions of a triangle
+    glm::vec2 vPosRight;
+    glm::vec2 vPosTop;
+};
+
 struct Border {
     std::string position;
 };

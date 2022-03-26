@@ -50,7 +50,8 @@
         setSize(Position, Tail);
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0};
-        Move(0);
+//TODO Not sure what "Move" is in reference to. Commented out since it was throwing an error
+//        Move(0);
         Destroyed = false;
     }
 

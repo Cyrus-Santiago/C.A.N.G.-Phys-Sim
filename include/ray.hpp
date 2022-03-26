@@ -4,12 +4,13 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "../include/simulationObject.hpp"
+//#include "../include/simulationObject.hpp"
+#include "../include/resourceManager.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 #include <cmath>
 
-class Ray : public SimulationObject{
+class Ray{ //: public SimulationObject{
 public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         glm::vec4 Color;
         bool Destroyed;
@@ -20,15 +21,16 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         Ray(glm::vec2 position, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {250,10},
             Texture2D texture = ResourceManager::GetTexture("laser"),
             glm::vec2 velocity = glm::vec2(0.0f),
-            float mass = 0, bool Destroyed = 0) :
-
+            float mass = 0, bool Destroyed = 0);// :
+//TODO See if everything still works ok
+/*
             SimulationObject(position, color, size,
             texture, velocity, mass, Destroyed) {
                 Position = position;
                 Color = color;
                 Size = size;
             }
-
+*/
         /* Methods */
         void printRayStats();
         glm::vec2 setPosition(double, double);
