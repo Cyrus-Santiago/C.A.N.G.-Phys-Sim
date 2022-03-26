@@ -9,7 +9,7 @@
 #include "../include/game.hpp"
 #include "../include/shader.hpp"
 #include "../include/input.hpp"
-
+#include "../include/audio.hpp"
 class Program {
     public:
         static int program();
