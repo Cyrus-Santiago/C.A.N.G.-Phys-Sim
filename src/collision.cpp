@@ -3,7 +3,7 @@
 
 #define GRAVITY 9.17
 
-void Collision::rigidBodyCollision(entt::registry &reg, float dt,
+void Collision::gravityCollision(entt::registry &reg, float dt,
     int bottomBorder) {
     // create a view containing all the entities with the physics component
     auto view = reg.view<Physics>();
@@ -68,10 +68,9 @@ void Collision::rigidBodyCollision(entt::registry &reg, float dt,
                     if ((yBoundsB.x < yBoundsA.y) && (yBoundsA.y < yBoundsB.y)) {
                         // we essentially undo the gravitational effect before it's
                         // even drawn.
-                        reg.patch<Renderable>(entityA, [dt, entityA, &reg]
+                        reg.patch<Renderable>(entityA, [dt, entityA, &reg, yBoundsB, entityB]
                             (auto &renderable) {
-                            renderable.yPos -= dt * reg.get<Physics>(entityA).mass
-                                * GRAVITY;
+                            renderable.yPos = yBoundsB.x - reg.get<Renderable>(entityA).ySize;
                         });
                     }
                 }
@@ -91,10 +90,9 @@ void Collision::rigidBodyCollision(entt::registry &reg, float dt,
                     if ((yBoundsA.x < yBoundsB.y) && (yBoundsB.y < yBoundsA.y)) {
                         // we essentially undo the gravitational effect before it's
                         // even drawn.
-                        reg.patch<Renderable>(entityB, [dt, entityB, &reg]
+                        reg.patch<Renderable>(entityB, [dt, entityB, &reg, yBoundsA, entityA]
                             (auto &renderable) {
-                            renderable.yPos -= dt * reg.get<Physics>(entityB).mass
-                                * GRAVITY;
+                            renderable.yPos = yBoundsA.x - reg.get<Renderable>(entityB).ySize;
                         });
                     }
                 }
