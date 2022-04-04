@@ -1,3 +1,6 @@
+/*
+//DEPCRECATED, PLACE IN "SRC" DIRECTORY TO COMPILE
+//Code written by Cyrus
 #include "../include/entityMaestro.hpp"
 
 Maestro::Maestro(entt::entity handle, Game* game)
@@ -42,3 +45,4 @@ void Maestro::setDimensions(entt::entity entity, float xPos, float yPos, float x
 void Maestro::setPhysics(entt::entity entity, float mass){
     this->registry.emplace_or_replace<physics>(entity, mass);
 };
+*/

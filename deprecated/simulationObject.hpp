@@ -1,3 +1,5 @@
+/*
+//DEPCRECATED, PLACE IN "include" DIRECTORY TO COMPILE
 // This code was written by Nate
 
 #ifndef SIMULATIONOBJECT_H
@@ -33,3 +35,4 @@ public:
 };
 
 #endif
+*/

@@ -1,5 +1,5 @@
 //Made by Griffen
-#include "../include/simulationObject.hpp"
+//#include "../include/simulationObject.hpp"
 
 class Shape{
 //----------Fields---------------

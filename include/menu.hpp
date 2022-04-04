@@ -5,6 +5,10 @@
 
 #include "../include/button.hpp"
 #include <glm/fwd.hpp>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <glm/fwd.hpp>
 #include <vector>
 
 #define ELEMENT_NUM 30

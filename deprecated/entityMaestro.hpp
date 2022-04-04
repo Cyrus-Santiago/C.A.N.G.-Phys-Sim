@@ -1,3 +1,6 @@
+/*
+//DEPCRECATED, PLACE IN "include" DIRECTORY TO COMPILE
+//Code written by Cyrus
 #ifndef ENTITYMAESTRO_H
 #define ENTITYMAESTRO_H
 
@@ -79,3 +82,4 @@ public:
 };
 
 #endif
+*/

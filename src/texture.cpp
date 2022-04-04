@@ -3,7 +3,6 @@ a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
 he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
-#include <iostream>
 
 #include "../include/texture.hpp"
 

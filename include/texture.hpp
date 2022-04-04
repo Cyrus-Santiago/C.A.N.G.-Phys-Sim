@@ -6,6 +6,7 @@ and it should not count towards his 1000 lines. */
 #define TEXTURE_H
 
 #include "../include/glad.h"
+#include <iostream>
 
 class Texture2D {
 public:
