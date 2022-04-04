@@ -12,6 +12,7 @@ public:
     //Calculates whether a collision occured
     bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
     bool checkCollision(entt::entity entity, entt::registry &reg);
+    void rigidBodyCollision(entt::registry &reg, float dt, int bottomBorder);
 
 //    void collide(SimulationObject &obj);
 
