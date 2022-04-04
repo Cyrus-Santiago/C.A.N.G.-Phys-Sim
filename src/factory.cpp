@@ -9,7 +9,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
     auto entity = reg.create();
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button2", position.x, position.y, 10, 10,
+    reg.emplace<Renderable>(entity, "particle", "button2", position.x, position.y, 5, 5,
         0.0f, color.x, color.y, color.z, color.w);
 
     // give the particle a mass of 10 and turn on physics, setting it's initial height
