@@ -59,13 +59,13 @@ void Collision::gravityCollision(entt::registry &reg, float dt,
                 * OR entity A's left side is to the left of entity B's right size,
                 * AND entity A's right side is to the right of entity B's right side,
                 */ 
-                if ((xBoundsB.x < xBoundsA.x) && (xBoundsA.x < xBoundsB.y) ||
-                    (((xBoundsA.x < xBoundsB.y) && (xBoundsB.y < xBoundsA.y)))) {
+                if ((xBoundsB.x <= xBoundsA.x) && (xBoundsA.x <= xBoundsB.y) ||
+                    (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
                     /*
                     * if entity B's top is above entity A's bottom,
                     * AND entity B's bottom is below entity A's bottom
                     */
-                    if ((yBoundsB.x < yBoundsA.y) && (yBoundsA.y < yBoundsB.y)) {
+                    if ((yBoundsB.x <= yBoundsA.y) && (yBoundsA.y <= yBoundsB.y)) {
                         // we essentially undo the gravitational effect before it's
                         // even drawn.
                         reg.patch<Renderable>(entityA, [dt, entityA, &reg, yBoundsB, entityB]
@@ -81,13 +81,13 @@ void Collision::gravityCollision(entt::registry &reg, float dt,
                 * entity A's left side is to the left of entity B's left side,
                 * AND entity A's right side is to the right of entity B's right side,
                 */
-                if (((xBoundsA.x < xBoundsB.x) && (xBoundsB.x < xBoundsA.y)) ||
-                    (((xBoundsA.x < xBoundsB.y) && (xBoundsB.y < xBoundsA.y)))) {
+                if (((xBoundsA.x <= xBoundsB.x) && (xBoundsB.x <= xBoundsA.y)) ||
+                    (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
                     /*
                     * if entity A's top is above entity B's bottom,
                     * AND entity A's bottom is below entity B's bottom
                     */
-                    if ((yBoundsA.x < yBoundsB.y) && (yBoundsB.y < yBoundsA.y)) {
+                    if ((yBoundsA.x <= yBoundsB.y) && (yBoundsB.y <= yBoundsA.y)) {
                         // we essentially undo the gravitational effect before it's
                         // even drawn.
                         reg.patch<Renderable>(entityB, [dt, entityB, &reg, yBoundsA, entityA]
@@ -109,6 +109,38 @@ void Collision::liquidCollision(entt::registry &reg, float dt) {
             renderable.xPos += (((rand() % 100 - 50) % 4) * dt) /
             reg.get<Liquid>(entity).viscosity;
         });
+    }
+    for (auto entityA : view) {
+        glm::vec2 xBoundsA, xBoundsB;
+
+        // left and right dimensions of entity A (save them for collisions later on)
+        xBoundsA = glm::vec2(reg.get<Renderable>(entityA).xPos,
+                            reg.get<Renderable>(entityA).xPos +
+                            (float)reg.get<Renderable>(entityA).xSize);
+
+        // now we loop through every entity again, so we can compare entities
+        for (auto entityB : view) {
+            // left and right dimensions of entity B (save them for collisions later on)
+            xBoundsB = glm::vec2(reg.get<Renderable>(entityB).xPos,
+                            reg.get<Renderable>(entityA).xPos +
+                            (float)reg.get<Renderable>(entityB).xSize);
+
+            // we check to make sure we don't compare an entity with itself,
+            // since it'd always be colliding with itself
+            if (entityA != entityB) {
+                if (xBoundsB.x == xBoundsA.y) {
+                    reg.patch<Renderable>(entityA, [&reg, entityA, xBoundsB]
+                            (auto &renderable) {
+                            renderable.xPos = xBoundsB.x + renderable.xSize;
+                        });
+                } else if (xBoundsA.x == xBoundsB.y) {
+                    reg.patch<Renderable>(entityB, [&reg, entityB, xBoundsA]
+                        (auto &renderable) {
+                        renderable.xPos = xBoundsA.x + renderable.xSize;
+                    });
+                }
+            }
+        }
     }
 }
 
