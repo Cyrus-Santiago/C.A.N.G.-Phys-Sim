@@ -15,7 +15,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
         0.0f, color.x, color.y, color.z, color.w);
 
     // give the particle a mass of 10 and turn on physics, setting it's initial height
-    reg.emplace<Physics>(entity, 10, position.y+10);
+    reg.emplace<Physics>(entity, 10.0f);
 
     return entity;
 }
@@ -24,15 +24,24 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     glm::vec4 color, glm::vec2 dimensions, std::string type) {
     auto entity = reg.create();
     std::string shapeTexture;
-    if(type=="TRIANGLE")    shapeTexture="triangle";
+    //Add the triangle component if the shape is a triangle
+    if(type=="TRIANGLE")    {
+        //The triangle points are in this particular order in the vector. The order DOES matter
+        //Vertices: Left, right, top
+        //Midpoints: Left, right, bottom, middle (of triangle)
+        std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
+            glm::vec2(position.x+10,position.y+20), glm::vec2(position.x+5,position.y+10), glm::vec2(position.x+15,position.y+10),
+            glm::vec2(position.x+10,position.y), glm::vec2(position.x+10,position.y+10)};
+        reg.emplace<Triangle>(entity, trianglePoints);
+        shapeTexture="triangle";
+    }
     else    shapeTexture="button2";
     reg.emplace<Renderable>(entity,type, shapeTexture, position.x, position.y, 
-        dimensions.x, dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
-
-    reg.emplace<Physics>(entity, 10, position.y+30);
+        (int)dimensions.x, (int)dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
+    //For gravity and velocity
+    reg.emplace<Physics>(entity, 30.0f);
     return entity;
 }
-//TODO Amethyst, reimplement ray constructor
 
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
@@ -40,7 +49,7 @@ entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     ray.init(position.x, position.y);
     auto entity = reg.create();
 
-    reg.emplace<Renderable>(entity, "ray", "laser", position.x, position.y, ray.Size[0], ray.Size[1],
+    reg.emplace<Renderable>(entity, "ray", "laser", position.x, position.y, (int)ray.Size[0], (int)ray.Size[1],
         0.0f, color.x, color.y, color.z, color.w);
     ray.printRayStats();
     return entity;
@@ -51,7 +60,7 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     Beam beam({position.x, position.y});
     auto entity = reg.create();
 
-    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, beam.rays[0].Size[0], beam.rays[0].Size[1],
+    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, (int)beam.rays[0].Size[0], (int)beam.rays[0].Size[1],
         0.0f, color.x, color.y, color.z, color.w);
     return entity;
 }
@@ -62,28 +71,32 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 20, 20,
         rotation, color.x, color.y, color.z, color.w);
     reg.emplace<Forcewave>(entity, velocity.x, velocity.y);
-    glm::vec2 vertices[3]={glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
-        glm::vec2(position.x+10,position.y+20)};
-    reg.emplace<Triangle>(entity, vertices[0],vertices[1],vertices[2]);
+    //The triangle points are in this particular order in the vector. The order DOES matter
+    //Vertices: Left, right, top
+    //Midpoints: Left, right, bottom, middle (of triangle)
+    std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
+        glm::vec2(position.x+10,position.y+20), glm::vec2(position.x+5,position.y+10), glm::vec2(position.x+15,position.y+10),
+        glm::vec2(position.x+10,position.y), glm::vec2(position.x+10,position.y+10)};
+    reg.emplace<Triangle>(entity, trianglePoints);
     return entity;
 }
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
     int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
     int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
     auto entity1 = reg.create(); //Top Line
-    reg.emplace<Renderable>(entity1, "topBorder", "button1", xPos+1, yPos, 
+    reg.emplace<Renderable>(entity1, "topBorder", "button1", (float)xPos+1, (float)yPos, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity1, "topBorder");
     auto entity2 = reg.create(); //Bottom Line
-    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", xPos+1, yPos+areaHeight, 
+    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", (float)xPos+1, (float)yPos+areaHeight, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity2, "bottomBorder");
     auto entity3 = reg.create(); //Left Line
-    reg.emplace<Renderable>(entity3, "leftBorder", "button1", xPos-1, yPos, 
+    reg.emplace<Renderable>(entity3, "leftBorder", "button1", (float)xPos-1, (float)yPos, 
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity3, "leftBorder");
     auto entity4 = reg.create(); //Right Line
-    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (xPos+areaWidth)-1, yPos, 
+    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (float)(xPos+areaWidth)-1, (float)yPos, 
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity4, "rightBorder");
     return;

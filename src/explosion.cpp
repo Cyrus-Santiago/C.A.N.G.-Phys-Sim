@@ -17,26 +17,28 @@
 float Explosion::velocityArrayX[]={0,100,100,100,0,-100,-100,-100};
 float Explosion::velocityArrayY[]={-100,-100,0,100,100,100,0,-100};
 float Explosion::rotation[]={0,45,90,135,180,225,270,315};
-Factory factorie;
+float Explosion::deltaX=0;
+float Explosion::deltaY=0;
 //This function updates the position of the force vectors. 
 //The velocity of the vectors is decreased based on the duration.
 void Explosion::updateForcePositions(entt::registry *reg, float dt)    {
     auto view =reg->view<Forcewave>();
     for (auto entity: view) {
+        Explosion::deltaX=(dt* reg->get<Forcewave>(entity).xVel);
+        Explosion::deltaY=(dt* reg->get<Forcewave>(entity).yVel);    
         //Changes position of the force vectors
-        reg->patch<Renderable>(entity, [dt, reg, entity](auto &renderable) {
-            renderable.yPos += (dt* reg->get<Forcewave>(entity).yVel);
-            renderable.xPos += (dt* reg->get<Forcewave>(entity).xVel);
+        reg->patch<Renderable>(entity, [reg,entity](auto &renderable) {
+            renderable.xPos += deltaX;
+            renderable.yPos += deltaY;
         });
         //Changes position of force vector vertices
-        reg->patch<Triangle>(entity, [dt, reg, entity](auto &triangle) {
-            //It's a little redunant to make these variables but it probably 
-            //speeds up the program slightly to only do the retrieval calculation once.
-            float deltaX=(dt* reg->get<Forcewave>(entity).xVel);
-            float deltaY=(dt* reg->get<Forcewave>(entity).yVel);
-            triangle.vPosLeft.x += deltaX;  triangle.vPosLeft.y += deltaY;
-            triangle.vPosTop.x += deltaX;  triangle.vPosTop.y += deltaY;
-            triangle.vPosRight.x += deltaX;  triangle.vPosRight.y += deltaY;
+        reg->patch<Triangle>(entity, [reg, entity](auto &triangle) {
+            //functional operator "map" to update each point position
+            std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[](glm::vec2 point){
+                point.x+=deltaX;
+                point.y+=deltaY;
+                return(point);
+            });
         });
         //Decrease x and y velocities over time
         reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force) {
@@ -52,23 +54,10 @@ void Explosion::updateTimeActive(entt::registry *reg, float dt)  {
     auto view =reg->view<Forcewave>();
     for(auto entity: view)  {
         //If the force vector has been surpassed the maximum time, delete it.
-        if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME){
-            /*
-            if(reg->get<Renderable>(entity).rotate == 45){
-                factorie.makeForceVector(*reg, glm::vec2((int) reg->get<Renderable>(entity).xPos,
-                    (int)reg->get<Renderable>(entity).yPos), reg->get<Renderable>(entity).rotate, glm::vec4(1,1,1,1), 
-                    glm::vec2(0,0));
-                std::cout<<reg->get<Renderable>(entity).rotate<<" x "<<reg->get<Triangle>(entity).vPosLeft.x<<" y "<<reg->get<Triangle>(entity).vPosLeft.y<<std::endl;
-                std::cout<<reg->get<Renderable>(entity).rotate<<" x "<<reg->get<Triangle>(entity).vPosTop.x<<" y "<<reg->get<Triangle>(entity).vPosTop.y<<std::endl;
-                std::cout<<reg->get<Renderable>(entity).rotate<<" x "<<reg->get<Triangle>(entity).vPosRight.x<<" y "<<reg->get<Triangle>(entity).vPosRight.y<<std::endl;
-            }
-            */
-            reg->destroy(entity);
-        }
+        if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME)  reg->destroy(entity);
         //Else, update the time it's active.
         else    reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force){
                     force.timeActive+=dt;
                 });
     }
 }
-//TODO make collision for triangle, gotta do lame calculations
