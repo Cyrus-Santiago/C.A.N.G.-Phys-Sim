@@ -5,10 +5,13 @@
 #include <glm/fwd.hpp>
 #include <string>
 
-entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
+entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::vec2 position,
     glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
+
+    if (type == "WATER")
+        reg.emplace<Liquid>(entity, 0.5f);    
     
     // insert data passed to method into renderable component of entity
     reg.emplace<Renderable>(entity, "particle", "button2", position.x, position.y, 5, 5,

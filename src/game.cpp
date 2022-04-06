@@ -122,7 +122,7 @@ void Game::Update(float dt) {
           //Determines what to do based on the game state
           switch(int(State)) {
             case GAME_DRAW_ELEMENT:
-              factory.makeParticle(* reg, glm::vec2((int) newMouseClick.xPos,
+              factory.makeParticle(* reg, pressedButton.Type, glm::vec2((int) newMouseClick.xPos,
                 (int) newMouseClick.yPos), buttonColor);
               break;
             case GAME_DRAW_SHAPE:
@@ -160,6 +160,7 @@ void Game::Update(float dt) {
   Explosion::updateTimeActive(reg, dt);
 
   colEngine.gravityCollision(* reg, dt, bottomBorder);
+  colEngine.liquidCollision(* reg, dt);
 }
 
 void Game::Render() {

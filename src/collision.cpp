@@ -59,8 +59,8 @@ void Collision::gravityCollision(entt::registry &reg, float dt,
                 * OR entity A's left side is to the left of entity B's right size,
                 * AND entity A's right side is to the right of entity B's right side,
                 */ 
-                if ((xBoundsB.x <= xBoundsA.x) && (xBoundsA.x <= xBoundsB.y) ||
-                    (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
+                if ((xBoundsB.x < xBoundsA.x) && (xBoundsA.x < xBoundsB.y) ||
+                    (((xBoundsA.x < xBoundsB.y) && (xBoundsB.y < xBoundsA.y)))) {
                     /*
                     * if entity B's top is above entity A's bottom,
                     * AND entity B's bottom is below entity A's bottom
@@ -81,8 +81,8 @@ void Collision::gravityCollision(entt::registry &reg, float dt,
                 * entity A's left side is to the left of entity B's left side,
                 * AND entity A's right side is to the right of entity B's right side,
                 */
-                if (((xBoundsA.x <= xBoundsB.x) && (xBoundsB.x <= xBoundsA.y)) ||
-                    (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
+                if (((xBoundsA.x < xBoundsB.x) && (xBoundsB.x < xBoundsA.y)) ||
+                    (((xBoundsA.x < xBoundsB.y) && (xBoundsB.y < xBoundsA.y)))) {
                     /*
                     * if entity A's top is above entity B's bottom,
                     * AND entity A's bottom is below entity B's bottom
@@ -98,6 +98,17 @@ void Collision::gravityCollision(entt::registry &reg, float dt,
                 }
             }
         }
+    }
+}
+
+void Collision::liquidCollision(entt::registry &reg, float dt) {
+    auto view = reg.view<Liquid>();
+    srand(time(0));
+    for (auto entity : view) {
+        reg.patch<Renderable>(entity, [dt, &reg, entity](auto &renderable) {
+            renderable.xPos += (((rand() % 100 - 50) % 4) * dt) /
+            reg.get<Liquid>(entity).viscosity;
+        });
     }
 }
 
