@@ -129,8 +129,8 @@ void Game::Update(float dt) {
               //Double length if shape is a rectangle
               if(pressedButton.Type=="RECTANGLE")
                 shapeDimensions.x*=2;
-              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
+              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos-20,
+                (int)newMouseClick.yPos-20), buttonColor,shapeDimensions, pressedButton.Type);
               break;            
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
@@ -158,7 +158,7 @@ void Game::Update(float dt) {
   }
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
-
+  //TODO colEngine.triangleCollision(reg, dt);
   colEngine.rigidBodyCollision(* reg, dt, bottomBorder);
 }
 
@@ -233,6 +233,6 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_EXPLOSION;
       }
     }
-    std::cout<<"idle mode" <<std::endl;
+    //std::cout<<"idle mode" <<std::endl;
     return GAME_ACTIVE;
 }
