@@ -108,9 +108,9 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
                 renderable.xPos += dt * 30 * modifier;
             });
             //Update vertice locations on triangle shapes
-            if(reg.all_of<Triangle,Physics>(entityA)){
-                reg.patch<Triangle>(entityA, [dt, entityA, &reg](auto &triangle){
-                    float deltaY=dt * reg.get<Physics>(entityA).mass * GRAVITY;
+            if(reg.all_of<Triangle,Physics>(entity)){
+                reg.patch<Triangle>(entity, [dt, entity, &reg](auto &triangle){
+                    float deltaY=dt * reg.get<Physics>(entity).mass * GRAVITY;
                     //functional operator "map" to update each point position
                     std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[deltaY](glm::vec2 point){
                         point.y+=deltaY;
