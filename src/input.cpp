@@ -15,38 +15,41 @@ std::vector<Button> Input::Buttons;
 //This function checks for the area in which a mouse click was made.
 //If a button was clicked, its state is set to "pressed". 0,1 is returned
 //a legal click is made. -1 is returned if no legal click is made.
-int Input::determineAreaPressed(double xPos, double yPos)  {
+//TODO make mode for when the mouse is held down. No button presses.
+int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
   //If the click was in the menu area
-  if(yPos > screenHeight * 0.5){
-    for (int i = 0; i < Buttons.size(); ++i) {
-      int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
-      int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
-      // checks bounds of current button and compares that to click data
-      if ((xPos > Buttons[i].Position.x) && (xPos < upperBoundX) &&
-        (yPos > Buttons[i].Position.y) && (yPos < upperBoundY)) {
-        // records click
-        xClick = xPos; yClick = yPos;
-        // debug
-        audio.playAudio("audio/click.wav");
-        //std::cout << "Button " << i << " pressed!" << std::endl;
-        // records button press so we can do something with it
-        if (Buttons[i].Pressed) Buttons[i].Pressed = false;
-        else{
-          //functional operator "map" that changes all the values of "pressed" 
-          //to false in the vector
-          std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
-            button.Pressed=false;
-            return(button);
-          });
-          Buttons[i].Pressed = true;
+  if(mode==0){
+    if(yPos > screenHeight * 0.5){
+      for (int i = 0; i < Buttons.size(); ++i) {
+        int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
+        int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
+        // checks bounds of current button and compares that to click data
+        if ((xPos > Buttons[i].Position.x) && (xPos < upperBoundX) &&
+          (yPos > Buttons[i].Position.y) && (yPos < upperBoundY)) {
+          // records click
+          xClick = xPos; yClick = yPos;
+          // debug
+          audio.playAudio("audio/click.wav");
+          //std::cout << "Button " << i << " pressed!" << std::endl;
+          // records button press so we can do something with it
+          if (Buttons[i].Pressed) Buttons[i].Pressed = false;
+          else{
+            //functional operator "map" that changes all the values of "pressed" 
+            //to false in the vector
+            std::transform(Buttons.begin(), Buttons.end(),Buttons.begin(),[](Button button){
+              button.Pressed=false;
+              return(button);
+            });
+            Buttons[i].Pressed = true;
+          }
+          //Returns 0 when a legal mouse click was made
+          return 0;
         }
-        //Returns 0 when a legal mouse click was made
-        return 0;
       }
     }
   }
   //If the click is in the play area
-  else if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
+  if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
     (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
     //std::cout<<"in play area"<<std::endl;
     xClick = xPos; yClick = yPos;
@@ -69,7 +72,7 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // std::cout<<"mouse is clicking"<<std::endl;
     glfwGetCursorPos(window, &xPos, &yPos);
     //std::cout<<"x "<<xPos<<" y "<<yPos<<std::endl;
-    Input::validClick=Input::determineAreaPressed(xPos,yPos);
+    Input::validClick=Input::determineAreaPressed(xPos,yPos,0);
   }
   else if (action==GLFW_RELEASE)  {
     mousePressed=false;
@@ -117,4 +120,13 @@ std::vector<Button> Input::getButtonPressed()  {
 //So only one click is registered in game per click.
 void Input::resetValidClick(){
   Input::validClick=2;
+}
+
+//This is only called when the mouse press is held down to draw multiple things at once.
+//For example, you can click and drag elements to draw them across the screen.
+void Input::mousePressHeldDown(GLFWwindow *window){
+  double xPos, yPos;
+  // call glfw to give us mouse position data
+  glfwGetCursorPos(window, &xPos, &yPos);
+  Input::determineAreaPressed(xPos,yPos,1);
 }
