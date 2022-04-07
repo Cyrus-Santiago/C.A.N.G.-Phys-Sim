@@ -3,92 +3,125 @@
 
 #define GRAVITY 9.17
 
-void Collision::gravityCollision(entt::registry &reg, float dt,
-    int bottomBorder) {
-    // create a view containing all the entities with the physics component
-    auto view = reg.view<Physics>();
+void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
+    auto physical = reg.view<Physics>();
+    
+    for (auto entity : physical) {
+        gravityCollision(reg, dt, bottomBorder, entity);
+        liquidCollision(reg, dt, bottomBorder, entity);
+    }
+}
 
-    // loop through each entity in the view
-    for (auto A : view) {
+void Collision::registerEntity(entt::registry &reg, entt::entity entity) {
+    int xPos = reg.get<Renderable>(entity).xPos;
+    int xSize = reg.get<Renderable>(entity).xSize;
+    int yPos = reg.get<Renderable>(entity).yPos;
+    int ySize = reg.get<Renderable>(entity).ySize;
 
-        double gravity = dt * reg.get<Physics>(A).mass * GRAVITY;
-
-        // loop through each entity with the physics component that's above the
-        // bottom border
-            
-        // calculate distance moved by gravity for the object and add it to
-        // the entity's y component to simulate gravity
-        reg.patch<Renderable>(A, [dt, A, &reg, gravity](auto &renderable)
-        {
-            renderable.yPos += gravity;
-        });
-
-        // now we loop through every entity again, so we can compare entities
-        for (auto B : view) {
-            ///There's a separate function for dealing with triangle collisions
-            //because they're a pain to calculate unlike rectangle shapes.
-            //So we skip any triangle entities (including forcewaves)
-            if((!reg.all_of<Triangle>(A)) && (!reg.all_of<Triangle>(B))){
-                // we check to make sure we don't compare an entity with itself,
-                // since it'd always be colliding with itself
-                if (A != B) {
-                    if (xOverlap(reg, A, B)) {
-                        if (bottomOverlap(reg, A, B)) {
-                            reg.patch<Renderable>(A, [&reg, gravity, B]
-                                (auto &renderable) {
-                                renderable.yPos = 
-                                    reg.get<Renderable>(B).yPos - renderable.ySize;
-                            });
-                        }
-                        if (topOverlap(reg, A, B)) {
-                            reg.patch<Renderable>(B, [&reg, gravity, A]
-                                (auto &renderable) {
-                                renderable.yPos = 
-                                    reg.get<Renderable>(A).yPos - renderable.ySize;
-                            });
-                        }
-                    }
-                    if ((reg.get<Renderable>(A).yPos +
-                        reg.get<Renderable>(A).ySize) > bottomBorder) {
-                        
-                        reg.patch<Renderable>(A, [&reg, gravity, bottomBorder]
-                            (auto &renderable) {
-                            renderable.yPos = bottomBorder - renderable.ySize;
-                        });
-                    }
-                }
-            }
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
+            grid[x][y] = true;
         }
     }
 }
 
-void Collision::liquidCollision(entt::registry &reg, float dt) {
-    auto view = reg.view<Liquid>();
-    srand(time(0));
+void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
+    entt::entity entity) {
+    int xPos = reg.get<Renderable>(entity).xPos;
+    int xSize = reg.get<Renderable>(entity).xSize;
+    int yPos = reg.get<Renderable>(entity).yPos;
+    int ySize = reg.get<Renderable>(entity).ySize;
+    float gravity = dt * reg.get<Physics>(entity).mass * GRAVITY;
 
-    // loop through each entity in the view
-    for (auto A : view) {
-        // now we loop through every entity again, so we can compare entities
-        for (auto B : view) {
-            if (A != B) {
-                if (yOverlap(reg, A, B)) {
-                    if (leftOverlap(reg, A, B)) {
-                        reg.patch<Renderable>(A, [&reg](auto &renderable) {
-                            renderable.xPos -= 3;
-                        });
-                        reg.patch<Renderable>(B, [&reg](auto &renderable) {
-                            renderable.xPos += 3;
-                        });
-                    }
-                    if (rightOverlap(reg, A, B)) {
-                        reg.patch<Renderable>(A, [&reg](auto &renderable) {
-                            renderable.xPos += 3;
-                        });
-                        reg.patch<Renderable>(B, [&reg](auto &renderable) {
-                            renderable.xPos -= 3;
-                        });
-                    }
+    reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
+        renderable.yPos += gravity;
+    });
+
+    int i = 0;
+    int newYPos = ((int)reg.get<Renderable>(entity).yPos + ySize);
+    bool result = false;
+    for (i = xPos; i < xPos + xSize; i++) {
+        if (grid[i][newYPos] ||
+            ((yPos + ySize) >= bottomBorder)) {
+            result = true;
+            break;
+        }
+    }
+    
+    int ySolid = 0;
+
+    if (result) {
+        if ((yPos + ySize) >= bottomBorder) {
+            ySolid = bottomBorder - ySize;
+        } else {
+            for (int j = yPos + ySize; j < bottomBorder; j++) {
+                if (grid[i][j]) {
+                    ySolid = j - ySize;
+                    break;
                 }
+            }
+        }
+        reg.patch<Renderable>(entity, [&reg, ySolid, gravity](auto &renderable)
+        {
+            if (ySolid != 0) {
+                renderable.yPos = ySolid;
+            } else {
+                renderable.yPos -= gravity;
+            }
+        });
+    }
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (reg.get<Renderable>(entity).yPos); y++) {
+            grid[x][y] = false;
+        }
+    }
+    yPos = reg.get<Renderable>(entity).yPos;
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
+            grid[x][y] = true;
+        }
+    }
+}
+
+void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
+    entt::entity entity) {
+    if (reg.any_of<Liquid>(entity)) {
+        int xPos = reg.get<Renderable>(entity).xPos;
+        int xSize = reg.get<Renderable>(entity).xSize;
+        int yPos = reg.get<Renderable>(entity).yPos;
+        int ySize = reg.get<Renderable>(entity).ySize;
+        if (yPos + ySize == bottomBorder) {
+            return;
+        } else if (grid[xPos][yPos + ySize + 1]) {
+            reg.patch<Renderable>(entity, [&reg, dt](auto &renderable) {
+                renderable.xPos += dt * 50;
+            });
+        } else if (grid[xPos + xSize][yPos + ySize + 1]) {
+            reg.patch<Renderable>(entity, [&reg, dt](auto &renderable) {
+                renderable.xPos -= dt * 50;
+            });
+        }
+        int newX = reg.get<Renderable>(entity).xPos;
+        for (int x = xPos + xSize; x < newX + xSize; x++) {
+            for (int y = yPos; y < yPos + ySize; y++) {
+                if (grid[x][y]) {
+                    reg.patch<Renderable>(entity, [&reg, dt, xPos](auto &renderable) {
+                        renderable.xPos = xPos;
+                    });
+                    return;
+                }
+            }
+        }
+        for (int x = xPos; x < (xPos + xSize); x++) {
+            for (int y = yPos; y < yPos + ySize; y++) {
+                grid[x][y] = false;
+            }
+        }
+        yPos = reg.get<Renderable>(entity).yPos;
+        xPos = reg.get<Renderable>(entity).xPos;
+        for (int x = xPos; x < (xPos + xSize); x++) {
+            for (int y = yPos; y < (yPos + ySize); y++) {
+                grid[x][y] = true;
             }
         }
     }
@@ -224,28 +257,28 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
     }
 }
 
-bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
-    colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
-        reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
-        reg.get<Renderable>(obj2).xSize >= reg.get<Renderable>(obj1).xPos;
+// bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
+//     colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
+//         reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
+//         reg.get<Renderable>(obj2).xSize >= reg.get<Renderable>(obj1).xPos;
     
-    colY = reg.get<Renderable>(obj1).yPos + reg.get<Renderable>(obj1).ySize >= 
-        reg.get<Renderable>(obj2).yPos && reg.get<Renderable>(obj2).yPos + 
-        reg.get<Renderable>(obj2).ySize >= reg.get<Renderable>(obj1).yPos;
+//     colY = reg.get<Renderable>(obj1).yPos + reg.get<Renderable>(obj1).ySize >= 
+//         reg.get<Renderable>(obj2).yPos && reg.get<Renderable>(obj2).yPos + 
+//         reg.get<Renderable>(obj2).ySize >= reg.get<Renderable>(obj1).yPos;
 
-    return colX && colY;
-}
+//     return colX && colY;
+// }
 
-bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
-    auto view = reg.view<Renderable>();
-    for(auto Entity : view){
-        if(detector(entity, Entity, reg)){
-            return true;
-        }
-    }
+// bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
+//     auto view = reg.view<Renderable>();
+//     for(auto Entity : view){
+//         if(detector(entity, Entity, reg)){
+//             return true;
+//         }
+//     }
 
-    return false;
-}
+//     return false;
+// }
 //Depcrecated(?), uses an old simulation object
 /*
 void Collision::collide(SimulationObject &obj){
