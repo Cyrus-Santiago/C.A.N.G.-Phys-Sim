@@ -5,17 +5,19 @@
 #include <glm/fwd.hpp>
 #include <string>
 
-entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
+entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::vec2 position,
     glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
+
+    if (type == "WATER")
+        reg.emplace<Liquid>(entity, 0.1f, 0.0f);
+        
+    reg.emplace<Physics>(entity, 10.0f);
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button2", position.x, position.y, 5, 5,
+    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 15, 15,
         0.0f, color.x, color.y, color.z, color.w);
-
-    // give the particle a mass of 10 and turn on physics, setting it's initial height
-    reg.emplace<Physics>(entity, 10.0f);
 
     return entity;
 }
@@ -105,10 +107,16 @@ void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::
 void Factory::draw(entt::registry &reg, entt::entity entity,
     SpriteRenderer &spriteRenderer) {
     
+    Texture2D texture;
+
     // pass the specified texture string from the entity and provide it to the
     // resource manager to get our texture
-    Texture2D texture =
-    ResourceManager::GetTexture(reg.get<Renderable>(entity).texture);
+    if (reg.get<Renderable>(entity).texture != "") {
+        texture =
+        ResourceManager::GetTexture(reg.get<Renderable>(entity).texture);
+    } else {
+        texture.ID = -1;
+    }
 
     // call upon the spriteRenderer to render the entity based on it's
     // renderable component

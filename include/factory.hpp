@@ -39,10 +39,15 @@ struct Border {
     std::string position;
 };
 
+struct Liquid {
+    float viscosity;
+    float movement;
+};
+
 class Factory {
 public:
     // used to create a new particle entity
-    entt::entity makeParticle(entt::registry &reg, glm::vec2 position =
+    entt::entity makeParticle(entt::registry &reg, std::string type, glm::vec2 position =
         glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f));
 
     // used to create a new shape entity
