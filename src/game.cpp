@@ -18,7 +18,7 @@ and it should not count towards his 1000 lines. */
 
 
 #define GRAVITY 9.17
-
+GLFWwindow *Window;
 Menu menu;
 PlayArea parea;
 Audio sfxAudio;
@@ -37,7 +37,7 @@ entt::entity entity;
 //ECS::Entity entity1, entity2, entity3, entity4, entity5;
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Width(width), Height(height) {
+    : State(GAME_ACTIVE), Width(width), Height(height){
 }
 
 Game::~Game() {
@@ -45,7 +45,8 @@ Game::~Game() {
   delete reg;
 }
 
-void Game::Init() {
+void Game::Init(GLFWwindow *window) {
+  Window=window;
   ResourceManager::initializeResources(); /* This will load all textures and shaders */
 
   // set projection matrix based on dimensions of screen (that way we can provide
@@ -124,6 +125,10 @@ void Game::Update(float dt) {
           switch(int(State)) {
             
             case GAME_DRAW_ELEMENT:
+              if(Input::mousePressed){
+                Input::mousePressHeldDown(Window);
+                newMouseClick=input.getLastMouseClickPos();
+              }
               entity = factory.makeParticle(* reg, pressedButton.Type,
                 glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
               if (!colEngine.registerEntity(* reg, entity))

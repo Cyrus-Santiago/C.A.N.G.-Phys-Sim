@@ -51,7 +51,7 @@ int Program::program() {
         return -1;
     }
 
-    physSim.Init();
+    physSim.Init(window);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;

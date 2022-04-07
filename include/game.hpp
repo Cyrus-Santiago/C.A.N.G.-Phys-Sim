@@ -46,7 +46,7 @@ class Game {
         ~Game();
 
         // initialize game state and load shaders and textures
-        void Init();
+        void Init(GLFWwindow *window);
 
         // game loop
         void Update(float dt);

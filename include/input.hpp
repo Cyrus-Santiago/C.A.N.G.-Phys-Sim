@@ -40,7 +40,7 @@ public:
     static bool mousePressed;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
-    static int determineAreaPressed(double xPos, double yPos);
+    static int determineAreaPressed(double xPos, double yPos, int mode);
     // called by glfw on mouse click
     static void mouseClickCallback(GLFWwindow * window, int button, int action, int mods);
     // called by glfw on moust move
@@ -56,7 +56,8 @@ public:
     static std::vector<Button> giveButtonData();
     //Acquires a vector of (hopefully) size =1 with one button that is pressed.
     static std::vector<Button> getButtonPressed();
-
+    //Acquires mouse pressed location when the mouse is held down
+    static void mousePressHeldDown(GLFWwindow *window);
 };
 
 #endif
