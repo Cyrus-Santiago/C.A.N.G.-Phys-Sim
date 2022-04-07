@@ -3,34 +3,109 @@
 
 #define GRAVITY 9.17
 
-void Collision::rigidBodyCollision(entt::registry &reg, float dt,
-    int bottomBorder) {
-    // create a view containing all the entities with the physics component
-    auto view = reg.view<Physics>();
+void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
+    auto physical = reg.view<Physics>();
+    
+    for (auto entity : physical) {
+        gravityCollision(reg, dt, bottomBorder, entity);
+        liquidCollision(reg, dt, bottomBorder, entity);
+    }
+}
 
-    glm::vec2 xBoundsA, yBoundsA, xBoundsB, yBoundsB;
+bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
+    int xPos = reg.get<Renderable>(entity).xPos;
+    int xSize = reg.get<Renderable>(entity).xSize;
+    int yPos = reg.get<Renderable>(entity).yPos;
+    int ySize = reg.get<Renderable>(entity).ySize;
 
-    // loop through each entity in the view
-    for (auto entityA : view) {
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
+            if (grid[x][y]) return false;
+        }
+    }
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
+            grid[x][y] = true;
+        }
+    }
+    return true;
+}
 
-        // left and right dimensions of entity A (save them for collisions later on)
-        xBoundsA = glm::vec2(reg.get<Renderable>(entityA).xPos,
-                            reg.get<Renderable>(entityA).xPos +
-                            (float)reg.get<Renderable>(entityA).xSize);
-        // top and bottom dimensions of entity A (save them for collisions later on)
-        yBoundsA = glm::vec2(reg.get<Renderable>(entityA).yPos,
-                            reg.get<Renderable>(entityA).yPos +
-                            (float)reg.get<Renderable>(entityA).ySize);
+void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
+    entt::entity entity) {
+    int xPos = reg.get<Renderable>(entity).xPos;
+    int xSize = reg.get<Renderable>(entity).xSize;
+    int yPos = reg.get<Renderable>(entity).yPos;
+    int ySize = reg.get<Renderable>(entity).ySize;
+    float gravity = dt * reg.get<Physics>(entity).mass * GRAVITY;
 
-        // loop through each entity with the physics component that's above the
-        // bottom border
-        if (reg.get<Renderable>(entityA).yPos + reg.get<Renderable>(entityA).ySize
-            <= bottomBorder) {    
-            // calculate distance moved by gravity for the object and add it to
-            // the entity's y component to simulate gravity
-            reg.patch<Renderable>(entityA, [dt, entityA, &reg](auto &renderable)
-            {
-                renderable.yPos += dt * reg.get<Physics>(entityA).mass * GRAVITY;
+    reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
+        renderable.yPos += gravity;
+    });
+
+    int i = 0;
+    int newYPos = ((int)reg.get<Renderable>(entity).yPos + ySize);
+    bool result = false;
+    for (i = xPos; i < xPos + xSize; i++) {
+        if (grid[i][newYPos] ||
+            ((yPos + ySize) >= bottomBorder)) {
+            result = true;
+            break;
+        }
+    }
+    
+    int ySolid = 0;
+
+    if (result) {
+        if ((yPos + ySize) >= bottomBorder) {
+            ySolid = bottomBorder - ySize;
+        } else {
+            for (int j = yPos + ySize; j < bottomBorder; j++) {
+                if (grid[i][j]) {
+                    ySolid = j - ySize;
+                    break;
+                }
+            }
+        }
+        reg.patch<Renderable>(entity, [&reg, ySolid, gravity](auto &renderable)
+        {
+            if (ySolid != 0) {
+                renderable.yPos = ySolid;
+            } else {
+                renderable.yPos -= gravity;
+            }
+        });
+    }
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (reg.get<Renderable>(entity).yPos); y++) {
+            grid[x][y] = false;
+        }
+    }
+    yPos = reg.get<Renderable>(entity).yPos;
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
+            grid[x][y] = true;
+        }
+    }
+}
+
+void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
+    entt::entity entity) {
+    if (reg.any_of<Liquid>(entity)) {
+        srand((unsigned int)entity);
+        int xPos = reg.get<Renderable>(entity).xPos;
+        int xSize = reg.get<Renderable>(entity).xSize;
+        int yPos = reg.get<Renderable>(entity).yPos;
+        int ySize = reg.get<Renderable>(entity).ySize;
+
+        int modifier = 0;
+
+        if (yPos + ySize == bottomBorder) {
+            return;
+        } else if (grid[xPos][yPos + ySize + 1] || grid[xPos + xSize - 1][yPos + ySize + 1]) {
+            modifier = ((rand() % 3) >= 2) ? 1 : -1;
+            reg.patch<Renderable>(entity, [dt, modifier](auto &renderable) {
+                renderable.xPos += dt * 30 * modifier;
             });
             //Update vertice locations on triangle shapes
             if(reg.all_of<Triangle,Physics>(entityA)){
@@ -44,82 +119,108 @@ void Collision::rigidBodyCollision(entt::registry &reg, float dt,
                 });
             }
         }
+        int newX = reg.get<Renderable>(entity).xPos;
 
-        // now we loop through every entity again, so we can compare entities
-        for (auto entityB : view) {
-            ///There's a separate function for dealing with triangle collisions
-            //because they're a pain to calculate unlike rectangle shapes.
-            //So we skip any triangle entities (including forcewaves)
-            if((!reg.all_of<Triangle>(entityA)) && (!reg.all_of<Triangle>(entityB))){
-                // we check to make sure we don't compare an entity with itself,
-                // since it'd always be colliding with itself
-                if (entityA != entityB) {
-                    // left and right dimensions of entity B
-                    // (save them for collisions later on)
-                    xBoundsB = glm::vec2(reg.get<Renderable>(entityB).xPos,
-                                        reg.get<Renderable>(entityB).xPos +
-                                        (float)reg.get<Renderable>(entityB).xSize);
-                    // top and bottom dimensions of entity B
-                    // (save them for collisions later on)
-                    yBoundsB = glm::vec2(reg.get<Renderable>(entityB).yPos,
-                                        reg.get<Renderable>(entityB).yPos +
-                                        (float)reg.get<Renderable>(entityB).ySize);
-
-                    /* This next part is really dense so I'm going to be very verbose */
-
-                    /* 
-                    * if entity B's left side is to the left of entity A's left side,
-                    * AND entity B's right side is to the right of entity A's left side,
-                    * 
-                    * OR entity A's left side is to the left of entity B's right size,
-                    * AND entity A's right side is to the right of entity B's right side,
-                    */ 
-                    if ((xBoundsB.x <= xBoundsA.x) && (xBoundsA.x <= xBoundsB.y) ||
-                        (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
-                        /*
-                        * if entity B's top is above entity A's bottom,
-                        * AND entity B's bottom is below entity A's bottom
-                        */
-                        if ((yBoundsB.x < yBoundsA.y) && (yBoundsA.y < yBoundsB.y)) {
-                            // we essentially undo the gravitational effect before it's
-                            // even drawn.
-                            reg.patch<Renderable>(entityA, [dt, entityA, &reg]
-                                (auto &renderable) {
-                                renderable.yPos -= dt * reg.get<Physics>(entityA).mass
-                                    * GRAVITY;
-                            });
-                        }
-                    }
-                    /* 
-                    * if entity A's left side is to the left of entity B's left side,
-                    * AND entity A's right side is to the right of entity B's left side,
-                    * OR
-                    * entity A's left side is to the left of entity B's left side,
-                    * AND entity A's right side is to the right of entity B's right side,
-                    */
-                    if (((xBoundsA.x <= xBoundsB.x) && (xBoundsB.x <= xBoundsA.y)) ||
-                        (((xBoundsA.x <= xBoundsB.y) && (xBoundsB.y <= xBoundsA.y)))) {
-                        /*
-                        * if entity A's top is above entity B's bottom,
-                        * AND entity A's bottom is below entity B's bottom
-                        */
-                        if ((yBoundsA.x < yBoundsB.y) && (yBoundsB.y < yBoundsA.y)) {
-                            // we essentially undo the gravitational effect before it's
-                            // even drawn.
-                            reg.patch<Renderable>(entityB, [dt, entityB, &reg]
-                                (auto &renderable) {
-                                renderable.yPos -= dt * reg.get<Physics>(entityB).mass
-                                    * GRAVITY;
-                            });
-                        }
+        if (modifier > 0) {
+            for (int x = xPos + xSize; x < newX + xSize; x++) {
+                for (int y = yPos; y < yPos + ySize; y++) {
+                    if (grid[x][y]) {
+                        reg.patch<Renderable>(entity, [&reg, dt, xPos](auto &renderable) {
+                            renderable.xPos = xPos;
+                        });
+                        return;
                     }
                 }
+            }
+        } else {
+            for (int x = xPos - 1; x >= newX; x--) {
+                for (int y = yPos; y < yPos + ySize; y++) {
+                    if (grid[x][y]) {
+                        reg.patch<Renderable>(entity, [&reg, dt, xPos, x](auto &renderable) {
+                            renderable.xPos = xPos;
+                        });
+                        return;
+                    }
+                }
+            }
+        }
+        for (int x = xPos; x < (xPos + xSize); x++) {
+            for (int y = yPos; y < yPos + ySize; y++) {
+                grid[x][y] = false;
+            }
+        }
+        yPos = reg.get<Renderable>(entity).yPos;
+        xPos = reg.get<Renderable>(entity).xPos;
+        for (int x = xPos; x < (xPos + xSize); x++) {
+            for (int y = yPos; y < (yPos + ySize); y++) {
+                grid[x][y] = true;
             }
         }
     }
 }
 
-void Collision::triangleCollision(entt::registry *reg, float dt){
+// Entity A left overlaps Entity B
+bool Collision::leftOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    float  leftA  = reg.get<Renderable>(A).xPos,
+           rightA = reg.get<Renderable>(A).xPos + (float)reg.get<Renderable>(A).xSize,
+           leftB  = reg.get<Renderable>(B).xPos,
+           rightB = reg.get<Renderable>(B).xPos + (float)reg.get<Renderable>(B).xSize;
+
+    return ((leftA <= leftB) && (leftB <= rightA)) ? true : false;
+}
+
+// Entity A right overlaps Entity B
+bool Collision::rightOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+
+    float  leftA  = reg.get<Renderable>(A).xPos,
+           rightA = reg.get<Renderable>(A).xPos + (float)reg.get<Renderable>(A).xSize,
+           leftB  = reg.get<Renderable>(B).xPos,
+           rightB = reg.get<Renderable>(B).xPos + (float)reg.get<Renderable>(B).xSize;
+
+    return ((leftB <= leftA) && (leftA <= rightB)) ? true : false;
+}
+
+// Entity A top overlaps Entity B
+bool Collision::topOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    
+    float  topA  = reg.get<Renderable>(A).yPos,
+           bottomA = reg.get<Renderable>(A).yPos + (float)reg.get<Renderable>(A).ySize,
+           topB  = reg.get<Renderable>(B).yPos,
+           bottomB = reg.get<Renderable>(B).yPos + (float)reg.get<Renderable>(B).ySize;
+
+    return ((topA <= bottomB) && (bottomB <= bottomA)) ? true : false;
+}
+
+// Entity A bottom overlaps Entity B
+bool Collision::bottomOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+
+    double topA  = reg.get<Renderable>(A).yPos,
+           bottomA = reg.get<Renderable>(A).yPos + (float)reg.get<Renderable>(A).ySize,
+           topB  = reg.get<Renderable>(B).yPos,
+           bottomB = reg.get<Renderable>(B).yPos + (float)reg.get<Renderable>(B).ySize;
+
+    return ((topB <= bottomA) && (bottomA <= bottomB)) ? true : false;
+}
+
+bool Collision::xOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    if (leftOverlap(reg, A, B))
+        return true;
+    else if (rightOverlap(reg, A, B))
+        return true;
+    else
+        return false;
+}
+
+bool Collision::yOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    if (topOverlap(reg, A, B))
+        return true;
+    else if (bottomOverlap(reg, A, B))
+        return true;
+    else
+        return false;
+}
+
+void Collision::triangleCollision(entt::registry *reg, float dt) {
     bool insideFlag=false;
     auto view = reg->view<Physics>();
     // loop through each entity in the view
@@ -199,30 +300,28 @@ void Collision::triangleCollision(entt::registry *reg, float dt){
     }
 }
 
-
-
-bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
-    colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
-        reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
-        reg.get<Renderable>(obj2).xSize >= reg.get<Renderable>(obj1).xPos;
+// bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
+//     colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
+//         reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
+//         reg.get<Renderable>(obj2).xSize >= reg.get<Renderable>(obj1).xPos;
     
-    colY = reg.get<Renderable>(obj1).yPos + reg.get<Renderable>(obj1).ySize >= 
-        reg.get<Renderable>(obj2).yPos && reg.get<Renderable>(obj2).yPos + 
-        reg.get<Renderable>(obj2).ySize >= reg.get<Renderable>(obj1).yPos;
+//     colY = reg.get<Renderable>(obj1).yPos + reg.get<Renderable>(obj1).ySize >= 
+//         reg.get<Renderable>(obj2).yPos && reg.get<Renderable>(obj2).yPos + 
+//         reg.get<Renderable>(obj2).ySize >= reg.get<Renderable>(obj1).yPos;
 
-    return colX && colY;
-}
+//     return colX && colY;
+// }
 
-bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
-    auto view = reg.view<Renderable>();
-    for(auto Entity : view){
-        if(detector(entity, Entity, reg)){
-            return true;
-        }
-    }
+// bool Collision::checkCollision(entt::entity entity, entt::registry &reg){
+//     auto view = reg.view<Renderable>();
+//     for(auto Entity : view){
+//         if(detector(entity, Entity, reg)){
+//             return true;
+//         }
+//     }
 
-    return false;
-}
+//     return false;
+// }
 //Depcrecated(?), uses an old simulation object
 /*
 void Collision::collide(SimulationObject &obj){

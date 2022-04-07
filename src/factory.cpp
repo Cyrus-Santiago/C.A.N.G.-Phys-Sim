@@ -5,17 +5,19 @@
 #include <glm/fwd.hpp>
 #include <string>
 
-entt::entity Factory::makeParticle(entt::registry &reg, glm::vec2 position,
+entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::vec2 position,
     glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
+
+    if (type == "WATER")
+        reg.emplace<Liquid>(entity, 0.1f, 0.0f);
+        
+    reg.emplace<Physics>(entity, 10.0f);
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button2", position.x, position.y, 5, 5,
+    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
         0.0f, color.x, color.y, color.z, color.w);
-
-    // give the particle a mass of 10 and turn on physics, setting it's initial height
-    reg.emplace<Physics>(entity, 10.0f);
 
     return entity;
 }
@@ -83,32 +85,46 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
     int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
     int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
+
     auto entity1 = reg.create(); //Top Line
     reg.emplace<Renderable>(entity1, "topBorder", "button1", (float)xPos+1, (float)yPos, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity1, "topBorder");
+
     auto entity2 = reg.create(); //Bottom Line
     reg.emplace<Renderable>(entity2, "bottomBorder", "button1", (float)xPos+1, (float)yPos+areaHeight, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity2, "bottomBorder");
+
     auto entity3 = reg.create(); //Left Line
     reg.emplace<Renderable>(entity3, "leftBorder", "button1", (float)xPos-1, (float)yPos, 
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity3, "leftBorder");
+
     auto entity4 = reg.create(); //Right Line
     reg.emplace<Renderable>(entity4, "rightBorder", "button1", (float)(xPos+areaWidth)-1, (float)yPos, 
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity4, "rightBorder");
+
+    std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
+    std::cout << (yPos + areaHeight) - (yPos) << std::endl;
+
     return;
 };
 
 void Factory::draw(entt::registry &reg, entt::entity entity,
     SpriteRenderer &spriteRenderer) {
     
+    Texture2D texture;
+
     // pass the specified texture string from the entity and provide it to the
     // resource manager to get our texture
-    Texture2D texture =
-    ResourceManager::GetTexture(reg.get<Renderable>(entity).texture);
+    if (reg.get<Renderable>(entity).texture != "") {
+        texture =
+        ResourceManager::GetTexture(reg.get<Renderable>(entity).texture);
+    } else {
+        texture.ID = -1;
+    }
 
     // call upon the spriteRenderer to render the entity based on it's
     // renderable component

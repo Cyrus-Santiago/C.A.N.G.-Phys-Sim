@@ -66,15 +66,14 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // declare variables that glfw will store mouse position data in
     double xPos, yPos;
     // call glfw to give us mouse position data
-    //std::cout<<"mouse is clicking"<<std::endl;
+    // std::cout<<"mouse is clicking"<<std::endl;
     glfwGetCursorPos(window, &xPos, &yPos);
-    //Debug mouse click location
     //std::cout<<"x "<<xPos<<" y "<<yPos<<std::endl;
     Input::validClick=Input::determineAreaPressed(xPos,yPos);
   }
   else if (action==GLFW_RELEASE)  {
     mousePressed=false;
-    //std::cout<<"mouse not clicking"<<std::endl;
+    // std::cout<<"mouse not clicking"<<std::endl;
   }
 }
 
