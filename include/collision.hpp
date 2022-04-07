@@ -17,7 +17,7 @@ public:
     };
     //Calculates whether a collision occured
 
-    void registerEntity(entt::registry &reg, entt::entity entity);
+    bool registerEntity(entt::registry &reg, entt::entity entity);
     
     void collisionLoop(entt::registry &reg, float dt, int bottomBorder);
 

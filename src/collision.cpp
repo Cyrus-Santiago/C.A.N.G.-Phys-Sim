@@ -12,7 +12,7 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
     }
 }
 
-void Collision::registerEntity(entt::registry &reg, entt::entity entity) {
+bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
     int xPos = reg.get<Renderable>(entity).xPos;
     int xSize = reg.get<Renderable>(entity).xSize;
     int yPos = reg.get<Renderable>(entity).yPos;
@@ -20,9 +20,15 @@ void Collision::registerEntity(entt::registry &reg, entt::entity entity) {
 
     for (int x = xPos; x < (xPos + xSize); x++) {
         for (int y = yPos; y < (yPos + ySize); y++) {
+            if (grid[x][y]) return false;
+        }
+    }
+    for (int x = xPos; x < (xPos + xSize); x++) {
+        for (int y = yPos; y < (yPos + ySize); y++) {
             grid[x][y] = true;
         }
     }
+    return true;
 }
 
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
@@ -86,29 +92,44 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
 void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entity) {
     if (reg.any_of<Liquid>(entity)) {
+        srand((unsigned int)entity);
         int xPos = reg.get<Renderable>(entity).xPos;
         int xSize = reg.get<Renderable>(entity).xSize;
         int yPos = reg.get<Renderable>(entity).yPos;
         int ySize = reg.get<Renderable>(entity).ySize;
+
+        int modifier = 0;
+
         if (yPos + ySize == bottomBorder) {
             return;
-        } else if (grid[xPos][yPos + ySize + 1]) {
-            reg.patch<Renderable>(entity, [&reg, dt](auto &renderable) {
-                renderable.xPos += dt * 50;
-            });
-        } else if (grid[xPos + xSize][yPos + ySize + 1]) {
-            reg.patch<Renderable>(entity, [&reg, dt](auto &renderable) {
-                renderable.xPos -= dt * 50;
+        } else if (grid[xPos][yPos + ySize + 1] || grid[xPos + xSize - 1][yPos + ySize + 1]) {
+            modifier = ((rand() % 3) >= 2) ? 1 : -1;
+            reg.patch<Renderable>(entity, [dt, modifier](auto &renderable) {
+                renderable.xPos += dt * 30 * modifier;
             });
         }
         int newX = reg.get<Renderable>(entity).xPos;
-        for (int x = xPos + xSize; x < newX + xSize; x++) {
-            for (int y = yPos; y < yPos + ySize; y++) {
-                if (grid[x][y]) {
-                    reg.patch<Renderable>(entity, [&reg, dt, xPos](auto &renderable) {
-                        renderable.xPos = xPos;
-                    });
-                    return;
+
+        if (modifier > 0) {
+            for (int x = xPos + xSize; x < newX + xSize; x++) {
+                for (int y = yPos; y < yPos + ySize; y++) {
+                    if (grid[x][y]) {
+                        reg.patch<Renderable>(entity, [&reg, dt, xPos](auto &renderable) {
+                            renderable.xPos = xPos;
+                        });
+                        return;
+                    }
+                }
+            }
+        } else {
+            for (int x = xPos - 1; x >= newX; x--) {
+                for (int y = yPos; y < yPos + ySize; y++) {
+                    if (grid[x][y]) {
+                        reg.patch<Renderable>(entity, [&reg, dt, xPos, x](auto &renderable) {
+                            renderable.xPos = xPos;
+                        });
+                        return;
+                    }
                 }
             }
         }

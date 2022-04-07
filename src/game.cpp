@@ -126,7 +126,8 @@ void Game::Update(float dt) {
             case GAME_DRAW_ELEMENT:
               entity = factory.makeParticle(* reg, pressedButton.Type,
                 glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
-              colEngine.registerEntity(* reg, entity);
+              if (!colEngine.registerEntity(* reg, entity))
+                reg->destroy(entity);
               break;
 
             case GAME_DRAW_SHAPE:
@@ -161,7 +162,8 @@ void Game::Update(float dt) {
     }
     
     //Needed so that multiple clicks are not registered in one spot
-    Input::resetValidClick();
+    if (int(State) != GAME_DRAW_ELEMENT)
+      Input::resetValidClick();
   }
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
