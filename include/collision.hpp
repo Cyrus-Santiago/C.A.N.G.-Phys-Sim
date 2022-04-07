@@ -8,18 +8,35 @@
 class Collision{
 public:
     //constructor
-    Collision(){};
+    Collision(){
+        for (int i = 0; i < 764; i++) {
+            for (int j = 0; j < 345; j++) {
+                grid[i][j] = false;
+            }
+        }
+    };
     //Calculates whether a collision occured
-    bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
-    bool checkCollision(entt::entity entity, entt::registry &reg);
-    void gravityCollision(entt::registry &reg, float dt, int bottomBorder);
-    void liquidCollision(entt::registry &reg, float dt);
+
+    bool registerEntity(entt::registry &reg, entt::entity entity);
+    
+    void collisionLoop(entt::registry &reg, float dt, int bottomBorder);
+
     void triangleCollision(entt::registry *reg,float dt);
 
+    bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
+    bool checkCollision(entt::entity entity, entt::registry &reg);
     // void collide(SimulationObject &obj);
 
 private:
-    bool colX, colY;
+    // 43, 806 x coords
+    // 43, 387 y coords
+    bool grid[763][344];
+
+    void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
+        entt::entity entity);
+
+    void liquidCollision(entt::registry &reg, float dt, int bottomBorder,
+        entt::entity entity);
 
     // if A right overlaps B
     bool rightOverlap(entt::registry &reg, entt::entity A, entt::entity B);

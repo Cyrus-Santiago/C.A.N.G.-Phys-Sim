@@ -120,11 +120,16 @@ void Game::Update(float dt) {
           assert(Height>0);
           glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
           //Determines what to do based on the game state
+          entt::entity entity;
           switch(int(State)) {
+            
             case GAME_DRAW_ELEMENT:
-              factory.makeParticle(* reg, pressedButton.Type, glm::vec2((int) newMouseClick.xPos,
-                (int) newMouseClick.yPos), buttonColor);
+              entity = factory.makeParticle(* reg, pressedButton.Type,
+                glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
+              if (!colEngine.registerEntity(* reg, entity))
+                reg->destroy(entity);
               break;
+
             case GAME_DRAW_SHAPE:
               //Double length if shape is a rectangle
               if(pressedButton.Type=="RECTANGLE")
@@ -132,14 +137,17 @@ void Game::Update(float dt) {
               factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos-20,
                 (int)newMouseClick.yPos-20), buttonColor,shapeDimensions, pressedButton.Type);
               break;            
+
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
+
             case GAME_DRAW_BEAM:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
               break;
+
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
               for(int i=0; i<8; i++)  {
@@ -154,13 +162,14 @@ void Game::Update(float dt) {
     }
     
     //Needed so that multiple clicks are not registered in one spot
-    Input::resetValidClick();
+    if (int(State) != GAME_DRAW_ELEMENT)
+      Input::resetValidClick();
   }
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  colEngine.gravityCollision(* reg, dt, bottomBorder);
-  colEngine.liquidCollision(* reg, dt);
+  colEngine.collisionLoop(* reg, dt, bottomBorder);
+
   //TODO colEngine.triangleCollision(reg, dt);
 }
 
