@@ -107,6 +107,17 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
             reg.patch<Renderable>(entity, [dt, modifier](auto &renderable) {
                 renderable.xPos += dt * 30 * modifier;
             });
+            //Update vertice locations on triangle shapes
+            if(reg.all_of<Triangle,Physics>(entity)){
+                reg.patch<Triangle>(entity, [dt, entity, &reg](auto &triangle){
+                    float deltaY=dt * reg.get<Physics>(entity).mass * GRAVITY;
+                    //functional operator "map" to update each point position
+                    std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[deltaY](glm::vec2 point){
+                        point.y+=deltaY;
+                        return(point);
+                    });
+                });
+            }
         }
         int newX = reg.get<Renderable>(entity).xPos;
 
@@ -216,15 +227,15 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
     for (auto triangleEnt : view) {
         for(auto entity : view){
             insideFlag=false;
-            //If the entities being compared are not the same and the second from rendreable is not a triangle
-            if((entity != triangleEnt) && (!reg->all_of<Triangle>(entity))){
-                std::cout<<"he"<<std::endl;
-                //I declared variables so it is more human readable. These are bounds for the renderable entity
+            //If the entities being compared are not the same and the second from physics is not a triangle
+            if((entity != triangleEnt) && (!reg->all_of<Triangle>(entity) && (reg->all_of<Triangle>(triangleEnt)))){
+                //I declared variables so it is more human readable. These are bounds for the physics entity
                 float xSize =reg->get<Renderable>(entity).xSize;
                 float ySize =reg->get<Renderable>(entity).ySize;
                 glm::vec2 lowerBound(reg->get<Renderable>(entity).xPos,reg->get<Renderable>(entity).yPos);
                 glm::vec2 upperBound(reg->get<Renderable>(entity).xPos+xSize,reg->get<Renderable>(entity).yPos+ySize);
                 //Iterate through each point in the triangle entity to see if it is inside a renderable
+                
                 for(auto point : reg->get<Triangle>(triangleEnt).points){
                 
                     //If the point on a triangle is within some renderable shape.
@@ -234,9 +245,20 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
                         reg->patch<Renderable>(triangleEnt, [dt, triangleEnt, &reg] (auto &renderable){
                             renderable.yPos-=dt*reg->get<Physics>(triangleEnt).mass * GRAVITY;
                         });
+                        reg->patch<Triangle>(triangleEnt, [dt, triangleEnt, &reg](auto &triangle){
+                            float deltaY=dt * reg->get<Physics>(triangleEnt).mass * GRAVITY;
+                            //functional operator "map" to update each point position
+                            std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[deltaY](glm::vec2 point){
+                                point.y+=deltaY;
+                                return(point);
+                            });
+                        });        
+                    std::cout<<"AAAAABBBBBBBB"<<std::endl;
+
                         break;
                     }
                 }
+                
                 //Need to run more collision calculations using slopes :/
                 if(!insideFlag){
                     //Variables so it's more human readable. Gets each triangle vertex and the slopes
@@ -247,20 +269,20 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
                     float rightSlope= (rightPoint.y - topPoint.y) / (rightPoint.x - topPoint.x);
                     float pointY=topPoint.y;
                     //Calculate collisions along the right edge of the triangle
-                    std::cout<<"lower "<<lowerBound.x<<" "<<lowerBound.y<<" upperBound "<<upperBound.x<<" "<<upperBound.y<<std::endl;
+                    //TODO std::cout<<"x "<<lowerBound.x<<"-"<<upperBound.x<<" y "<<lowerBound.y<<"-"<<upperBound.y<<std::endl;
                     for(float pointX=topPoint.x; pointX <= rightPoint.x; pointX++){
                         //If the point on a triangle is within some renderable shape.
                         if( (pointX >= lowerBound.x) && (pointX <= upperBound.x) &&
                             (pointY >= lowerBound.y) && (pointY <= upperBound.y) )  {
                             reg->patch<Renderable>(triangleEnt, [dt, triangleEnt, &reg] (auto &renderable){
                                 renderable.yPos-=dt*reg->get<Physics>(triangleEnt).mass * GRAVITY;
-                            });
+                            }); 
                             std::cout<<"AAAAA"<<std::endl;
                             break;
                         }
                         //else, calculate a new point on the edge of the triangle with the slope.
                         else    {
-                            std::cout<<"pointX "<<pointX<<" pointY "<<pointY<<std::endl;
+                            //TODO std::cout<<"pointX "<<pointX<<" pointY "<<pointY<<std::endl;
                             pointY+=rightSlope;
                         }
                     }
