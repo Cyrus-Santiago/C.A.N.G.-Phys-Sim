@@ -158,7 +158,7 @@ void Game::Update(float dt) {
   }
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
-  //TODO colEngine.triangleCollision(reg, dt);
+  colEngine.triangleCollision(reg, dt);
   colEngine.rigidBodyCollision(* reg, dt, bottomBorder);
 }
 
