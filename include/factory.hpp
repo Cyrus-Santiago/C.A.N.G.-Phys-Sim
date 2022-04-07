@@ -41,6 +41,7 @@ struct Border {
 
 struct Liquid {
     float viscosity;
+    float movement;
 };
 
 class Factory {
