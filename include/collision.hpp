@@ -11,7 +11,7 @@ public:
     Collision(){
         for (int i = 0; i < 764; i++) {
             for (int j = 0; j < 345; j++) {
-                grid[i][j] = false;
+                grid[i][j] = entt::null;
             }
         }
     };
@@ -30,7 +30,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-    bool grid[763][344];
+    entt::entity grid[763][344];
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
