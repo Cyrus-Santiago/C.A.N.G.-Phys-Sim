@@ -94,6 +94,7 @@ void Collision::liquidCascade(entt::registry &reg, entt::entity entt, float dt, 
 
 void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entt) {
+    if (!reg.all_of<Liquid>(entt)) return;
     bool above = false;
     auto enttR = reg.get<Renderable>(entt);
     for (int i = enttR.xPos; i < enttR.xPos + enttR.xSize; i++) {
