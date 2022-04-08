@@ -16,7 +16,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     reg.emplace<Physics>(entity, 10.0f);
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
+    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 15, 15,
         0.0f, color.x, color.y, color.z, color.w);
 
     return entity;
@@ -106,8 +106,8 @@ void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity4, "rightBorder");
 
-    std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
-    std::cout << (yPos + areaHeight) - (yPos) << std::endl;
+    // std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
+    // std::cout << (yPos + areaHeight) - (yPos) << std::endl;
 
     return;
 };

@@ -77,6 +77,7 @@ void Game::Init(GLFWwindow *window) {
   for (auto border : view) {
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
+      colEngine.registerEntity(* reg, border);
     }
   }
   // give the button data to input class
