@@ -1,5 +1,6 @@
 #include "../include/collision.hpp"
 #include "../include/factory.hpp"
+#include <GLFW/glfw3.h>
 
 #define GRAVITY 9.17
 
@@ -88,15 +89,45 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     }
 }
 
+void Collision::liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left) {
+}
+
 void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
-    entt::entity entity) {
-    
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
+    entt::entity entt) {
+    bool above = false;
+    auto enttR = reg.get<Renderable>(entt);
+    for (int i = enttR.xPos; i < enttR.xPos + enttR.xSize; i++) {
+        if (reg.valid(grid[i][(int)enttR.yPos - 1])) {
+            above = true;
+        }
+    }
+    if (above) {
+        moveX(reg, entt, dt, true);
+    }
+}
 
-
+void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
+    auto enttR = reg.get<Renderable>(entt);
+    for (int i = enttR.yPos; i < (enttR.yPos + enttR.ySize); i++) {
+        if (reg.valid(grid[(int)enttR.xPos + enttR.xSize + 1][i])) return;
+    }
+    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
+        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+            grid[x][y] = entt::null;
+        }
+    }
+    reg.patch<Renderable>(entt, [dt, right](auto &renderable) {
+        if (right)
+            renderable.xPos += dt * 50;
+        else
+            renderable.xPos -= dt * 50;;
+    });
+    enttR = reg.get<Renderable>(entt);
+    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
+        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+            grid[x][y] = entt;
+        }
+    }
 }
 
 void Collision::triangleCollision(entt::registry *reg, float dt) {
