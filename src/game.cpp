@@ -26,6 +26,7 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
+Click gridMouseClick;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -77,8 +78,8 @@ void Game::Init(GLFWwindow *window) {
   for (auto border : view) {
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
-      colEngine.registerEntity(* reg, border);
     }
+    colEngine.registerEntity(* reg, border);
   }
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -123,15 +124,18 @@ void Game::Update(float dt) {
           glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
           //Determines what to do based on the game state
           entt::entity entity;
+          gridMouseClick=newMouseClick;
+          gridMouseClick.xPos-=43;     gridMouseClick.yPos-=43;
           switch(int(State)) {
             
             case GAME_DRAW_ELEMENT:
               if(Input::mousePressed){
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
-              }
+              }//TODO update mouseclick with edgegap
               entity = factory.makeParticle(* reg, pressedButton.Type,
-                glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
+                glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor,
+                glm::vec2((int)gridMouseClick.xPos, (int) gridMouseClick.yPos));
               if (!colEngine.registerEntity(* reg, entity))
                 reg->destroy(entity);
               break;

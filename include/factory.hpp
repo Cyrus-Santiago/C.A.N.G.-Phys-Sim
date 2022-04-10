@@ -14,6 +14,7 @@ struct Renderable {
     int xSize, ySize;
     float rotate;
     float colorR, colorG, colorB, colorA;
+    glm::vec2 gridPos;
 };
 
 // component for holding all data needed to enable physics properties for an entity
@@ -48,12 +49,12 @@ class Factory {
 public:
     // used to create a new particle entity
     entt::entity makeParticle(entt::registry &reg, std::string type, glm::vec2 position =
-        glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f));
+        glm::vec2(1, 1), glm::vec4 color = glm::vec4(1.0f), glm::vec2 gridPos=glm::vec2(0,0));
 
     // used to create a new shape entity
     entt::entity makeShape(entt::registry &reg, glm::vec2 position =
         glm::vec2(50, 50), glm::vec4 color = glm::vec4(1.0f), glm::vec2 dimensions=
-        glm::vec2(30), std::string type="shape");
+        glm::vec2(30), std::string type="shape");//TODO, glm::vec2 gridPos= glm::vec2(0,0));
 
     //used to create the borders of the simulation area
     void makeBorder(entt::registry &reg, int scrWidth, int scrHeight, 

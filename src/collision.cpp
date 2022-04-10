@@ -14,14 +14,40 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
 }
 
 bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
+    glm::vec2 lowerBound,upperBound;
+    //Upper and lower bounds of the entity's position
+    lowerBound.x=reg.get<Renderable>(entity).gridPos.x;
+    lowerBound.y=reg.get<Renderable>(entity).gridPos.y;
+    upperBound.x=reg.get<Renderable>(entity).gridPos.x+reg.get<Renderable>(entity).xSize;
+    upperBound.y=reg.get<Renderable>(entity).gridPos.y+reg.get<Renderable>(entity).ySize;
+    
+    for (int x=(int)lowerBound.x; x < (int)upperBound.x; x++){
+        for(int y=(int)lowerBound.y; y < (int)upperBound.y; y++){
+            if(reg.valid(grid[x][y])){
+                return false;
+            }   
+        }
+    }
+    for (int x=(int)lowerBound.x; x < (int)upperBound.x; x++){
+        for(int y=(int)lowerBound.y; y < (int)upperBound.y; y++){
+            grid[x][y] = entity;
+        }
+    }
+    return true;
+}
+    /*
     int xPos = reg.get<Renderable>(entity).xPos;
     int xSize = reg.get<Renderable>(entity).xSize;
     int yPos = reg.get<Renderable>(entity).yPos;
     int ySize = reg.get<Renderable>(entity).ySize;
-
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            if (reg.valid(grid[x][y])) return false;
+    std::cout<<"x="<<xPos<<"-"<<xSize+xPos<<" y="<<yPos<<"-"<<ySize+yPos<<std::endl;
+    for (int x = xPos-xSize; x < (xPos + xSize); x++) {
+        for (int y = yPos-ySize; y < (yPos + ySize); y++) {
+            std::cout<<"uhhh "<<"x="<<x<<" y="<<y<<std::endl;
+            if (reg.valid(grid[x][y])) {
+               // std::cout<<"uhm"<<std::endl;
+                return false;
+            }
         }
     }
     for (int x = xPos; x < (xPos + xSize); x++) {
@@ -31,7 +57,7 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
     }
     return true;
 }
-
+*/
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entity) {
     int xPos = reg.get<Renderable>(entity).xPos;

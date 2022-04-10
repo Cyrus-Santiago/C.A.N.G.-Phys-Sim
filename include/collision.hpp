@@ -4,6 +4,7 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
+#include <glm/fwd.hpp>
 
 class Collision{
 public:
@@ -30,7 +31,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-    entt::entity grid[763][345];
+    entt::entity grid[764][347];
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
