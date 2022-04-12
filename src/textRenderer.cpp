@@ -95,9 +95,15 @@ void TextRenderer::Draw(SpriteRenderer &renderer, std::string name,
     assert(Sentences.find(name) != Sentences.end());
     // retrieve the struct information from sentence array
     CharactersArray charArray = Sentences.at(name);
+		Character characters[] = {
+			Character('M', {3.37f, 1.05f}),
+			Character('A', {0.07f, 0.01f}),
+			Character('S', {0.07f, 2.09f}),
+			Character('H', {7.77f, 0.01f})
+		};
     int i = 0;
     // loop through every character
-    for (Character &character : charArray.Characters) {
+    for (Character &character : characters) {
         // draw every character (increasing horizontal position in sentence)
         color.w = charArray.time;
         character.Draw(renderer, i, charArray.position, charArray.fontSize, 
