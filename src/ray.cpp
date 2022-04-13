@@ -6,9 +6,9 @@
 
 /* Print the contents of the rayOrigin array */
     void Ray::printRayStats(){
-        std::cout <<"Origin: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
+        std::cout <<"Head: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
         std::cout <<"Tail: (" << Tail[0] << ", " << Tail[1] << ")" << std::endl;
-        std::cout <<"Size: " << fabsf(Tail[0]-Position[0]) << " x " << Size[1] << std::endl;
+        std::cout <<"Direction: " << Direction[0] << "," << Direction[1] << std::endl;
     }
 
 /* Set position of the ray origin */
@@ -29,7 +29,7 @@
 
 /* Ray Dimensions (length, width) */
     void Ray::setSize(glm::vec2 position, glm::vec2 tail){
-        Size[0] = fabsf(tail[0]-position[0]);
+        Size[0] = (tail[0]-position[0]);
         Size[1] = 10;
     }
 
@@ -45,13 +45,12 @@
 
 /* Initial Stats upon inserting a ray */
     void Ray::init(double xPos, double yPos){
-        Position = {(float)xPos, (float)yPos};
-        Tail = {425, 300};
+        Position = {(float)xPos, (float)yPos}; /* head is at click */
+        Tail = {420, 200}; /* tail is always at origin */
         setSize(Position, Tail);
+        setDirection(); /* set angle relative to head/tail position */
         Texture = ResourceManager::GetTexture("laser");
-        Velocity = {0, 0};
-//TODO Not sure what "Move" is in reference to. Commented out since it was throwing an error
-//        Move(0);
+        Velocity = {0, 0}; /* we don't want the ray to move */
         Destroyed = false;
     }
 
@@ -59,35 +58,33 @@
     void Ray::clear(){
         Position = {0, 0};
         Tail = {0, 0};
-        Size = {0,0};
-        Texture = ResourceManager::GetTexture("laser");
+        Size = {0, 0};
         Velocity = {0, 0};
-//TODO        Move(0);
         Destroyed = true;
     }
 
 /* Angle Logic */
     void Ray::setDirection(){
-        float posX2 = Position[0] + Size[0],
+        float posX2 = Position[0] + Size[1],
               posY2 = Position[1] + Size[1],
-              tailX2 = Tail[0] + Size[0],
+              tailX2 = Tail[0] + Size[1],
               tailY2 = Tail[1] + Size[1];
         glm::vec2 Position2 = {posX2, posY2},
                   Tail2 = {tailX2, tailY2};
 
-        if (Position[1] == Position2[1])
+        if (Position[1] == Tail[1])
             Direction[0] = 0.0f; /* 0 degree with x axis */
-        else if (Position2[0] == Tail2[0])
+        else if (Position[0] == Position2[0])
             Direction[1] = 0.0f; /* 0 degree with y axis */
         else{
-            float xSlope = Position2[0] - Position[1],
-                  ySlope = Position2[1] - Position[1];
-            Direction[0] = (float)atan(ySlope/xSlope);
-            Direction[1] = (float)atan(xSlope/ySlope);
+            float xSlope = Position[0] - Tail[0],
+                  ySlope = Position[1] - Tail[0];
+            Direction[0] = (float)atan(ySlope/xSlope) * (180/M_PI);
+            Direction[1] = (float)atan(xSlope/ySlope) * (180/M_PI);
         }
     }
 
-/* Physical calcualtion for incident ray */
+/* Physical calculation for incident ray */
     Ray Ray::incident(){
         Ray newRay(Tail); /* Position of previous tail is new Origin */
         /* For incidence on x-axis - i.e. no angle on y-axis */
