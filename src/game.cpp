@@ -161,6 +161,30 @@ void Game::Update(float dt) {
                   glm::vec2(Explosion::velocityArrayX[i], Explosion::velocityArrayY[i]));
               }
               break;
+
+            /**/
+            case GAME_MOVE_OBJECT:
+              if(Input::mousePressed){
+                Input::mousePressHeldDown(Window);
+                newMouseClick=input.getLastMouseClickPos();
+              } 
+              entt::entity clickedObject; //Used to update object
+              auto view = reg->view<Renderable>();
+              for(auto object : view){ //Find object that was clicked
+                int objX = reg->get<Renderable>(object).xPos;
+                int objY = reg->get<Renderable>(object).yPos;
+                if((int)newMouseClick.xPos > objX && (int)newMouseClick.xPos > objX+reg->get<Renderable>(object).xSize){
+                  if((int)newMouseClick.yPos > objY && (int)newMouseClick.yPos > objY+reg->get<Renderable>(object).ySize){
+                    clickedObject = object;
+                    break;
+                  }
+                }
+              }
+              //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
+            reg->patch<Renderable>(clickedObject, [](auto &pos){
+              pos.xPos = (int)newMouseClick.xPos-20, pos.yPos = (int)newMouseClick.yPos-20;
+            });
+            break;
           }
         }
         break;
@@ -244,9 +268,18 @@ GameState Game::determineGameState()  {
           //std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
       }
-      else if(pressedButton[0].ID ==35) {
+      else if(pressedButton[0].ID == 35) {
           //std::cout<<"explosion mode"<<std::endl;
           return GAME_DRAW_EXPLOSION;
+      }
+      else if(pressedButton[0].ID == 36) {
+        return GAME_MOVE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 37) {
+        return GAME_RESIZE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 38) {
+        return GAME_DELETE_OBJECT;
       }
     }
     //std::cout<<"idle mode" <<std::endl;
