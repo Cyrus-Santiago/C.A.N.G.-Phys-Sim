@@ -52,13 +52,12 @@ entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     /* This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
-    float angle = 0;
-    if (position.y > 200)
-        angle = ray.Direction[0] * -1;
-    if (position.y < 200)
-        angle = ray.Direction[0];
+    float angle;
+    float   angleX = ray.Direction[0],
+            angleY = ray.Direction[1];
 
-    reg.emplace<Renderable>(entity, "ray", "laser", position.x, position.y, (int)ray.Size[0], (int)ray.Size[1],
+    angle = angleX;
+    reg.emplace<Renderable>(entity, "ray", "laser", ray.Position[0], ray.Position[1], (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
     ray.printRayStats();
     return entity;
@@ -68,9 +67,8 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Beam beam({position.x, position.y});
     auto entity = reg.create();
-
-    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, (int)beam.rays[0].Size[0], (int)beam.rays[0].Size[1],
-        0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, (int)beam.rays[0].Dimensions[0], (int)beam.rays[0].Dimensions[1],
+        beam.rays[0].Angle, color.x, color.y, color.z, color.w);
     return entity;
 }
 

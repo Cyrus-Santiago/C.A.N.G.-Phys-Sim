@@ -11,7 +11,7 @@
 #include <cmath>
 
 class Ray{
-public: glm::vec2 Position, Tail, Size, Velocity, Direction;
+public: glm::vec2 Position, Tail, Dimensions, Velocity, Direction;
         glm::vec4 Color;
         bool Destroyed;
         float Mass, Angle;
@@ -24,9 +24,9 @@ public: glm::vec2 Position, Tail, Size, Velocity, Direction;
 
         /* Methods */
         void printRayStats();
-        glm::vec2 setPosition(double, double);
-        glm::vec2 setTail(double, double);
-        void setSize(glm::vec2, glm::vec2);
+        void setPosition(double, double);
+        void setTail(double, double);
+        void setDimensions(glm::vec2, glm::vec2);
         void successfulDraw(int);
         void init(double, double);
         void clear();

@@ -12,7 +12,7 @@
         /* Increase the origin position of next ray by the width of one ray */
         rays[beamWidth - 1].Position[1]+= 10;
         rays[beamWidth - 1].Tail[1] += 10;
-        rays[beamWidth - 1].setSize(rays[beamWidth - 1].Position, rays[beamWidth - 1].Tail);
+        rays[beamWidth - 1].setDimensions(rays[beamWidth - 1].Position, rays[beamWidth - 1].Tail);
         }
         else Beam::init(xPos, yPos);
     }

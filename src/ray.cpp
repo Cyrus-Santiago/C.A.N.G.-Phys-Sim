@@ -8,29 +8,25 @@
     void Ray::printRayStats(){
         std::cout <<"Head: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
         std::cout <<"Tail: (" << Tail[0] << ", " << Tail[1] << ")" << std::endl;
-        std::cout <<"Direction: " << Direction[0] << "," << Direction[1] << std::endl;
+        std::cout <<"Angle: " << Angle << std::endl;
     }
 
 /* Set position of the ray origin */
-    glm::vec2 Ray::setPosition(double x, double y){
+    void Ray::setPosition(double x, double y){
         Position[0] = (float)x;
         Position[1] = (float)y;
-
-        return (Position);
     }
 
 /* Set coordinates where the ray will end */
-    glm::vec2 Ray::setTail(double x, double y){
+    void Ray::setTail(double x, double y){
         Tail[0] = (float)x;
         Tail[1] = (float)y;
-
-        return(Tail);
     }
 
 /* Ray Dimensions (length, width) */
-    void Ray::setSize(glm::vec2 position, glm::vec2 tail){
-        Size[0] = (tail[0]-position[0]);
-        Size[1] = 10;
+    void Ray::setDimensions(glm::vec2 position, glm::vec2 tail){
+        Dimensions[0] = (tail[0]-position[0]);
+        Dimensions[1] = 10;
     }
 
 /* Was ray drawn successfully? */
@@ -46,9 +42,10 @@
 /* Initial Stats upon inserting a ray */
     void Ray::init(double xPos, double yPos){
         Position = {(float)xPos, (float)yPos}; /* head is at click */
-        Tail = {420, 200}; /* tail is always at origin */
-        setSize(Position, Tail);
+        Tail = {420, 385}; /* tail is always at origin */
+        setDimensions(Position, Tail);
         setDirection(); /* set angle relative to head/tail position */
+        Angle = Direction[0];
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0}; /* we don't want the ray to move */
         Destroyed = false;
@@ -58,17 +55,17 @@
     void Ray::clear(){
         Position = {0, 0};
         Tail = {0, 0};
-        Size = {0, 0};
+        Dimensions = {0, 0};
         Velocity = {0, 0};
         Destroyed = true;
     }
 
 /* Angle Logic */
     void Ray::setDirection(){
-        float posX2 = Position[0] + Size[1],
-              posY2 = Position[1] + Size[1],
-              tailX2 = Tail[0] + Size[1],
-              tailY2 = Tail[1] + Size[1];
+        float posX2 = Position[0] - Dimensions[1],
+              posY2 = Position[1] - Dimensions[1],
+              tailX2 = Tail[0] - Dimensions[1],
+              tailY2 = Tail[1] - Dimensions[1];
         glm::vec2 Position2 = {posX2, posY2},
                   Tail2 = {tailX2, tailY2};
 
@@ -78,7 +75,7 @@
             Direction[1] = 0.0f; /* 0 degree with y axis */
         else{
             float xSlope = Position[0] - Tail[0],
-                  ySlope = Position[1] - Tail[0];
+                  ySlope = Position[1] - Tail[1];
             Direction[0] = (float)atan(ySlope/xSlope) * (180/M_PI);
             Direction[1] = (float)atan(xSlope/ySlope) * (180/M_PI);
         }
