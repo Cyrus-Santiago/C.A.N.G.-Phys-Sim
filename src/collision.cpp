@@ -123,7 +123,7 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
                 // flush with what it collided into, we subtract the size to get
                 // the new top position, since that's what yPos represents.
                 reg.patch<Renderable>(entt, [newY](auto &renderable) {
-                    renderable.yPos = newY - renderable.ySize;
+                    renderable.yPos = newY - renderable.ySize + 1;
                 });
             }
         }
@@ -166,21 +166,21 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     // get the renderable component of our entity
     auto enttR = reg.get<Renderable>(entt);
     // choose a direction to move randomly true is right, false is left
-    bool direction = (rand() % 3 > 1) ? true : false;
+    int direction = rand() % 19;
 
     // if there's an entity above use, there's nothing in the direction we want
     // to move, and we're on the ground or there's entities between us and the
     // ground then we move in the direction we randomly chose
-    if (above(reg, entt) && !checkX(reg, entt, direction) && grounded(reg, entt, bottomBorder)) {
+    if (!checkX(reg, entt, direction) /*&& grounded(reg, entt, bottomBorder)*/) {
         moveX(reg, entt, dt, direction);
     
-    // if there's something on our right and nothing on our left, move left
-    } else if (checkX(reg, entt, true) && !checkX(reg, entt, false)) {
-        moveX(reg, entt, dt, false);
+    // // if there's something on our right and nothing on our left, move left
+    // } else if (checkX(reg, entt, true) && !checkX(reg, entt, false)) {
+    //     moveX(reg, entt, dt, false);
     
-    // if there's something on our left and nothing on our right, move right
-    } else if(checkX(reg, entt, false) && !checkX(reg, entt, true)) {
-        moveX(reg, entt, dt, true);
+    // // if there's something on our left and nothing on our right, move right
+    // } else if(checkX(reg, entt, false) && !checkX(reg, entt, true)) {
+    //     moveX(reg, entt, dt, true);
     }
 
 }
@@ -216,7 +216,7 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
     auto enttR = reg.get<Renderable>(entt);
 
     // we we're on the ground directly, return true
-    if ((int)enttR.yPos + enttR.ySize == bottomBorder) return true;
+    if ((int)enttR.yPos + enttR.ySize - 1 >= bottomBorder) return true;
 
     // get the y pos directly beneath this entity
     int y = enttR.yPos + enttR.ySize + 1;
@@ -239,14 +239,14 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
  * Returns:   true if there's something there, false if there isn't
  * Purpose:   checks to see if there's an entity to the left or right of a given
  *            entity for safe movment. */
-bool Collision::checkX(entt::registry &reg, entt::entity entt, bool right) {
+bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
     
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
     // if we're moving right we set the x component to the pixel just right of 
     // the entity, otherwise we set x to the pixel just left
     int x = 0;
-    if (right) x = enttR.xPos + enttR.xSize + 1;
+    if (direction % 2 == 0) x = enttR.xPos + enttR.xSize + 1;
     else x = enttR.xPos - 1;
 
     // now we scan along the length of the entity at that x position
@@ -263,18 +263,18 @@ bool Collision::checkX(entt::registry &reg, entt::entity entt, bool right) {
 /* Arguments: entity registry, entity, delta frame time, right bool (true is right, false is left)
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given x direction */
-void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
+void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction) {
 
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
 
     // change the x position of the entity based on the delta frame, and direction
     // we were told to move
-    reg.patch<Renderable>(entt, [dt, right](auto &renderable) {
-        if (right)
-            renderable.xPos += dt * 100;
+    reg.patch<Renderable>(entt, [dt, direction](auto &renderable) {
+        if (direction % 2 == 0)
+            renderable.xPos += dt * 3 * direction;
         else
-            renderable.xPos -= dt * 100;
+            renderable.xPos += dt * 3 * direction * -1;
     });
 
     // get renderable component of future entity
