@@ -16,7 +16,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     reg.emplace<Physics>(entity, 10.0f);
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 15, 15,
+    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
         0.0f, color.x, color.y, color.z, color.w);
 
     return entity;
