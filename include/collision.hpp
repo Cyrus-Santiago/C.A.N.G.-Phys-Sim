@@ -4,13 +4,14 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
+#include "../include/spriteRenderer.hpp"
 
-class Collision{
+class Collision {
 public:
     //constructor
     Collision(){
-        for (int i = 0; i < 764; i++) {
-            for (int j = 0; j < 345; j++) {
+        for (int i = 0; i < 806; i++) {
+            for (int j = 0; j < 388; j++) {
                 grid[i][j] = entt::null;
             }
         }
@@ -21,6 +22,8 @@ public:
     
     void collisionLoop(entt::registry &reg, float dt, int bottomBorder);
 
+    void debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg);
+
     void triangleCollision(entt::registry *reg,float dt);
 
     bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
@@ -30,7 +33,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-    entt::entity grid[763][345];
+    entt::entity grid[820][400];
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
@@ -41,6 +44,12 @@ private:
     void liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left);
 
     void moveX(entt::registry &reg, entt::entity entt, float dt, bool right);
+
+    bool checkX(entt::registry &reg, entt::entity entt, bool right);
+
+    bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
+
+    bool above(entt::registry &reg, entt::entity entt);
 
     // if A left overlaps OR right overlaps B
     bool xOverlap(entt::registry &reg, entt::entity A, entt::entity B);
