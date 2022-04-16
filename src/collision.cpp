@@ -1,132 +1,176 @@
 #include "../include/collision.hpp"
 #include "../include/factory.hpp"
 #include <GLFW/glfw3.h>
+#include <glm/fwd.hpp>
 
 #define GRAVITY 9.17
 
 void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
     auto physical = reg.view<Physics>();
-    
+
     for (auto entity : physical) {
         gravityCollision(reg, dt, bottomBorder, entity);
         liquidCollision(reg, dt, bottomBorder, entity);
     }
 }
 
-bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
+bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
+    auto enttR = reg.get<Renderable>(entt);
 
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
+    if (reg.all_of<Border>(entt)) {
+        auto enttB = reg.get<Border>(entt);
+        if (enttB.position == "rightBorder") {
+            for (int x = enttR.xPos; x < (enttR.xPos + 10); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    grid[x][y] = entt;
+                }
+            }
+        } else if (enttB.position == "leftBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    grid[x][y] = entt;
+                }
+            }
+        }
+    }
+
+    for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
+        for (int y = enttR.yPos - 1; y < (enttR.yPos + enttR.ySize) + 1; y++) {
             if (reg.valid(grid[x][y])) return false;
         }
     }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            grid[x][y] = entity;
+    for (int x = enttR.xPos + 1; x < (enttR.xPos + enttR.xSize) - 1; x++) {
+        for (int y = enttR.yPos + 1; y < (enttR.yPos + enttR.ySize) - 1; y++) {
+            grid[x][y] = entt;
         }
     }
     return true;
 }
 
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
-    entt::entity entity) {
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
-    float gravity = dt * reg.get<Physics>(entity).mass * GRAVITY;
+    entt::entity entt) {
 
-    reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
+    auto enttR = reg.get<Renderable>(entt);
+
+    float gravity = dt * reg.get<Physics>(entt).mass * GRAVITY;
+
+    reg.patch<Renderable>(entt, [&reg, gravity](auto &renderable) {
         renderable.yPos += gravity;
     });
 
-    int i = 0;
-    int newYPos = ((int)reg.get<Renderable>(entity).yPos + ySize);
-    bool result = false;
-    for (i = xPos; i < xPos + xSize; i++) {
-        if (reg.valid(grid[i][newYPos]) || ((yPos + ySize) >= bottomBorder)) {
-            result = true;
-            break;
-        }
-    }
-    
-    int ySolid = 0;
+    auto newEnttR = reg.get<Renderable>(entt);
+    int newY = 0;
 
-    if (result) {
-        if ((yPos + ySize) >= bottomBorder) {
-            ySolid = bottomBorder - ySize;
-        } else {
-            for (int j = yPos + ySize; j < bottomBorder; j++) {
-                if (grid[i][j] != entt::null) {
-                    ySolid = j - ySize;
-                    break;
-                }
+    for (int x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
+        for (int y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
+            if (reg.valid(grid[x][y]) && (grid[x][y] != entt)) {
+                newY = reg.get<Renderable>(grid[x][y]).yPos;
+                if (newY == 43) newY = bottomBorder;
+                reg.patch<Renderable>(entt, [newY](auto &renderable) {
+                    renderable.yPos = newY - renderable.ySize;
+                });
             }
         }
-        reg.patch<Renderable>(entity, [&reg, ySolid, gravity](auto &renderable)
-        {
-            if (ySolid != 0) {
-                renderable.yPos = ySolid;
-            } else {
-                renderable.yPos -= gravity;
-            }
-        });
     }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (reg.get<Renderable>(entity).yPos); y++) {
-            grid[x][y] = entt::null;
-        }
-    }
-    yPos = reg.get<Renderable>(entity).yPos;
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            grid[x][y] = entity;
-        }
-    }
-}
 
-void Collision::liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left) {
+    for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
+        for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
+            if (grid[x][y] == entt)
+                grid[x][y] = entt::null;
+        }
+    }
+    newEnttR = reg.get<Renderable>(entt);
+    for (int x = newEnttR.xPos + 1; x < newEnttR.xPos + newEnttR.xSize - 1; x++) {
+        for (int y = newEnttR.yPos + 1; y < newEnttR.yPos + newEnttR.ySize - 1; y++) {
+            grid[x][y] = entt;
+        }
+    }
 }
 
 void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entt) {
     if (!reg.all_of<Liquid>(entt)) return;
-    bool above = false;
+    srand(time(0) * (uint)entt);
+
     auto enttR = reg.get<Renderable>(entt);
-    for (int i = enttR.xPos; i < enttR.xPos + enttR.xSize; i++) {
-        if (reg.valid(grid[i][(int)enttR.yPos - 1])) {
-            above = true;
-        }
-    }
-    if (above) {
+    bool direction = (rand() % 3 > 1) ? true : false;
+
+    if (above(reg, entt) && !checkX(reg, entt, direction) && grounded(reg, entt, bottomBorder)) {
+        moveX(reg, entt, dt, direction);
+    } else if (checkX(reg, entt, true) && !checkX(reg, entt, false)) {
+        moveX(reg, entt, dt, false);
+    } else if(checkX(reg, entt, false) && !checkX(reg, entt, true)) {
         moveX(reg, entt, dt, true);
     }
+
+}
+
+bool Collision::above(entt::registry &reg, entt::entity entt) {
+    auto enttR = reg.get<Renderable>(entt);
+    int y = enttR.yPos - 1;
+    for (int x = enttR.xPos; x < enttR.xPos + enttR.xSize; x++) {
+        if (reg.valid(grid[x][y])) return true;
+    }
+    return false;
+}
+
+bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorder) {
+    auto enttR = reg.get<Renderable>(entt);
+    if ((int)enttR.yPos + enttR.ySize == bottomBorder) return true;
+    int y = enttR.yPos + enttR.ySize + 1;
+    for (int x = enttR.xPos; x < enttR.xPos + enttR.xSize; x++) {
+        if (reg.valid(grid[x][y])) {
+            return grounded(reg, grid[x][y], bottomBorder);
+        }
+    }
+    return false;
+}
+
+bool Collision::checkX(entt::registry &reg, entt::entity entt, bool right) {
+    auto enttR = reg.get<Renderable>(entt);
+    int x = 0;
+    if (right) x = enttR.xPos + enttR.xSize + 1;
+    else x = enttR.xPos - 1;
+    for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+        if (reg.valid(grid[x][y])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
     auto enttR = reg.get<Renderable>(entt);
-    for (int i = enttR.yPos; i < (enttR.yPos + enttR.ySize); i++) {
-        if (reg.valid(grid[(int)enttR.xPos + enttR.xSize + 1][i])) return;
-    }
-    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
-        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
-            grid[x][y] = entt::null;
-        }
-    }
     reg.patch<Renderable>(entt, [dt, right](auto &renderable) {
         if (right)
-            renderable.xPos += dt * 50;
+            renderable.xPos += dt * 100;
         else
-            renderable.xPos -= dt * 50;;
+            renderable.xPos -= dt * 100;
     });
-    enttR = reg.get<Renderable>(entt);
-    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
-        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+    auto newEnttR = reg.get<Renderable>(entt);
+    
+    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
+        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
+            if (entt == grid[x][y]) {
+                grid[x][y] = entt::null;
+            }
+        }
+    }
+    for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
+        for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
             grid[x][y] = entt;
+        }
+    }
+}
+
+void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
+    for (int x = 33; x < 816; x++) {
+        for (int y = 33; y < 398; y++) {
+            if (reg.valid(grid[x][y])) {
+                Texture2D texture = ResourceManager::GetTexture("button2");
+                spriteRenderer.DrawSprite(texture, glm::vec2(x, y), glm::vec2(1.0f),
+                0.0f, glm::vec4(1.0f, 0.0f, 0.0f, 0.4f));
+            }
         }
     }
 }
