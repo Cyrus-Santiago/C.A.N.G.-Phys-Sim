@@ -64,7 +64,7 @@ namespace irrklang
 		ESEO_LINEAR_ROLLOFF = 0x40,
 
 		//! Default parameters when starting up the engine.
-		ESEO_DEFAULT_OPTIONS = ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER | ESEO_PRINT_DEBUG_INFO_TO_STDOUT,
+		ESEO_DEFAULT_OPTIONS = ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER,
 
 		//! Never used, it only forces the compiler to compile these enumeration values to 32 bit.
 		/** Don't use this. */
