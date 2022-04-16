@@ -43,9 +43,9 @@ private:
 
     void liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, bool right);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
 
-    bool checkX(entt::registry &reg, entt::entity entt, bool right);
+    bool checkX(entt::registry &reg, entt::entity entt, int direction);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
 
