@@ -15,7 +15,6 @@ std::vector<Button> Input::Buttons;
 //This function checks for the area in which a mouse click was made.
 //If a button was clicked, its state is set to "pressed". 0,1 is returned
 //a legal click is made. -1 is returned if no legal click is made.
-//TODO make mode for when the mouse is held down. No button presses.
 int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
   //If the click was in the menu area
   if(mode==0){
@@ -49,8 +48,8 @@ int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
     }
   }
   //If the click is in the play area
-  if((xPos < screenWidth*0.95) && (xPos > screenWidth*0.0425) &&
-    (yPos < screenHeight*0.45) && (yPos > screenHeight * 0.05)) {
+  if((xPos < screenWidth*0.95+3) && (xPos > screenWidth*0.0425) &&
+    (yPos < screenHeight*0.45+3) && (yPos > screenHeight * 0.05)) {
     //std::cout<<"in play area"<<std::endl;
     xClick = xPos; yClick = yPos;
     return 1;

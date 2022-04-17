@@ -10,8 +10,8 @@ class Collision{
 public:
     //constructor
     Collision(){
-        for (int i = 0; i < 764; i++) {
-            for (int j = 0; j < 345; j++) {
+        for (int i = 0; i < 781; i++) {
+            for (int j = 0; j < 358; j++) {
                 grid[i][j] = entt::null;
             }
         }
@@ -31,7 +31,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-    entt::entity grid[764][347];
+    entt::entity grid[781][358];
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);

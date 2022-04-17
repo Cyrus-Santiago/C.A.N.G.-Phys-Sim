@@ -84,31 +84,31 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
 }
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight,
 glm::vec4 color){
-    int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
-    int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
-
+    int areaWidth=(int)(scrWidth*0.91882), areaHeight=(int)(scrHeight*0.416);
+    float xPos=(int)(scrWidth*0.05), yPos=(int)(scrHeight*0.05);
+    std::cout<<areaWidth<<std::endl;
     auto entity1 = reg.create(); //Top Line
-    reg.emplace<Renderable>(entity1, "topBorder", "button1", (float)xPos+1, (float)yPos, 
+    reg.emplace<Renderable>(entity1, "topBorder", "button1", xPos+1, yPos, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,0));
     reg.emplace<Border>(entity1, "topBorder");
 
     auto entity2 = reg.create(); //Bottom Line
-    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", (float)xPos+1, (float)yPos+areaHeight, 
+    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", xPos+1, yPos+areaHeight, 
         areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,343));
     reg.emplace<Border>(entity2, "bottomBorder");
 
     auto entity3 = reg.create(); //Left Line
-    reg.emplace<Renderable>(entity3, "leftBorder", "button1", (float)xPos-1, (float)yPos, 
+    reg.emplace<Renderable>(entity3, "leftBorder", "button1", xPos-1, yPos, 
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,0));
     reg.emplace<Border>(entity3, "leftBorder");
 
     auto entity4 = reg.create(); //Right Line
-    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (float)(xPos+areaWidth)-1, (float)yPos, 
-        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(760,0));
+    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (xPos+areaWidth)-1, yPos, 
+        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(777,0));
     reg.emplace<Border>(entity4, "rightBorder");
 
-    // std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
-    // std::cout << (yPos + areaHeight) - (yPos) << std::endl;
+    std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
+    std::cout << (yPos + areaHeight) - (yPos) << std::endl;
 
     return;
 };

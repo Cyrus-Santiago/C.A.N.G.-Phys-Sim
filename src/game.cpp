@@ -160,6 +160,7 @@ void Game::Update(float dt) {
 
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
+              //TODO create animation gif
               for(int i=0; i<8; i++)  {
                 factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
                   (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 

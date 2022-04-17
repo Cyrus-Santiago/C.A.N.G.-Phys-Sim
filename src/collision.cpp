@@ -20,9 +20,12 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
     lowerBound.y=reg.get<Renderable>(entity).gridPos.y;
     upperBound.x=reg.get<Renderable>(entity).gridPos.x+reg.get<Renderable>(entity).xSize;
     upperBound.y=reg.get<Renderable>(entity).gridPos.y+reg.get<Renderable>(entity).ySize;
-    
+    std::cout<<reg.get<Renderable>(entity).type<<std::endl;
+    std::cout<<"Lower "<<lowerBound.x<<" "<<lowerBound.y<<std::endl;
+    std::cout<<"Upper "<<upperBound.x<<" "<<upperBound.y<<std::endl;
     for (int x=(int)lowerBound.x; x < (int)upperBound.x; x++){
         for(int y=(int)lowerBound.y; y < (int)upperBound.y; y++){
+            std::cout<<x<<" "<<y<<std::endl;
             if(reg.valid(grid[x][y])){
                 return false;
             }   
@@ -60,6 +63,12 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
 */
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entity) {
+    glm::vec2 lowerBound(reg.get<Renderable>(entity).gridPos.x,reg.get<Renderable>(entity).gridPos.y);
+    glm::vec2 upperBound(lowerBound.x+reg.get<Renderable>(entity).xSize, 
+        lowerBound.y+reg.get<Renderable>(entity).ySize);
+
+
+
     int xPos = reg.get<Renderable>(entity).xPos;
     int xSize = reg.get<Renderable>(entity).xSize;
     int yPos = reg.get<Renderable>(entity).yPos;
@@ -68,13 +77,14 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
 
     reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
         renderable.yPos += gravity;
+        renderable.gridPos.y+=gravity;
     });
 
     int i = 0;
-    int newYPos = ((int)reg.get<Renderable>(entity).yPos + ySize);
+    int newYPos = ((int)upperBound.y);
     bool result = false;
-    for (i = xPos; i < xPos + xSize; i++) {
-        if (reg.valid(grid[i][newYPos]) || ((yPos + ySize) >= bottomBorder)) {
+    for (i = lowerBound.x; i < upperBound.x; i++) {
+        if (reg.valid(grid[i][newYPos]) || upperBound.y >= bottomBorder) {
             result = true;
             break;
         }
@@ -83,10 +93,10 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     int ySolid = 0;
 
     if (result) {
-        if ((yPos + ySize) >= bottomBorder) {
+        if ((upperBound.y) >= bottomBorder) {
             ySolid = bottomBorder - ySize;
         } else {
-            for (int j = yPos + ySize; j < bottomBorder; j++) {
+            for (int j = upperBound.y; j < bottomBorder; j++) {
                 if (grid[i][j] != entt::null) {
                     ySolid = j - ySize;
                     break;
@@ -97,19 +107,21 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
         {
             if (ySolid != 0) {
                 renderable.yPos = ySolid;
+                renderable.gridPos.y= ySolid;
             } else {
                 renderable.yPos -= gravity;
+                renderable.gridPos.y-=gravity;
             }
         });
     }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (reg.get<Renderable>(entity).yPos); y++) {
+    for (int x = lowerBound.x; x < upperBound.x; x++) {
+        for (int y = lowerBound.y; y < upperBound.y; y++) {
             grid[x][y] = entt::null;
         }
     }
-    yPos = reg.get<Renderable>(entity).yPos;
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
+    yPos = reg.get<Renderable>(entity).gridPos.y;
+    for (int x = lowerBound.x; x < upperBound.x; x++) {
+        for (int y = yPos; y < upperBound.y; y++) {
             grid[x][y] = entity;
         }
     }
@@ -132,7 +144,7 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
         moveX(reg, entt, dt, true);
     }
 }
-
+//TODO change to grid pos
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
     auto enttR = reg.get<Renderable>(entt);
     for (int i = enttR.yPos; i < (enttR.yPos + enttR.ySize); i++) {
