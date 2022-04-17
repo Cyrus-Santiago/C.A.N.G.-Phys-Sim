@@ -408,7 +408,7 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
         }
     }
 }
-<<<<<<< HEAD
+/*
 //TODO change to grid pos
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
     auto enttR = reg.get<Renderable>(entt);
@@ -430,8 +430,7 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool rig
     for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
         for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
             grid[x][y] = entt;
-=======
-
+*/
 /* Arguments: spriteRenderer, entity registry
  * Returns:   N/A
  * Purpose:   draws a translucent red filter over areas registered in the
@@ -448,7 +447,6 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
                 spriteRenderer.DrawSprite(texture, glm::vec2(x, y), glm::vec2(1.0f),
                 0.0f, glm::vec4(1.0f, 0.0f, 0.0f, 0.4f));
             }
->>>>>>> e34f508ed72ab4c03077d794339479440867798b
         }
     }
 }

@@ -4,23 +4,15 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
-<<<<<<< HEAD
 #include <glm/fwd.hpp>
-=======
 #include "../include/spriteRenderer.hpp"
->>>>>>> e34f508ed72ab4c03077d794339479440867798b
 
 class Collision {
 public:
     //constructor
     Collision(){
-<<<<<<< HEAD
-        for (int i = 0; i < 781; i++) {
-            for (int j = 0; j < 358; j++) {
-=======
         for (int i = 0; i < 806; i++) {
             for (int j = 0; j < 388; j++) {
->>>>>>> e34f508ed72ab4c03077d794339479440867798b
                 grid[i][j] = entt::null;
             }
         }
@@ -42,11 +34,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-<<<<<<< HEAD
-    entt::entity grid[781][358];
-=======
     entt::entity grid[820][400];
->>>>>>> e34f508ed72ab4c03077d794339479440867798b
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
