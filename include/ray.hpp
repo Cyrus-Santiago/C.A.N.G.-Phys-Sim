@@ -10,25 +10,18 @@
 #include <iostream>
 #include <cmath>
 
-class Ray{ //: public SimulationObject{
+class Ray{
 public: glm::vec2 Position, Tail, Size, Velocity, Direction;
         glm::vec4 Color;
         bool Destroyed;
-        float Mass;
+        float Mass, Angle;
         Texture2D Texture;
         /* Default Constructor */
         Ray(glm::vec2 position, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {250,10},
             Texture2D texture = ResourceManager::GetTexture("laser"),
             glm::vec2 velocity = glm::vec2(0.0f),
-            float mass = 0, bool Destroyed = 0){}// :
-/*
-            SimulationObject(position, color, size,
-            texture, velocity, mass, Destroyed) {
-                Position = position;
-                Color = color;
-                Size = size;
-            }
-*/
+            float mass = 0, bool Destroyed = 0){};
+
         /* Methods */
         void printRayStats();
         glm::vec2 setPosition(double, double);

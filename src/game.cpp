@@ -76,6 +76,7 @@ void Game::Init(GLFWwindow *window) {
   factory.makeBorder(*reg,Width*0.85,Height);
   auto view = reg->view<Border>();
   for (auto border : view) {
+    colEngine.registerEntity(* reg, border);
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
     }
@@ -223,6 +224,8 @@ void Game::Render() {
     // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
+
+  // colEngine.debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The

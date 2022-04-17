@@ -16,7 +16,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     reg.emplace<Physics>(entity, 10.0f);
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 15, 15,
+    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
         0.0f, color.x, color.y, color.z, color.w, gridPos);
 
     return entity;
@@ -48,11 +48,18 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Ray ray({position.x, position.y});
+    /* Send mouse click coordinates to init function */
+    /* This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
+    float angle = 0;
+    if (position.y > 200)
+        angle = ray.Direction[0] * -1;
+    if (position.y < 200)
+        angle = ray.Direction[0];
 
     reg.emplace<Renderable>(entity, "ray", "laser", position.x, position.y, (int)ray.Size[0], (int)ray.Size[1],
-        0.0f, color.x, color.y, color.z, color.w);
+        angle, color.x, color.y, color.z, color.w);
     ray.printRayStats();
     return entity;
 }

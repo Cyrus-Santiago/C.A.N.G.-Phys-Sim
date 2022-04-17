@@ -4,14 +4,23 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
+<<<<<<< HEAD
 #include <glm/fwd.hpp>
+=======
+#include "../include/spriteRenderer.hpp"
+>>>>>>> e34f508ed72ab4c03077d794339479440867798b
 
-class Collision{
+class Collision {
 public:
     //constructor
     Collision(){
+<<<<<<< HEAD
         for (int i = 0; i < 781; i++) {
             for (int j = 0; j < 358; j++) {
+=======
+        for (int i = 0; i < 806; i++) {
+            for (int j = 0; j < 388; j++) {
+>>>>>>> e34f508ed72ab4c03077d794339479440867798b
                 grid[i][j] = entt::null;
             }
         }
@@ -22,6 +31,8 @@ public:
     
     void collisionLoop(entt::registry &reg, float dt, int bottomBorder);
 
+    void debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg);
+
     void triangleCollision(entt::registry *reg,float dt);
 
     bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
@@ -31,7 +42,11 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
+<<<<<<< HEAD
     entt::entity grid[781][358];
+=======
+    entt::entity grid[820][400];
+>>>>>>> e34f508ed72ab4c03077d794339479440867798b
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
@@ -41,7 +56,13 @@ private:
 
     void liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, bool right);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
+
+    bool checkX(entt::registry &reg, entt::entity entt, int direction);
+
+    bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
+
+    bool above(entt::registry &reg, entt::entity entt);
 
     // if A left overlaps OR right overlaps B
     bool xOverlap(entt::registry &reg, entt::entity A, entt::entity B);
