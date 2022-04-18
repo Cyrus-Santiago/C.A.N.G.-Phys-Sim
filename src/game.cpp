@@ -79,6 +79,9 @@ void Game::Init(GLFWwindow *window) {
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
     }
+    if (reg->get<Border>(border).position == "topBorder") {
+      topBorder = reg->get<Renderable>(border).yPos;
+    }
   }
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -132,8 +135,10 @@ void Game::Update(float dt) {
               }
               entity = factory.makeParticle(* reg, pressedButton.Type,
                 glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
-              if (!colEngine.registerEntity(* reg, entity))
-                reg->destroy(entity);
+              if (reg->all_of<Physics>(entity)) {
+                if (!colEngine.registerEntity(* reg, entity))
+                  reg->destroy(entity);
+              }
               break;
 
             case GAME_DRAW_SHAPE:
@@ -174,7 +179,7 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  colEngine.collisionLoop(* reg, dt, bottomBorder);
+  colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
 
   //TODO colEngine.triangleCollision(reg, dt);
 }

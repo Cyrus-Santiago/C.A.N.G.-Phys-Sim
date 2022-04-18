@@ -9,15 +9,24 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
+    int modifierX = 0, modifierY = 0;
 
-    if (type == "WATER")
-        reg.emplace<Liquid>(entity, 0.1f, 0.0f);
-        
-    reg.emplace<Physics>(entity, 10.0f);
+    if (type == "WATER") {
+        reg.emplace<Liquid>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "FIRE") {
+        reg.emplace<Fire>(entity);
+    } else if (type == "STEAM") {
+        reg.emplace<Gas>(entity);
+        modifierX += (uint)entity % 8 - 4;
+        modifierY -= (uint)entity % 8 - 4;
+    } else {
+        reg.emplace<Physics>(entity, 10.0f);
+    }
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "solid", position.x, position.y, 5, 5,
-        0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Renderable>(entity, "particle", "solid", position.x + modifierX,
+    position.y + modifierY, 5, 5, 0.0f, color.x, color.y, color.z, color.w);
 
     return entity;
 }
