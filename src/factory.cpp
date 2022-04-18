@@ -47,19 +47,16 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
 
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
-    Ray ray({position.x, position.y});
-    /* Send mouse click coordinates to init function */
-    /* This will tell the ray how to orient itself */
+    Ray ray;
+    /* Send mouse click coordinates to init function
+     * This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
-    float angle;
-    float   angleX = ray.Direction[0],
-            angleY = ray.Direction[1];
-
-    angle = angleX;
-    reg.emplace<Renderable>(entity, "ray", "laser", ray.Position[0], ray.Position[1], (int)ray.Dimensions[0], (int)ray.Dimensions[1],
+    float angle = (float)(ray.Angle * (180/M_PI));   
+    float posX = ray.Position[0] + ray.Offset[0];
+    float posY = ray.Position[1] + ray.Offset[1];
+    reg.emplace<Renderable>(entity, "ray", "laser", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
-    ray.printRayStats();
     return entity;
 }
 

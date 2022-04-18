@@ -1,4 +1,4 @@
-/* Ray (Extends Simulation Object) - Class Methods
+/* Ray - Class Methods
    Written by Amethyst Skye
    Description: Handles all data for various operations performed on light ray(s) within simulation environment. */
 
@@ -8,6 +8,7 @@
     void Ray::printRayStats(){
         std::cout <<"Head: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
         std::cout <<"Tail: (" << Tail[0] << ", " << Tail[1] << ")" << std::endl;
+        std::cout <<"Dimensions: " << Dimensions[0] << "," << Dimensions[1] << std::endl;
         std::cout <<"Angle: " << Angle << std::endl;
     }
 
@@ -25,8 +26,26 @@
 
 /* Ray Dimensions (length, width) */
     void Ray::setDimensions(glm::vec2 position, glm::vec2 tail){
-        Dimensions[0] = (tail[0]-position[0]);
-        Dimensions[1] = 10;
+        Dimensions[0] = fabs(tail[0]-position[0]);
+        Dimensions[1] = 10; /* always keep rays 10 pixels wide */
+        offsetFlag = false;
+
+        /* This will allow ray to rotate properly. 
+         * Otherwise, when the ray angle approaches 90 
+         * degrees, it begins to disappear */
+        if (Dimensions[0] < fabs(tail[1] - position[1])){
+            Dimensions[0] = fabs(tail[1] - position[1]);
+            offsetFlag = true;
+        }
+    }
+
+    void Ray::determineOffset(){
+        if (offsetFlag == true){
+            Offset[0] = sin(Angle) * (Dimensions[0]/2);
+        }
+        else 
+            Offset[0] = 0;
+        Offset[1] = sin(Angle) * (Dimensions[0]/2);
     }
 
 /* Was ray drawn successfully? */
@@ -42,10 +61,10 @@
 /* Initial Stats upon inserting a ray */
     void Ray::init(double xPos, double yPos){
         Position = {(float)xPos, (float)yPos}; /* head is at click */
-        Tail = {420, 385}; /* tail is always at origin */
-        setDimensions(Position, Tail);
+        Tail = {805, 45}; /* tail is always at top right corner */
+        setDimensions(Position, Tail); /* tells us ray dimensions for drawing */
         setDirection(); /* set angle relative to head/tail position */
-        Angle = Direction[0];
+        determineOffset();
         Texture = ResourceManager::GetTexture("laser");
         Velocity = {0, 0}; /* we don't want the ray to move */
         Destroyed = false;
@@ -76,9 +95,10 @@
         else{
             float xSlope = Position[0] - Tail[0],
                   ySlope = Position[1] - Tail[1];
-            Direction[0] = (float)atan(ySlope/xSlope) * (180/M_PI);
-            Direction[1] = (float)atan(xSlope/ySlope) * (180/M_PI);
+            Direction[0] = (float)atan(ySlope/xSlope);
+            Direction[1] = (float)atan(xSlope/ySlope);      
         }
+        Angle = Direction[0];
     }
 
 /* Physical calculation for incident ray */

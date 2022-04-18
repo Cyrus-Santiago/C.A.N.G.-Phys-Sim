@@ -10,7 +10,8 @@
 class Beam{
     /* Fields */
 public: int beamWidth = 0;
-        std::vector<Ray> rays;
+        std::vector<Ray> rays; /* Depreciated */
+        Ray beam;
 
     /* Constructor */
     Beam(double xPos, double yPos){
