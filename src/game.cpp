@@ -146,12 +146,14 @@ void Game::Update(float dt) {
               break;            
 
             case GAME_DRAW_RAY:
+              sfxAudio.playAudio("audio/zap.wav");
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
             case GAME_DRAW_BEAM:
-              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+              sfxAudio.playAudio("audio/zap.wav");
+              factory.makeBeam( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
