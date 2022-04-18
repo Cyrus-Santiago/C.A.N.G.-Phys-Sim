@@ -6,15 +6,16 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
-//#include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
-//#include "../include/simulation.hpp"
 #include "../include/explosion.hpp"
-//#include "../include/entityMaestro.hpp"
-//#include "../include/ecs.hpp"
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
 #include "../include/collision.hpp"
+
+//#include "../include/simulation.hpp"
+//#include "../include/simulationObject.hpp"
+//#include "../include/entityMaestro.hpp"
+//#include "../include/ecs.hpp"
 
 
 #define GRAVITY 9.17
@@ -146,12 +147,12 @@ void Game::Update(float dt) {
 
             case GAME_DRAW_RAY:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
             case GAME_DRAW_BEAM:
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
             case GAME_DRAW_EXPLOSION:

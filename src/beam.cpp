@@ -4,7 +4,8 @@
 
 #include "../include/beam.hpp"
 
-/* Beam will add an additional ray for each click while in beam mode */
+/* Beam will add an additional ray for each click while in beam mode 
+ * ~ Depreciated ~ */
     void Beam::incBeamWidth(double xPos, double yPos){
         if (beamWidth < 5){ /* Maximum of 5 rays in width */
         beamWidth++;
@@ -12,12 +13,13 @@
         /* Increase the origin position of next ray by the width of one ray */
         rays[beamWidth - 1].Position[1]+= 10;
         rays[beamWidth - 1].Tail[1] += 10;
-        rays[beamWidth - 1].setSize(rays[beamWidth - 1].Position, rays[beamWidth - 1].Tail);
+        rays[beamWidth - 1].setDimensions(rays[beamWidth - 1].Position, rays[beamWidth - 1].Tail);
         }
         else Beam::init(xPos, yPos);
     }
 
-/* Remove all elements in rays array */
+/* Remove all elements in rays array 
+ * ~ Depreciated ~ */
     void Beam::clear(){
         for(int i = 0; i < 5; i++)
             rays[i].clear(); /* Ensure all other rays are cleared from array */
