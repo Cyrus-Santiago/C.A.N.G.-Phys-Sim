@@ -62,10 +62,19 @@ entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
 
 entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
-    Beam beam({position.x, position.y});
+    Beam myBeam;
+    myBeam.incBeamWidth(); //2 wide
+    myBeam.incBeamWidth(); //3 wide
+    myBeam.init(position.x, position.y);
     auto entity = reg.create();
-    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, (int)beam.rays[0].Dimensions[0], (int)beam.rays[0].Dimensions[1],
-        beam.rays[0].Angle, color.x, color.y, color.z, color.w);
+    float angle = (float)(myBeam.beam.Angle * (180/M_PI));   
+    float posX = myBeam.beam.Position[0] + myBeam.beam.Offset[0];
+    float posY = myBeam.beam.Position[1] + myBeam.beam.Offset[1];
+    float dimX = myBeam.beam.Dimensions[0];
+    float dimY = myBeam.beam.Dimensions[1];
+    std::cout << "Dimensions = " << dimX << ", " << dimY << std::endl;
+    reg.emplace<Renderable>(entity, "beam", "laser", posX, posY, (int)dimX, (int)dimY,
+        angle, color.x, color.y, color.z, color.w);
     return entity;
 }
 

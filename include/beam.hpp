@@ -9,17 +9,15 @@
 
 class Beam{
     /* Fields */
-public: int beamWidth = 0;
+public: int beamWidth = 1;
         std::vector<Ray> rays; /* Depreciated */
         Ray beam;
 
     /* Constructor */
-    Beam(double xPos, double yPos){
-        rays[0].init(xPos, yPos);
-    }
+    Beam(){};
 
     /* Methods */
-    void incBeamWidth(double, double);
+    void incBeamWidth();
     void clear();
     void init(double, double);
     void setBeamDirection();

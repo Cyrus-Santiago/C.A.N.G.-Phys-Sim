@@ -39,6 +39,21 @@
         }
     }
 
+/* Beam Dimensions (length, width) */
+    void Ray::setBeamDimensions(glm::vec2 position, glm::vec2 tail, int beamWidth){
+        Dimensions[0] = fabs(tail[0]-position[0]);
+        Dimensions[1] = 10 * beamWidth;
+        offsetFlag = false;
+
+        /* This will allow ray to rotate properly. 
+         * Otherwise, when the ray angle approaches 90 
+         * degrees, it begins to disappear */
+        if (Dimensions[0] < fabs(tail[1] - position[1])){
+            Dimensions[0] = fabs(tail[1] - position[1]);
+            offsetFlag = true;
+        }
+    }
+
     void Ray::determineOffset(){
         if (offsetFlag == true){
             Offset[0] = sin(Angle) * (Dimensions[0]/2);
@@ -46,6 +61,17 @@
         else 
             Offset[0] = 0;
         Offset[1] = sin(Angle) * (Dimensions[0]/2);
+    }
+
+    void Ray::determineBeamOffset(){
+        if (offsetFlag == true){
+            Offset[0] = (sin(Angle) * (Dimensions[0]/2)) - (Dimensions[1]/2);
+            Offset[1] = (sin(Angle) * (Dimensions[0]/2)) - 10;
+        }
+        else{
+            Offset[0] = 0;
+            Offset[1] = (sin(Angle) * (Dimensions[0]/2));
+        }
     }
 
 /* Was ray drawn successfully? */
