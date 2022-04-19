@@ -81,7 +81,6 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     float posY = myBeam.beam.Position[1] + myBeam.beam.Offset[1];
     float dimX = myBeam.beam.Dimensions[0];
     float dimY = myBeam.beam.Dimensions[1];
-    std::cout << "Dimensions = " << dimX << ", " << dimY << std::endl;
     reg.emplace<Renderable>(entity, "beam", "laser", posX, posY, (int)dimX, (int)dimY,
         angle, color.x, color.y, color.z, color.w);
     return entity;

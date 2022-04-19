@@ -31,10 +31,9 @@ bool paused=false;
 
 /* Plays audio in a loop - need to work on this more (DON'T USE THIS YET) */
     int Audio::playAudioLoop(const char *audioClip){
-    if(engineStartup() == -1) return -1;
-        while(true)
-            engine->play2D(audioClip);
-    return 0;
+        ISound * sound = engine->play2D(audioClip,true,false,false,ESM_AUTO_DETECT,true);
+        Sounds.push_back(sound);
+        return 0;
     }
 
 /* Removes audio engine from use */
