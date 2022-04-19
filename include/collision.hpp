@@ -5,11 +5,12 @@
 #include "../include/entt.hpp"
 #include <vector>
 #include "../include/spriteRenderer.hpp"
+#include "../include/factory.hpp"
 
 class Collision {
 public:
     // constructor
-    Collision(){
+    Collision(entt::registry &reg){
         for (int i = 0; i < 806; i++) {
             for (int j = 0; j < 388; j++) {
                 grid[i][j] = entt::null;

@@ -29,7 +29,7 @@ Click newMouseClick;
 Input input;
 Factory factory;
 entt::registry * reg;
-Collision colEngine;
+Collision colEngine(* reg);
 
 std::vector<Button> Buttons;
 //std::vector<SimulationObject> Border;

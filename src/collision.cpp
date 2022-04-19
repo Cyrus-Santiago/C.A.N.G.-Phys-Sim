@@ -14,6 +14,9 @@ Flame flame;
  *            It's more efficient than having individual loops for every type of
  *            collision. */
 void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, int topBorder) {
+
+    // auto renderable = reg.group<Renderable>(entt::get<Renderable>);
+
     auto renderable = reg.view<Renderable>();
 
     // loops through each entity with the physics component
@@ -105,7 +108,10 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
 
     // change the position of the entity by the calculated gravity
     reg.patch<Renderable>(entt, [&reg, gravity](auto &renderable) {
-        renderable.yPos += gravity;
+        if (gravity < 2)
+            renderable.yPos += gravity;
+        else
+            renderable.yPos += 2;
     });
 
     // the following code checks if we need to undo the above y position change
@@ -254,7 +260,7 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
     if ((int)enttR.yPos + enttR.ySize - 1 >= bottomBorder) return true;
 
     // get the y pos directly beneath this entity
-    int y = enttR.yPos + enttR.ySize + 1;
+    int y = enttR.yPos + enttR.ySize;
 
     // scan along width of the entity, one pixel below
     for (int x = enttR.xPos; x < enttR.xPos + enttR.xSize; x++) {
