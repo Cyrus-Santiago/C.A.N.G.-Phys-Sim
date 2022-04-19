@@ -11,6 +11,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
 #include "../include/collision.hpp"
+#include "../include/toolBox.hpp"
 
 //#include "../include/simulation.hpp"
 //#include "../include/simulationObject.hpp"
@@ -27,7 +28,7 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
-// Move move;
+Move move;
 Input input;
 Factory factory;
 entt::registry * reg;
