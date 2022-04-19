@@ -1,3 +1,4 @@
+
 /* Although this code was physically typed out by Nate, he followed
 a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
 he does not feel comfortable claiming this code as his intellectual property
@@ -26,7 +27,6 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
-Click gridMouseClick;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -47,6 +47,8 @@ Game::~Game() {
 }
 
 void Game::Init(GLFWwindow *window) {
+  assert(Width>0);
+  assert(Height>0);
   Window=window;
   ResourceManager::initializeResources(); /* This will load all textures and shaders */
 
@@ -80,7 +82,6 @@ void Game::Init(GLFWwindow *window) {
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
     }
-    colEngine.registerEntity(* reg, border);
   }
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -120,23 +121,18 @@ void Game::Update(float dt) {
           glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
           //Default shape is a square. For some reason I'm not allowed to put this
           //declaration inside the shape case.
-          assert(Width>0);
-          assert(Height>0);
-          glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
+          glm::vec2 shapeDimensions(40);
           //Determines what to do based on the game state
           entt::entity entity;
-          gridMouseClick=newMouseClick;
-          gridMouseClick.xPos-=43;     gridMouseClick.yPos-=43;
           switch(int(State)) {
             
             case GAME_DRAW_ELEMENT:
               if(Input::mousePressed){
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
-              }//TODO update mouseclick with edgegap
+              }
               entity = factory.makeParticle(* reg, pressedButton.Type,
-                glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor,
-                glm::vec2((int)gridMouseClick.xPos, (int) gridMouseClick.yPos));
+                glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
               if (!colEngine.registerEntity(* reg, entity))
                 reg->destroy(entity);
               break;
@@ -145,8 +141,10 @@ void Game::Update(float dt) {
               //Double length if shape is a rectangle
               if(pressedButton.Type=="RECTANGLE")
                 shapeDimensions.x*=2;
-              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos-20,
-                (int)newMouseClick.yPos-20), buttonColor,shapeDimensions, pressedButton.Type);
+              entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
+              if (!colEngine.registerEntity(* reg, entity))
+                reg->destroy(entity);
               break;            
 
             case GAME_DRAW_RAY:
@@ -161,7 +159,6 @@ void Game::Update(float dt) {
 
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
-              //TODO create animation gif
               for(int i=0; i<8; i++)  {
                 factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
                   (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 
@@ -180,9 +177,7 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  colEngine.collisionLoop(* reg, dt, bottomBorder);
-
-  //TODO colEngine.triangleCollision(reg, dt);
+  //colEngine.collisionLoop(* reg, dt, bottomBorder);
 }
 
 void Game::Render() {
@@ -209,7 +204,6 @@ void Game::Render() {
   /*auto group = registry.group<dimensions>(entt::get<physics>);
   for(auto entity : group){
     auto& [dims, phys] = group.get<dimensions,physics>(entity);
-
   }
   //maestro.setRenderable(entity1,texture);
   spriteRenderer->DrawSprite(maestro.registry.get(entity1).renderable.texture,
@@ -224,8 +218,8 @@ void Game::Render() {
     // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
-
-  // colEngine.debugGrid(* spriteRenderer, * reg);
+  //Debug method to highlight wherever a grid spot is filled.
+  colEngine.debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The

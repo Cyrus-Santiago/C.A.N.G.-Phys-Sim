@@ -4,7 +4,6 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
-#include <glm/fwd.hpp>
 #include "../include/spriteRenderer.hpp"
 
 class Collision {
@@ -35,7 +34,8 @@ private:
     // 43, 806 x coords
     // 43, 387 y coords
     entt::entity grid[820][400];
-
+    bool registerTriangleEntity(entt::registry &reg, entt::entity entt);
+    
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
 

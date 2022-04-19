@@ -1,4 +1,3 @@
-
 #include "../include/factory.hpp"
 #include "../include/ray.hpp"
 #include "../include/beam.hpp"
@@ -6,7 +5,7 @@
 #include <string>
 
 entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::vec2 position,
-    glm::vec4 color,glm::vec2 gridPos) {
+    glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
 
@@ -17,7 +16,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     
     // insert data passed to method into renderable component of entity
     reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
-        0.0f, color.x, color.y, color.z, color.w, gridPos);
+        0.0f, color.x, color.y, color.z, color.w);
 
     return entity;
 }
@@ -31,14 +30,15 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
         //The triangle points are in this particular order in the vector. The order DOES matter
         //Vertices: Left, right, top
         //Midpoints: Left, right, bottom, middle (of triangle)
-        std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
-            glm::vec2(position.x+10,position.y+20), glm::vec2(position.x+5,position.y+10), glm::vec2(position.x+15,position.y+10),
-            glm::vec2(position.x+10,position.y), glm::vec2(position.x+10,position.y+10)};
+        std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x-20,position.y+20), glm::vec2(position.x+20,position.y+20), 
+            glm::vec2(position.x,position.y-20), glm::vec2(position.x-10,position.y), glm::vec2(position.x+10,position.y), 
+            glm::vec2(position.x,position.y+20), glm::vec2(position.x,position.y), 
+        };
         reg.emplace<Triangle>(entity, trianglePoints);
         shapeTexture="triangle";
     }
     else    shapeTexture="button2";
-    reg.emplace<Renderable>(entity,type, shapeTexture, position.x, position.y, 
+    reg.emplace<Renderable>(entity,type, shapeTexture, position.x-20, position.y-20, 
         (int)dimensions.x, (int)dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
     //For gravity and velocity
     reg.emplace<Physics>(entity, 30.0f);
@@ -89,33 +89,32 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     reg.emplace<Triangle>(entity, trianglePoints);
     return entity;
 }
-void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight,
-glm::vec4 color){
-    int areaWidth=(int)(scrWidth*0.91882), areaHeight=(int)(scrHeight*0.416);
-    float xPos=(int)(scrWidth*0.05), yPos=(int)(scrHeight*0.05);
-    std::cout<<areaWidth<<std::endl;
+void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
+    int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
+    int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
+
     auto entity1 = reg.create(); //Top Line
-    reg.emplace<Renderable>(entity1, "topBorder", "button1", xPos+1, yPos, 
-        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,0));
+    reg.emplace<Renderable>(entity1, "topBorder", "button1", (float)xPos+1, (float)yPos, 
+        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity1, "topBorder");
 
     auto entity2 = reg.create(); //Bottom Line
-    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", xPos+1, yPos+areaHeight, 
-        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,343));
+    reg.emplace<Renderable>(entity2, "bottomBorder", "button1", (float)xPos+1, (float)yPos+areaHeight, 
+        areaWidth-2, 3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity2, "bottomBorder");
 
     auto entity3 = reg.create(); //Left Line
-    reg.emplace<Renderable>(entity3, "leftBorder", "button1", xPos-1, yPos, 
-        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(0,0));
+    reg.emplace<Renderable>(entity3, "leftBorder", "button1", (float)xPos-1, (float)yPos, 
+        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity3, "leftBorder");
 
     auto entity4 = reg.create(); //Right Line
-    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (xPos+areaWidth)-1, yPos, 
-        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w, glm::vec2(777,0));
+    reg.emplace<Renderable>(entity4, "rightBorder", "button1", (float)(xPos+areaWidth)-1, (float)yPos, 
+        3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity4, "rightBorder");
 
-    std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
-    std::cout << (yPos + areaHeight) - (yPos) << std::endl;
+    // std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
+    // std::cout << (yPos + areaHeight) - (yPos) << std::endl;
 
     return;
 };

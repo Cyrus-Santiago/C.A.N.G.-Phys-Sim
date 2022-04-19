@@ -21,117 +21,7 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
         liquidCollision(reg, dt, bottomBorder, entity);
     }
 }
-/*bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
-    glm::vec2 lowerBound,upperBound;
-    //Upper and lower bounds of the entity's position
-    lowerBound.x=reg.get<Renderable>(entity).gridPos.x;
-    lowerBound.y=reg.get<Renderable>(entity).gridPos.y;
-    upperBound.x=reg.get<Renderable>(entity).gridPos.x+reg.get<Renderable>(entity).xSize;
-    upperBound.y=reg.get<Renderable>(entity).gridPos.y+reg.get<Renderable>(entity).ySize;
-    std::cout<<reg.get<Renderable>(entity).type<<std::endl;
-    std::cout<<"Lower "<<lowerBound.x<<" "<<lowerBound.y<<std::endl;
-    std::cout<<"Upper "<<upperBound.x<<" "<<upperBound.y<<std::endl;
-    for (int x=(int)lowerBound.x; x < (int)upperBound.x; x++){
-        for(int y=(int)lowerBound.y; y < (int)upperBound.y; y++){
-            std::cout<<x<<" "<<y<<std::endl;
-            if(reg.valid(grid[x][y])){
-                return false;
-            }   
-        }
-    }
-    for (int x=(int)lowerBound.x; x < (int)upperBound.x; x++){
-        for(int y=(int)lowerBound.y; y < (int)upperBound.y; y++){
-            grid[x][y] = entity;
-        }
-    }
-    return true;
-}
-    
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
-    std::cout<<"x="<<xPos<<"-"<<xSize+xPos<<" y="<<yPos<<"-"<<ySize+yPos<<std::endl;
-    for (int x = xPos-xSize; x < (xPos + xSize); x++) {
-        for (int y = yPos-ySize; y < (yPos + ySize); y++) {
-            std::cout<<"uhhh "<<"x="<<x<<" y="<<y<<std::endl;
-            if (reg.valid(grid[x][y])) {
-               // std::cout<<"uhm"<<std::endl;
-                return false;
-            }
-        }
-    }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            grid[x][y] = entity;
-        }
-    }
-    return true;
-}
 
-void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
-    entt::entity entity) {
-    glm::vec2 lowerBound(reg.get<Renderable>(entity).gridPos.x,reg.get<Renderable>(entity).gridPos.y);
-    glm::vec2 upperBound(lowerBound.x+reg.get<Renderable>(entity).xSize, 
-        lowerBound.y+reg.get<Renderable>(entity).ySize);
-
-
-
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
-    float gravity = dt * reg.get<Physics>(entity).mass * GRAVITY;
-
-    reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
-        renderable.yPos += gravity;
-        renderable.gridPos.y+=gravity;
-    });
-
-    int i = 0;
-    int newYPos = ((int)upperBound.y);
-    bool result = false;
-    for (i = lowerBound.x; i < upperBound.x; i++) {
-        if (reg.valid(grid[i][newYPos]) || upperBound.y >= bottomBorder) {
-            result = true;
-            break;
-        }
-    }
-    
-    int ySolid = 0;
-
-    if (result) {
-        if ((upperBound.y) >= bottomBorder) {
-            ySolid = bottomBorder - ySize;
-        } else {
-            for (int j = upperBound.y; j < bottomBorder; j++) {
-                if (grid[i][j] != entt::null) {
-                    ySolid = j - ySize;
-                    break;
-                }
-            }
-        }
-        reg.patch<Renderable>(entity, [&reg, ySolid, gravity](auto &renderable)
-        {
-            if (ySolid != 0) {
-                renderable.yPos = ySolid;
-                renderable.gridPos.y= ySolid;
-            } else {
-                renderable.yPos -= gravity;
-                renderable.gridPos.y-=gravity;
-            }
-        });
-    }
-    for (int x = lowerBound.x; x < upperBound.x; x++) {
-        for (int y = lowerBound.y; y < upperBound.y; y++) {
-            grid[x][y] = entt::null;
-        }
-    }
-    yPos = reg.get<Renderable>(entity).gridPos.y;
-    for (int x = lowerBound.x; x < upperBound.x; x++) {
-        for (int y = yPos; y < upperBound.y; y++) {
-            grid[x][y] = entity;
-*/
 /* Arguments: entity registry, an entity to register
  * Returns:   true if successful, false if it's overlapping an existing entity.
  * Purpose:   registers an entity in the collision grid, ensures that it doesn't
@@ -165,6 +55,11 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
         // success
         return true;
     }
+    //Checks if entity has the triangle component. Does NOT include explosion entities
+    if(reg.all_of<Triangle>(entt) && !reg.all_of<Forcewave>(entt)){
+        return(registerTriangleEntity(reg,entt));
+    }
+        std::cout<<"AAAAAAbut we already ruled htis out?AAA"<<std::endl;
 
     // checks if an entity exists where we're trying to place one
     for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
@@ -408,29 +303,7 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
         }
     }
 }
-/*
-//TODO change to grid pos
-void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, bool right) {
-    auto enttR = reg.get<Renderable>(entt);
-    for (int i = enttR.yPos; i < (enttR.yPos + enttR.ySize); i++) {
-        if (reg.valid(grid[(int)enttR.xPos + enttR.xSize + 1][i])) return;
-    }
-    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
-        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
-            grid[x][y] = entt::null;
-        }
-    }
-    reg.patch<Renderable>(entt, [dt, right](auto &renderable) {
-        if (right)
-            renderable.xPos += dt * 50;
-        else
-            renderable.xPos -= dt * 50;;
-    });
-    enttR = reg.get<Renderable>(entt);
-    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
-        for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
-            grid[x][y] = entt;
-*/
+
 /* Arguments: spriteRenderer, entity registry
  * Returns:   N/A
  * Purpose:   draws a translucent red filter over areas registered in the
@@ -530,7 +403,56 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
         }
     }
 }
+bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
+    std::cout<<"AAAAAAAAA"<<std::endl;
+    auto enttT= reg.get<Triangle>(entt);
+    auto enttR= reg.get<Renderable>(entt);
+    //Variables to make this more readable
+    glm::vec2 leftPoint=enttT.points[0];
+    glm::vec2 rightPoint=enttT.points[1];
+    glm::vec2 topPoint=enttT.points[2];
+    int leftSlope= (int)((topPoint.y - leftPoint.y) / (topPoint.x - leftPoint.x));
+    int rightSlope= (int)((rightPoint.y - topPoint.y) / (rightPoint.x - topPoint.x));
+    int xLeft=(int)leftPoint.x, xRight=(int)rightPoint.x;
+    int previousXLeft, previousXRight;
+    //Descending for loop to check if an entity exists where we're trying to place one
+            std::cout<<"xleft "<<xLeft<<" xRight "<<xRight<<std::endl;
 
+    for(int y=(int)(leftPoint.y); y >(int)topPoint.y ; y-=2){        
+        previousXLeft=xLeft;
+        previousXRight=xRight;
+        //Checks from left to right on a certain right between two triangle points to check if an entity is there
+        for(xLeft; xLeft <= xRight; xLeft++)    {
+            // if there is an entity there, we return false and the entity
+            // should be deleted and not drawn
+            if(reg.valid(grid[xLeft][(y)]))   return false;
+        }
+        //Update left and right points. They should come closer to each other
+        xLeft=previousXLeft +1;
+        xRight=previousXRight -1;
+    }
+    //If we leave this loop, that means that there is no entity in the landing zone, meaning
+    //we are free to make a new triangle entity
+    //Reset points
+    xLeft=(int)leftPoint.x; 
+    xRight=(int)rightPoint.x;
+    //Descending for loop to register from the bottom-up of a triangle. Same routine as before
+    //TODO figure out why only some of the triangle is being registered.
+    for(int y=(int)(leftPoint.y-1); y >(int)topPoint.y+1 ; y-=2){
+        previousXLeft=xLeft;
+        previousXRight=xRight;
+        for(xLeft; xLeft-1 <= xRight+1; xLeft++)    {
+            // set all the grid locations for the entity to the entity ID
+            grid[xLeft][(y)]=entt;
+        }
+        //Update left and right points. They should come closer to each other
+        xLeft=previousXLeft +1;
+        xRight=previousXRight - 1;
+        std::cout<<"xleft "<<xLeft<<" xRight "<<xRight<<" y "<<y<<std::endl;
+    }
+    //success
+    return true;
+}
 // bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
 //     colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 
 //         reg.get<Renderable>(obj2).xPos && reg.get<Renderable>(obj2).xPos + 
