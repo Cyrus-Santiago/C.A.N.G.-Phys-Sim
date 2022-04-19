@@ -3,12 +3,16 @@ a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
 he does not feel comfortable claiming this code as his intellectual property
 and it should not count towards his 1000 lines. */
 
-#define STB_IMAGE_IMPLEMENTATION
-
 #include "../include/program.hpp"
 #include "../include/stb_image.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
 
+#define TARGET_FPS 60
 
 // settings
 const unsigned int SCR_WIDTH = 1000;
@@ -60,12 +64,20 @@ int Program::program() {
     const char *gameMusic = "audio/playMusic2.wav";
     //gameAudio.playAudio(gameMusic);
 
+    glfwSwapInterval(10);
+
+    float lasttime = glfwGetTime();
+
     /* RENDER LOOP */
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        while (glfwGetTime() < lasttime + 1.0/TARGET_FPS) {
+            usleep(1);
+        }
+        lasttime += 1.0/TARGET_FPS;
 
 				// check for user input
         Input::processInput(window);

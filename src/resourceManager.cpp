@@ -101,7 +101,7 @@ void ResourceManager::initializeResources(){
   ResourceManager::LoadTexture("textures/triangle.png", true, "triangle");
   ResourceManager::LoadTexture("textures/forceWave.png", true, "forceWave");
   ResourceManager::LoadTexture("textures/button2.png", true, "button2");
-  ResourceManager::LoadTexture("textures/button1.jpg", false, "button1");
+  ResourceManager::LoadTexture("textures/solid.jpg", false, "solid");
   ResourceManager::LoadTexture("textures/skyBackground.jpg", false, "skyBackground");
   ResourceManager::LoadTexture("textures/laser.png", true, "laser");
   ResourceManager::LoadTexture("textures/font2.png", true, "font2");

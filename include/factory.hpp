@@ -1,3 +1,5 @@
+#ifndef FACTORY
+#define FACTORY
 
 #include "../include/entt.hpp"
 #include "../include/glm/glm.hpp"
@@ -39,10 +41,11 @@ struct Border {
     std::string position;
 };
 
-struct Liquid {
-    float viscosity;
-    float movement;
-};
+struct Liquid {};
+
+struct Fire {};
+
+struct Gas {};
 
 class Factory {
 public:
@@ -75,3 +78,5 @@ public:
     void draw(entt::registry &reg, entt::entity entity,
         SpriteRenderer &spriteRenderer);
 };
+
+#endif

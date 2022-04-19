@@ -2,6 +2,8 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
 #include <cmath>
 #include "../include/glad.h"
