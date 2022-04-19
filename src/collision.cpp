@@ -1,223 +1,322 @@
 #include "../include/collision.hpp"
 #include "../include/factory.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/fwd.hpp>
 
 #define GRAVITY 9.17
 
+/* Arguments: entity registry, delta frame time, position of the bottom border.
+ * Returns:   N/A
+ * Purpose:   Loops through every entity and calls different collisons functions.
+ *            It's more efficient than having individual loops for every type of
+ *            collision. */
 void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder) {
     auto physical = reg.view<Physics>();
-    
+
+    // loops through each entity with the physics component
     for (auto entity : physical) {
+        // enacts gravity and bottom border collision
         gravityCollision(reg, dt, bottomBorder, entity);
+        // simulates liquid movement and collision
         liquidCollision(reg, dt, bottomBorder, entity);
     }
 }
 
-bool Collision::registerEntity(entt::registry &reg, entt::entity entity) {
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
+/* Arguments: entity registry, an entity to register
+ * Returns:   true if successful, false if it's overlapping an existing entity.
+ * Purpose:   registers an entity in the collision grid, ensures that it doesn't
+ *            overlap an existing entity. The grid prevents us from checking
+ *            every existing entity on the screen for a collision. */
+bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
+    auto enttR = reg.get<Renderable>(entt);
 
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            if (grid[x][y]) return false;
+    // checks if entity has the border component
+    if (reg.all_of<Border>(entt)) {
+        // gets the border component fields of the entity
+        auto enttB = reg.get<Border>(entt);
+        // if we have the right border we register a 10 pixel buffer to the right
+        // of it to help with collision detection
+        if (enttB.position == "rightBorder") {
+            for (int x = enttR.xPos; x < (enttR.xPos + 10); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    // store the border entity ID in the grid locations
+                    grid[x][y] = entt;
+                }
+            }
+        // if we have the left border we register the same buffer except to the left
+        } else if (enttB.position == "leftBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    // store the border entity ID in the grid locations
+                    grid[x][y] = entt;
+                }
+            }
+        }
+        // success
+        return true;
+    }
+
+    // checks if an entity exists where we're trying to place one
+    for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
+        for (int y = enttR.yPos - 1; y < (enttR.yPos + enttR.ySize) + 1; y++) {
+            // if there is an entity there, we return false and the entity
+            // should be deleted and not drawn
+            if (reg.valid(grid[x][y])) return false;
         }
     }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            grid[x][y] = true;
+    // since we're not on top of another entity, we register the location of the
+    // new entity, the grid location is 1 pixel smaller all around to make things
+    // more flush visually.
+    for (int x = enttR.xPos + 1; x < (enttR.xPos + enttR.xSize) - 1; x++) {
+        for (int y = enttR.yPos + 1; y < (enttR.yPos + enttR.ySize) - 1; y++) {
+            // set all the grid locations for the entity to the entity ID
+            grid[x][y] = entt;
         }
     }
+    // success
     return true;
 }
 
+/* Arguments: entity registry, delta frame time, position of bottom border, entity
+ * Returns:   N/A
+ * Purpose:   Enacts gravity on a given entity, and ensure it stops accelerating
+ *            down once it makes contact with the ground or another entity. */
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
-    entt::entity entity) {
-    int xPos = reg.get<Renderable>(entity).xPos;
-    int xSize = reg.get<Renderable>(entity).xSize;
-    int yPos = reg.get<Renderable>(entity).yPos;
-    int ySize = reg.get<Renderable>(entity).ySize;
-    float gravity = dt * reg.get<Physics>(entity).mass * GRAVITY;
+    entt::entity entt) {
 
-    reg.patch<Renderable>(entity, [&reg, gravity](auto &renderable) {
+    // get the renderable component of the entity
+    auto enttR = reg.get<Renderable>(entt);
+    // calculate gravity based on the delta frame, the mass of the entity, and
+    // the gravitational constant
+    float gravity = dt * reg.get<Physics>(entt).mass * GRAVITY;
+
+    // change the position of the entity by the calculated gravity
+    reg.patch<Renderable>(entt, [&reg, gravity](auto &renderable) {
         renderable.yPos += gravity;
     });
 
-    int i = 0;
-    int newYPos = ((int)reg.get<Renderable>(entity).yPos + ySize);
-    bool result = false;
-    for (i = xPos; i < xPos + xSize; i++) {
-        if (grid[i][newYPos] ||
-            ((yPos + ySize) >= bottomBorder)) {
-            result = true;
-            break;
-        }
-    }
-    
-    int ySolid = 0;
+    // the following code checks if we need to undo the above y position change
+    // to account for a collision.
 
-    if (result) {
-        if ((yPos + ySize) >= bottomBorder) {
-            ySolid = bottomBorder - ySize;
-        } else {
-            for (int j = yPos + ySize; j < bottomBorder; j++) {
-                if (grid[i][j]) {
-                    ySolid = j - ySize;
-                    break;
-                }
-            }
-        }
-        reg.patch<Renderable>(entity, [&reg, ySolid, gravity](auto &renderable)
-        {
-            if (ySolid != 0) {
-                renderable.yPos = ySolid;
-            } else {
-                renderable.yPos -= gravity;
-            }
-        });
-    }
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (reg.get<Renderable>(entity).yPos); y++) {
-            grid[x][y] = false;
-        }
-    }
-    yPos = reg.get<Renderable>(entity).yPos;
-    for (int x = xPos; x < (xPos + xSize); x++) {
-        for (int y = yPos; y < (yPos + ySize); y++) {
-            grid[x][y] = true;
-        }
-    }
-}
+    // get the renderable component of the entt now that the y position is changed
+    // we call it newEnttR because it's the renderable data of the entity's new pos
+    auto newEnttR = reg.get<Renderable>(entt);
+    int newY = 0;
 
-void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
-    entt::entity entity) {
-    if (reg.any_of<Liquid>(entity)) {
-        srand((unsigned int)entity);
-        int xPos = reg.get<Renderable>(entity).xPos;
-        int xSize = reg.get<Renderable>(entity).xSize;
-        int yPos = reg.get<Renderable>(entity).yPos;
-        int ySize = reg.get<Renderable>(entity).ySize;
+    // we loop through the entire area of the new entity to check for an overlap
+    // with anything else
+    for (int x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
+        for (int y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
 
-        int modifier = 0;
+            // if we detect a valid entity that is not the entity in question
+            if (reg.valid(grid[x][y]) && (grid[x][y] != entt)) {
 
-        if (yPos + ySize == bottomBorder) {
-            return;
-        } else if (grid[xPos][yPos + ySize + 1] || grid[xPos + xSize - 1][yPos + ySize + 1]) {
-            modifier = ((rand() % 3) >= 2) ? 1 : -1;
-            reg.patch<Renderable>(entity, [dt, modifier](auto &renderable) {
-                renderable.xPos += dt * 30 * modifier;
-            });
-            //Update vertice locations on triangle shapes
-            if(reg.all_of<Triangle,Physics>(entity)){
-                reg.patch<Triangle>(entity, [dt, entity, &reg](auto &triangle){
-                    float deltaY=dt * reg.get<Physics>(entity).mass * GRAVITY;
-                    //functional operator "map" to update each point position
-                    std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[deltaY](glm::vec2 point){
-                        point.y+=deltaY;
-                        return(point);
-                    });
+                // we adjust the y component to the top edge of whatever it collided
+                // with
+                newY = reg.get<Renderable>(grid[x][y]).yPos;
+
+                // for some reason, it wanted to put the entity on the top border
+                // when it collided with the bottom border, this fixes that.
+                if (newY == 43) newY = bottomBorder;
+
+                // adjust the y component of our entity so that the bottom is
+                // flush with what it collided into, we subtract the size to get
+                // the new top position, since that's what yPos represents.
+                reg.patch<Renderable>(entt, [newY](auto &renderable) {
+                    renderable.yPos = newY - renderable.ySize + 1;
                 });
             }
         }
-        int newX = reg.get<Renderable>(entity).xPos;
+    }
 
-        if (modifier > 0) {
-            for (int x = xPos + xSize; x < newX + xSize; x++) {
-                for (int y = yPos; y < yPos + ySize; y++) {
-                    if (grid[x][y]) {
-                        reg.patch<Renderable>(entity, [&reg, dt, xPos](auto &renderable) {
-                            renderable.xPos = xPos;
-                        });
-                        return;
-                    }
-                }
-            }
-        } else {
-            for (int x = xPos - 1; x >= newX; x--) {
-                for (int y = yPos; y < yPos + ySize; y++) {
-                    if (grid[x][y]) {
-                        reg.patch<Renderable>(entity, [&reg, dt, xPos, x](auto &renderable) {
-                            renderable.xPos = xPos;
-                        });
-                        return;
-                    }
-                }
-            }
+    // now we erase all the grid data based on the original renderable component
+    // of the entity (before any movement) with a buffer to ensure we get it all
+    for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
+        for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
+            // we ensure we're only erasing *this* component
+            if (grid[x][y] == entt)
+                grid[x][y] = entt::null;
         }
-        for (int x = xPos; x < (xPos + xSize); x++) {
-            for (int y = yPos; y < yPos + ySize; y++) {
-                grid[x][y] = false;
-            }
-        }
-        yPos = reg.get<Renderable>(entity).yPos;
-        xPos = reg.get<Renderable>(entity).xPos;
-        for (int x = xPos; x < (xPos + xSize); x++) {
-            for (int y = yPos; y < (yPos + ySize); y++) {
-                grid[x][y] = true;
-            }
+    }
+
+    // now we get the renderable data for the new entity again, in case we made any
+    // adjustments since the original fetch
+    newEnttR = reg.get<Renderable>(entt);
+
+    // now we claim everything one pixel withdrawn from what's rendered
+    for (int x = newEnttR.xPos + 1; x < newEnttR.xPos + newEnttR.xSize - 1; x++) {
+        for (int y = newEnttR.yPos + 1; y < newEnttR.yPos + newEnttR.ySize - 1; y++) {
+            grid[x][y] = entt;
         }
     }
 }
 
-// Entity A left overlaps Entity B
-bool Collision::leftOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
-    float  leftA  = reg.get<Renderable>(A).xPos,
-           rightA = reg.get<Renderable>(A).xPos + (float)reg.get<Renderable>(A).xSize,
-           leftB  = reg.get<Renderable>(B).xPos,
-           rightB = reg.get<Renderable>(B).xPos + (float)reg.get<Renderable>(B).xSize;
+/* Arguments: entity registry, delta frame time, pos of bottom border, entity
+ * Returns:   N/A
+ * Purpose:   This implements an algorithm that tries to mimic the way water will
+ *            fill the container it occupies. */
+void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
+    entt::entity entt) {
 
-    return ((leftA <= leftB) && (leftB <= rightA)) ? true : false;
-}
+    // checks to see if the entity has the liquid component, return if not
+    if (!reg.all_of<Liquid>(entt)) return;
+    // seed the random number generator based on time and entity ID
+    srand(time(0) * (uint)entt);
 
-// Entity A right overlaps Entity B
-bool Collision::rightOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    // get the renderable component of our entity
+    auto enttR = reg.get<Renderable>(entt);
+    // choose a direction to move randomly true is right, false is left
+    int direction = rand() % 19;
 
-    float  leftA  = reg.get<Renderable>(A).xPos,
-           rightA = reg.get<Renderable>(A).xPos + (float)reg.get<Renderable>(A).xSize,
-           leftB  = reg.get<Renderable>(B).xPos,
-           rightB = reg.get<Renderable>(B).xPos + (float)reg.get<Renderable>(B).xSize;
-
-    return ((leftB <= leftA) && (leftA <= rightB)) ? true : false;
-}
-
-// Entity A top overlaps Entity B
-bool Collision::topOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+    // if there's an entity above use, there's nothing in the direction we want
+    // to move, and we're on the ground or there's entities between us and the
+    // ground then we move in the direction we randomly chose
+    if (!checkX(reg, entt, direction) /*&& grounded(reg, entt, bottomBorder)*/) {
+        moveX(reg, entt, dt, direction);
     
-    float  topA  = reg.get<Renderable>(A).yPos,
-           bottomA = reg.get<Renderable>(A).yPos + (float)reg.get<Renderable>(A).ySize,
-           topB  = reg.get<Renderable>(B).yPos,
-           bottomB = reg.get<Renderable>(B).yPos + (float)reg.get<Renderable>(B).ySize;
+    // // if there's something on our right and nothing on our left, move left
+    // } else if (checkX(reg, entt, true) && !checkX(reg, entt, false)) {
+    //     moveX(reg, entt, dt, false);
+    
+    // // if there's something on our left and nothing on our right, move right
+    // } else if(checkX(reg, entt, false) && !checkX(reg, entt, true)) {
+    //     moveX(reg, entt, dt, true);
+    }
 
-    return ((topA <= bottomB) && (bottomB <= bottomA)) ? true : false;
 }
 
-// Entity A bottom overlaps Entity B
-bool Collision::bottomOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
+/* Arguments: entity registry, entity
+ * Returns:   true if there's something above us, false otherwise
+ * Purpose:   helps urge movement of liquid particles if there's something above. */
+bool Collision::above(entt::registry &reg, entt::entity entt) {
 
-    double topA  = reg.get<Renderable>(A).yPos,
-           bottomA = reg.get<Renderable>(A).yPos + (float)reg.get<Renderable>(A).ySize,
-           topB  = reg.get<Renderable>(B).yPos,
-           bottomB = reg.get<Renderable>(B).yPos + (float)reg.get<Renderable>(B).ySize;
+    // get renderable component
+    auto enttR = reg.get<Renderable>(entt);
 
-    return ((topB <= bottomA) && (bottomA <= bottomB)) ? true : false;
+    // get y position directly above this entity
+    int y = enttR.yPos - 1;
+
+    // check the pixel directly above along the width of the entity
+    for (int x = enttR.xPos; x < enttR.xPos + enttR.xSize; x++) {
+
+        // if there's a valid entity, there's something above us
+        if (reg.valid(grid[x][y])) return true;
+    }
+
+    // there's nothing above
+    return false;
 }
 
-bool Collision::xOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
-    if (leftOverlap(reg, A, B))
-        return true;
-    else if (rightOverlap(reg, A, B))
-        return true;
-    else
-        return false;
+/* Arguments: entity registry, entity, bottom border position
+ * Returns:   true if we're on the ground or there's something between us and the ground.
+ * Purpose:   this helps ensure water particles don't fly around in the air as they fall. */
+bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorder) {
+
+    // get the renderable component of the entity
+    auto enttR = reg.get<Renderable>(entt);
+
+    // we we're on the ground directly, return true
+    if ((int)enttR.yPos + enttR.ySize - 1 >= bottomBorder) return true;
+
+    // get the y pos directly beneath this entity
+    int y = enttR.yPos + enttR.ySize + 1;
+
+    // scan along width of the entity, one pixel below
+    for (int x = enttR.xPos; x < enttR.xPos + enttR.xSize; x++) {
+
+        // if we find another entity, we recurse to see if it's on the ground.
+        if (reg.valid(grid[x][y])) {
+            // if it is, or it's touching another entity that's on the ground,
+            // eventually this will return true
+            return grounded(reg, grid[x][y], bottomBorder);
+        }
+    }
+    // we're not grounded
+    return false;
 }
 
-bool Collision::yOverlap(entt::registry &reg, entt::entity A, entt::entity B) {
-    if (topOverlap(reg, A, B))
-        return true;
-    else if (bottomOverlap(reg, A, B))
-        return true;
-    else
-        return false;
+/* Arguments: entity registry, entity, right boolean (true is right, false is left)
+ * Returns:   true if there's something there, false if there isn't
+ * Purpose:   checks to see if there's an entity to the left or right of a given
+ *            entity for safe movment. */
+bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
+    
+    // get renderable component of entity
+    auto enttR = reg.get<Renderable>(entt);
+    // if we're moving right we set the x component to the pixel just right of 
+    // the entity, otherwise we set x to the pixel just left
+    int x = 0;
+    if (direction % 2 == 0) x = enttR.xPos + enttR.xSize + 1;
+    else x = enttR.xPos - 1;
+
+    // now we scan along the length of the entity at that x position
+    for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+        // if we find something, we return true
+        if (reg.valid(grid[x][y])) {
+            return true;
+        }
+    }
+    // there's nothing there
+    return false;
+}
+
+/* Arguments: entity registry, entity, delta frame time, right bool (true is right, false is left)
+ * Returns:   N/A
+ * Purpose:   Facilitates movement of entity in a given x direction */
+void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction) {
+
+    // get renderable component of entity
+    auto enttR = reg.get<Renderable>(entt);
+
+    // change the x position of the entity based on the delta frame, and direction
+    // we were told to move
+    reg.patch<Renderable>(entt, [dt, direction](auto &renderable) {
+        if (direction % 2 == 0)
+            renderable.xPos += dt * 3 * direction;
+        else
+            renderable.xPos += dt * 3 * direction * -1;
+    });
+
+    // get renderable component of future entity
+    auto newEnttR = reg.get<Renderable>(entt);
+    
+    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
+    // we get it all)
+    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
+        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
+            // ensure we only delete *this* entity
+            if (entt == grid[x][y]) {
+                grid[x][y] = entt::null;
+            }
+        }
+    }
+    
+    // register entity in new x position, with a 1 pixel buffer for better rendering
+    for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
+        for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
+            grid[x][y] = entt;
+        }
+    }
+}
+
+/* Arguments: spriteRenderer, entity registry
+ * Returns:   N/A
+ * Purpose:   draws a translucent red filter over areas registered in the
+ *            collision grid. */
+void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
+
+    // sorry about the hardcoded values, loops around outside and inside of play
+    // area, so you can clearly see borders and entities
+    for (int x = 33; x < 816; x++) {
+        for (int y = 33; y < 398; y++) {
+            // if it's valid, we draw a filter over it.
+            if (reg.valid(grid[x][y])) {
+                Texture2D texture = ResourceManager::GetTexture("button2");
+                spriteRenderer.DrawSprite(texture, glm::vec2(x, y), glm::vec2(1.0f),
+                0.0f, glm::vec4(1.0f, 0.0f, 0.0f, 0.4f));
+            }
+        }
+    }
 }
 
 void Collision::triangleCollision(entt::registry *reg, float dt) {

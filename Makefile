@@ -50,7 +50,8 @@ $(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CC) $(CCOBJFLAGS) $(DBGFLAGS) -o $@ $<
 # creates executable from debug object files
 $(TARGET_DEBUG): $(OBJ_DEBUG)
-	$(CC) $(DBGFLAGS) $(OBJ_DEBUG) -o $@ $(CCCOMPFLAGS)
+	$(CC) -o  $@ $(OBJ_DEBUG) $(OPTS) $(CCCOMPFLAGS)
+#	$(CC) $(DBGFLAGS) $(OBJ_DEBUG) $(OPTS) -o $@ $(CCCOMPFLAGS)
 
 # phony rules
 # creates directories

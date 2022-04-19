@@ -4,14 +4,15 @@
 //#include "../include/simulationObject.hpp"
 #include "../include/entt.hpp"
 #include <vector>
+#include "../include/spriteRenderer.hpp"
 
-class Collision{
+class Collision {
 public:
     //constructor
     Collision(){
-        for (int i = 0; i < 764; i++) {
-            for (int j = 0; j < 345; j++) {
-                grid[i][j] = false;
+        for (int i = 0; i < 806; i++) {
+            for (int j = 0; j < 388; j++) {
+                grid[i][j] = entt::null;
             }
         }
     };
@@ -20,6 +21,8 @@ public:
     bool registerEntity(entt::registry &reg, entt::entity entity);
     
     void collisionLoop(entt::registry &reg, float dt, int bottomBorder);
+
+    void debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg);
 
     void triangleCollision(entt::registry *reg,float dt);
 
@@ -30,7 +33,7 @@ public:
 private:
     // 43, 806 x coords
     // 43, 387 y coords
-    bool grid[763][344];
+    entt::entity grid[820][400];
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
@@ -38,14 +41,15 @@ private:
     void liquidCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
 
-    // if A right overlaps B
-    bool rightOverlap(entt::registry &reg, entt::entity A, entt::entity B);
-    // if A left overlaps B
-    bool leftOverlap(entt::registry &reg, entt::entity A, entt::entity B);
-    // if A top overlaps B
-    bool topOverlap(entt::registry &reg, entt::entity A, entt::entity B);
-    // if A bottom overlaps B
-    bool bottomOverlap(entt::registry &reg, entt::entity A, entt::entity B);
+    void liquidCascade(entt::registry &reg, entt::entity entt, float dt, bool left);
+
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
+
+    bool checkX(entt::registry &reg, entt::entity entt, int direction);
+
+    bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
+
+    bool above(entt::registry &reg, entt::entity entt);
 
     // if A left overlaps OR right overlaps B
     bool xOverlap(entt::registry &reg, entt::entity A, entt::entity B);
