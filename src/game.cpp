@@ -10,6 +10,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/ray.hpp"
 //#include "../include/simulation.hpp"
 #include "../include/explosion.hpp"
+#include "../include/toolBox.hpp"
 //#include "../include/entityMaestro.hpp"
 //#include "../include/ecs.hpp"
 #include "../include/factory.hpp"
@@ -26,6 +27,7 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
+Move move;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -75,6 +77,7 @@ void Game::Init(GLFWwindow *window) {
   factory.makeBorder(*reg,Width*0.85,Height);
   auto view = reg->view<Border>();
   for (auto border : view) {
+    colEngine.registerEntity(* reg, border);
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
     }
@@ -168,23 +171,16 @@ void Game::Update(float dt) {
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               } 
-              entt::entity clickedObject; //Used to update object
-              auto view = reg->view<Renderable>();
-              for(auto object : view){ //Find object that was clicked
-                int objX = reg->get<Renderable>(object).xPos;
-                int objY = reg->get<Renderable>(object).yPos;
-                if((int)newMouseClick.xPos > objX && (int)newMouseClick.xPos > objX+reg->get<Renderable>(object).xSize){
-                  if((int)newMouseClick.yPos > objY && (int)newMouseClick.yPos > objY+reg->get<Renderable>(object).ySize){
-                    clickedObject = object;
-                    break;
-                  }
-                }
-              }
               //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
-            reg->patch<Renderable>(clickedObject, [](auto &pos){
-              pos.xPos = (int)newMouseClick.xPos-20, pos.yPos = (int)newMouseClick.yPos-20;
-            });
-            break;
+              move.moveObject(reg,newMouseClick);
+              break;
+
+            case GAME_RESIZE_OBJECT:
+
+              break;
+            case GAME_DELETE_OBJECT:
+            
+              break;
           }
         }
         break;
@@ -241,6 +237,8 @@ void Game::Render() {
     // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
+
+  // colEngine.debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The
