@@ -11,7 +11,10 @@ bool paused=false;
         engineStartup();
     }
 
-/* Initializes audio engine */
+/* Arguments: none
+ * Returns:   int
+ * Purpose:   Initializes an audio engine using the irrKlang audio engine. 
+ *            Returns -1 upon failure, and 0 upon success. */
     int Audio::engineStartup(){
         engine = createIrrKlangDevice();
         if (!engine){
@@ -21,22 +24,31 @@ bool paused=false;
         return 0;
     }
 
-/* Will play audio for one cycle */
+/* Arguments: const char * audioClip
+ * Returns:   int
+ * Purpose:   Using the audio engine, plays an audio clip in 2D
+ *            for a single cycle. Returns 0 upon success. */
     int Audio::playAudio(const char *audioClip){
-        //if(engineStartup() == -1) return -1;
         ISound * sound = engine->play2D(audioClip,false,false,false,ESM_AUTO_DETECT,true);
         Sounds.push_back(sound);
         return 0;
     }
 
-/* Plays audio in a loop - need to work on this more (DON'T USE THIS YET) */
+/* Arguments: const char * audioClip
+ * Returns:   int
+ * Purpose:   Using the audio engine, plays an audio clip in 2D
+ *            in a loop until paused or program is terminated. 
+ *            Returns 0 upon success. */
     int Audio::playAudioLoop(const char *audioClip){
         ISound * sound = engine->play2D(audioClip,true,false,false,ESM_AUTO_DETECT,true);
         Sounds.push_back(sound);
         return 0;
     }
 
-/* Removes audio engine from use */
+/* Arguments: none
+ * Returns:   N/A
+ * Purpose:   Removes the audio engine from use. We usually use this
+ *            upon termination of the program to free memory. */
     void Audio::dropAudioEngine(){
         if (!Sounds.empty()) {
             for (ISound * sound : Sounds) {
@@ -47,6 +59,7 @@ bool paused=false;
             engine->drop();
         }
     }
+    
     //Adjusts the volume based on the pressing '-' or '+'. //TODO does not work yet
     //A "true" (+) passed increments the volume. "false" (-) decrements it.
     int Audio::adjustVolume(bool IncOrDec)   {

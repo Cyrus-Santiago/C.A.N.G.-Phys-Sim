@@ -62,9 +62,9 @@ int Program::program() {
 
     Audio gameAudio;
     const char *gameMusic = "audio/playMusic1.wav";
-    gameAudio.playAudioLoop(gameMusic);
+    //gameAudio.playAudioLoop(gameMusic);
 
-    glfwSwapInterval(10);
+    glfwSwapInterval(1);
 
     float lasttime = glfwGetTime();
 
