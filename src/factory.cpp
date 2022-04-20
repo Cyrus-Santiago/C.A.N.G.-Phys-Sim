@@ -1,4 +1,3 @@
-
 #include "../include/factory.hpp"
 #include "../include/ray.hpp"
 #include "../include/beam.hpp"
@@ -40,14 +39,15 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
         //The triangle points are in this particular order in the vector. The order DOES matter
         //Vertices: Left, right, top
         //Midpoints: Left, right, bottom, middle (of triangle)
-        std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
-            glm::vec2(position.x+10,position.y+20), glm::vec2(position.x+5,position.y+10), glm::vec2(position.x+15,position.y+10),
-            glm::vec2(position.x+10,position.y), glm::vec2(position.x+10,position.y+10)};
+        std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x-20,position.y+20), glm::vec2(position.x+20,position.y+20), 
+            glm::vec2(position.x,position.y-20), glm::vec2(position.x-10,position.y), glm::vec2(position.x+10,position.y), 
+            glm::vec2(position.x,position.y+20), glm::vec2(position.x,position.y), 
+        };
         reg.emplace<Triangle>(entity, trianglePoints);
         shapeTexture="triangle";
     }
     else    shapeTexture="button2";
-    reg.emplace<Renderable>(entity,type, shapeTexture, position.x, position.y, 
+    reg.emplace<Renderable>(entity,type, shapeTexture, position.x-20, position.y-20, 
         (int)dimensions.x, (int)dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
     //For gravity and velocity
     reg.emplace<Physics>(entity, 30.0f);

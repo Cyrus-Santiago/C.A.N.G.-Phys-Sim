@@ -1,3 +1,4 @@
+
 /* Although this code was physically typed out by Nate, he followed
 a tutorial on https://learnopengl.com. Unless explicitly marked otherwise,
 he does not feel comfortable claiming this code as his intellectual property
@@ -47,6 +48,8 @@ Game::~Game() {
 }
 
 void Game::Init(GLFWwindow *window) {
+  assert(Width>0);
+  assert(Height>0);
   Window=window;
   ResourceManager::initializeResources(); /* This will load all textures and shaders */
 
@@ -122,9 +125,7 @@ void Game::Update(float dt) {
           glm::vec4 buttonColor=Menu::Types.at(pressedButton.Type).color;
           //Default shape is a square. For some reason I'm not allowed to put this
           //declaration inside the shape case.
-          assert(Width>0);
-          assert(Height>0);
-          glm::vec2 shapeDimensions(((Width/Height)+1) * 20);
+          glm::vec2 shapeDimensions(40);
           //Determines what to do based on the game state
           entt::entity entity;
           switch(int(State)) {
@@ -146,8 +147,10 @@ void Game::Update(float dt) {
               //Double length if shape is a rectangle
               if(pressedButton.Type=="RECTANGLE")
                 shapeDimensions.x*=2;
-              factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos-20,
-                (int)newMouseClick.yPos-20), buttonColor,shapeDimensions, pressedButton.Type);
+              entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
+              if (!colEngine.registerEntity(* reg, entity))
+                reg->destroy(entity);
               break;            
 
             case GAME_DRAW_RAY:
@@ -184,7 +187,6 @@ void Game::Update(float dt) {
 
   colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
 
-  //TODO colEngine.triangleCollision(reg, dt);
 }
 
 void Game::Render() {
@@ -211,7 +213,6 @@ void Game::Render() {
   /*auto group = registry.group<dimensions>(entt::get<physics>);
   for(auto entity : group){
     auto& [dims, phys] = group.get<dimensions,physics>(entity);
-
   }
   //maestro.setRenderable(entity1,texture);
   spriteRenderer->DrawSprite(maestro.registry.get(entity1).renderable.texture,
@@ -226,8 +227,8 @@ void Game::Render() {
     // calls on the factory to draw the entity
     factory.draw(* reg, entity, * spriteRenderer);
   }
-
-  // colEngine.debugGrid(* spriteRenderer, * reg);
+  //Debug method to highlight wherever a grid spot is filled.
+  //colEngine.debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The
@@ -238,28 +239,22 @@ GameState Game::determineGameState()  {
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
       if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
-        //std::cout<<"element mode" <<std::endl;
         return GAME_DRAW_ELEMENT;
       }
       //If the button pressed is a shape
       else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
-          //std::cout<<"shape mode"<<std::endl;
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
       else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
-          //std::cout<<"ray mode"<<std::endl;
           return GAME_DRAW_RAY;
       }
       else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
-          //std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
       }
       else if(pressedButton[0].ID ==35) {
-          //std::cout<<"explosion mode"<<std::endl;
           return GAME_DRAW_EXPLOSION;
       }
     }
-    //std::cout<<"idle mode" <<std::endl;
     return GAME_ACTIVE;
 }
