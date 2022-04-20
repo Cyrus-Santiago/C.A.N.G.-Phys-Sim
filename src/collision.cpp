@@ -142,7 +142,15 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
                 // we adjust the y component to the top edge of whatever it collided
                 // with
                 newY = reg.get<Renderable>(this->grid[x][y]).yPos;
-
+                //If falling onto the side of a triangle, don't get the yPos from renderable.
+                //Instead, get the yPos from the nearest surface layer
+                if(reg.get<Renderable>(this->grid[x][y]).type=="TRIANGLE"){
+                    int y1=y;
+                    while( this->grid[x][y1] != entt::null){
+                        newY=y1;
+                        y1--;
+                    }
+                }
                 // for some reason, it wanted to put the entity on the top border
                 // when it collided with the bottom border, this fixes that.
                 if (newY == 43) newY = bottomBorder;
