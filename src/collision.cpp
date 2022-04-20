@@ -59,7 +59,6 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
     if(reg.all_of<Triangle>(entt) && !reg.all_of<Forcewave>(entt)){
         return(registerTriangleEntity(reg,entt));
     }
-        std::cout<<"AAAAAAbut we already ruled htis out?AAA"<<std::endl;
 
     // checks if an entity exists where we're trying to place one
     for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
@@ -88,7 +87,9 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
  *            down once it makes contact with the ground or another entity. */
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entt) {
-
+    if(reg.all_of<Triangle>(entt))  {
+        return(triangleGravityCollision(reg, dt, bottomBorder,entt));
+    }
     // get the renderable component of the entity
     auto enttR = reg.get<Renderable>(entt);
     // calculate gravity based on the delta frame, the mass of the entity, and
@@ -107,7 +108,7 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     // we call it newEnttR because it's the renderable data of the entity's new pos
     auto newEnttR = reg.get<Renderable>(entt);
     int newY = 0;
-
+    
     // we loop through the entire area of the new entity to check for an overlap
     // with anything else
     for (int x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
@@ -323,7 +324,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
         }
     }
 }
-
+/* Depcrecated method for detecting triangle collisions
 void Collision::triangleCollision(entt::registry *reg, float dt) {
     bool insideFlag=false;
     auto view = reg->view<Physics>();
@@ -339,9 +340,7 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
                 glm::vec2 lowerBound(reg->get<Renderable>(entity).xPos,reg->get<Renderable>(entity).yPos);
                 glm::vec2 upperBound(reg->get<Renderable>(entity).xPos+xSize,reg->get<Renderable>(entity).yPos+ySize);
                 //Iterate through each point in the triangle entity to see if it is inside a renderable
-                
                 for(auto point : reg->get<Triangle>(triangleEnt).points){
-                
                     //If the point on a triangle is within some renderable shape.
                     if( (point.x >= lowerBound.x) && (point.x <= upperBound.x) &&
                         (point.y >= lowerBound.y) && (point.y <= upperBound.y) )    {
@@ -358,11 +357,9 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
                             });
                         });        
                     std::cout<<"AAAAABBBBBBBB"<<std::endl;
-
                         break;
                     }
                 }
-                
                 //Need to run more collision calculations using slopes :/
                 if(!insideFlag){
                     //Variables so it's more human readable. Gets each triangle vertex and the slopes
@@ -386,46 +383,38 @@ void Collision::triangleCollision(entt::registry *reg, float dt) {
                         }
                         //else, calculate a new point on the edge of the triangle with the slope.
                         else    {
-                            //TODO std::cout<<"pointX "<<pointX<<" pointY "<<pointY<<std::endl;
                             pointY+=rightSlope;
                         }
                     }
-                    
-                    //std::cout<<"left "<<leftSlope<<" right "<<rightSlope<<std::endl;
-                    //std::exit(0);
                 }
-                //TODO If the triangle entity is a forcewave. Actually maybe just make separate forcewave detection method
                 if(reg->all_of<Triangle>(triangleEnt)){
-
                 }
             }
-            //TODO else, if the second entity IS a triangle (ugh)
         }
     }
 }
+/* 
+ * Arguments: entity registry, a triangle entity to register
+ * Returns:   true if successful, false if it's overlapping an existing entity.
+ * Purpose:   registers a triangle entity in the collision grid, ensures that it doesn't
+ *            overlap an existing entity. The grid prevents us from checking
+ *            every existing entity on the screen for a collision. */
 bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
-    std::cout<<"AAAAAAAAA"<<std::endl;
     auto enttT= reg.get<Triangle>(entt);
-    auto enttR= reg.get<Renderable>(entt);
     //Variables to make this more readable
-    glm::vec2 leftPoint=enttT.points[0];
-    glm::vec2 rightPoint=enttT.points[1];
+    glm::vec2 leftPoint=enttT.points[0]; glm::vec2 rightPoint=enttT.points[1];
     glm::vec2 topPoint=enttT.points[2];
-    int leftSlope= (int)((topPoint.y - leftPoint.y) / (topPoint.x - leftPoint.x));
-    int rightSlope= (int)((rightPoint.y - topPoint.y) / (rightPoint.x - topPoint.x));
     int xLeft=(int)leftPoint.x, xRight=(int)rightPoint.x;
     int previousXLeft, previousXRight;
     //Descending for loop to check if an entity exists where we're trying to place one
-            std::cout<<"xleft "<<xLeft<<" xRight "<<xRight<<std::endl;
-
     for(int y=(int)(leftPoint.y); y >(int)topPoint.y ; y-=2){        
         previousXLeft=xLeft;
         previousXRight=xRight;
-        //Checks from left to right on a certain right between two triangle points to check if an entity is there
+        //Checks from left to right on a certain y-line between two triangle points to check if an entity is there
         for(xLeft; xLeft <= xRight; xLeft++)    {
             // if there is an entity there, we return false and the entity
             // should be deleted and not drawn
-            if(reg.valid(grid[xLeft][(y)]))   return false;
+            if(reg.valid(grid[xLeft][(y)]) ||reg.valid(grid[xLeft][(y-1)]) )   return false;
         }
         //Update left and right points. They should come closer to each other
         xLeft=previousXLeft +1;
@@ -437,21 +426,123 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     xLeft=(int)leftPoint.x; 
     xRight=(int)rightPoint.x;
     //Descending for loop to register from the bottom-up of a triangle. Same routine as before
-    //TODO figure out why only some of the triangle is being registered.
-    for(int y=(int)(leftPoint.y-1); y >(int)topPoint.y+1 ; y-=2){
+    for(int y=(int)(leftPoint.y); y >(int)topPoint.y ; y-=2){
         previousXLeft=xLeft;
         previousXRight=xRight;
-        for(xLeft; xLeft-1 <= xRight+1; xLeft++)    {
+        for(xLeft; xLeft <= xRight; xLeft++)    {
             // set all the grid locations for the entity to the entity ID
             grid[xLeft][(y)]=entt;
+            //I don't get why I can't decrement y by 1 in the loop conditional. If I do that, only 
+            //half the triangle gets registered. So I have to do this statement as well.
+            grid[xLeft][(y-1)]=entt;
         }
         //Update left and right points. They should come closer to each other
-        xLeft=previousXLeft +1;
+        xLeft=previousXLeft + 1;
         xRight=previousXRight - 1;
-        std::cout<<"xleft "<<xLeft<<" xRight "<<xRight<<" y "<<y<<std::endl;
     }
     //success
     return true;
+}
+void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt){
+    float ySize=reg.get<Renderable>(entt).ySize;
+    if(reg.get<Renderable>(entt).yPos+reg.get<Renderable>(entt).ySize+1>bottomBorder) {
+        reg.patch<Renderable>(entt,[bottomBorder,ySize](auto &renderable){
+            renderable.yPos=bottomBorder-ySize+1;
+        });
+
+        return;
+    }
+    bool breakFlag=false;
+    bool slopeFlag=false;
+    auto enttTOld= reg.get<Triangle>(entt);
+    int newY = 0;
+    float gravity = dt * reg.get<Physics>(entt).mass * GRAVITY;
+    reg.patch<Renderable>(entt, [gravity](auto &triangle){
+        triangle.yPos+=gravity;
+    });
+    //functional operator "map" to update each point y-position for each triangle point
+    reg.patch<Triangle>(entt, [gravity](auto &triangle){
+        std::transform(triangle.points.begin(), triangle.points.end(), triangle.points.begin(),[gravity](glm::vec2 point){
+            point.y+=gravity;
+            return(point);
+        });
+    });
+    auto enttTNew = reg.get<Triangle>(entt);
+    glm::vec2 leftPoint=enttTNew.points[0]; glm::vec2 rightPoint=enttTNew.points[1];
+    glm::vec2 topPoint=enttTNew.points[2];
+    int xLeft=(int)leftPoint.x, xRight=(int)rightPoint.x;
+    int previousXLeft=0, previousXRight=0;
+    //Descending for loop to check if an entity exists where we're trying to place one
+    for(int y=(int)(leftPoint.y); y >(int)topPoint.y ; y--){   
+        if(breakFlag)   break;
+        previousXLeft=xLeft;
+        previousXRight=xRight;
+        //Checks from left to right on a certain y-line between two triangle points to check if an entity is there
+        for(xLeft; xLeft <= xRight; xLeft++)    {
+            //Check if there is a valid entity and if the entity is not the same one.
+            if(reg.valid(grid[xLeft][(y)]) && grid[xLeft][(y)]!= entt ){
+                newY = reg.get<Renderable>(grid[xLeft][y]).yPos;
+                // for some reason, it wanted to put the entity on the top border
+                // when it collided with the bottom border, this fixes that.
+                if (newY <= 43 || newY >= 348) newY = bottomBorder;
+                reg.patch<Renderable>(entt, [bottomBorder,newY](auto &renderable) {
+                    renderable.yPos = newY - renderable.ySize + 1;
+                    if(renderable.yPos>=bottomBorder)   renderable.yPos=bottomBorder;
+                    std::cout<<"render "<<renderable.xPos<<" "<<renderable.yPos<<std::endl;
+                });
+                reg.patch<Triangle>(entt, [ySize,newY](auto &triangle){
+                    triangle.points[0].y=newY-ySize+1;
+                    triangle.points[1].y=newY-ySize+1;
+                    triangle.points[2].y=newY+1;
+                });
+                breakFlag=true;
+                break;
+            }
+            
+        }
+        //Update left and right points. They should come closer to each other
+        if(slopeFlag){
+            xLeft=previousXLeft +1;
+            xRight=previousXRight -1;
+            slopeFlag=false;
+        }
+        else{
+            slopeFlag=true;
+        }
+    }
+    //Erase all points on grid of original triangle spot
+    //Reset points
+    glm::vec2 leftPointOld=enttTOld.points[0]; glm::vec2 rightPointOld=enttTOld.points[1];
+    glm::vec2 topPointOld=enttTOld.points[2];
+    xLeft=(int)leftPointOld.x; 
+    xRight=(int)rightPointOld.x;
+    for(int y=(int)(leftPointOld.y); y >(int)topPointOld.y ; y-=2){        
+        previousXLeft=xLeft;
+        previousXRight=xRight;
+        //Checks from left to right on a certain y-line between two triangle points to check if an entity is there
+        for(xLeft; xLeft <= xRight; xLeft++)    {
+            if(grid[xLeft][y] == entt)    grid[xLeft][y]=entt::null;
+            if(grid[xLeft][(y-1)] == entt)    grid[xLeft][(y-1)]=entt::null;
+        }
+        //Update left and right points. They should come closer to each other
+        xLeft=previousXLeft +1;
+        xRight=previousXRight -1;
+    }
+    //Claim everything one pixel withdrawn from what's rendered
+    enttTNew=reg.get<Triangle>(entt);
+    xLeft=(int)leftPoint.x; 
+    xRight=(int)rightPoint.x;
+    for(int y=(int)(leftPoint.y); y >(int)topPoint.y ; y-=2){        
+        previousXLeft=xLeft;
+        previousXRight=xRight;
+        for(xLeft; xLeft <= xRight; xLeft++)    {
+            grid[xLeft][y]=entt;
+            grid[xLeft][(y-1)]=entt;
+        }
+        //Update left and right points. They should come closer to each other
+        xLeft=previousXLeft +1;
+        xRight=previousXRight -1;
+    }
 }
 // bool Collision::detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg){
 //     colX = reg.get<Renderable>(obj1).xPos + reg.get<Renderable>(obj1).xSize >= 

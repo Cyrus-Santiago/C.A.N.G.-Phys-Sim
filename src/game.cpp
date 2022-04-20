@@ -177,7 +177,7 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  //colEngine.collisionLoop(* reg, dt, bottomBorder);
+  colEngine.collisionLoop(* reg, dt, bottomBorder);
 }
 
 void Game::Render() {
@@ -230,28 +230,22 @@ GameState Game::determineGameState()  {
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
       if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
-        //std::cout<<"element mode" <<std::endl;
         return GAME_DRAW_ELEMENT;
       }
       //If the button pressed is a shape
       else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
-          //std::cout<<"shape mode"<<std::endl;
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
       else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
-          //std::cout<<"ray mode"<<std::endl;
           return GAME_DRAW_RAY;
       }
       else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
-          //std::cout<<"beam mode"<<std::endl;
           return GAME_DRAW_BEAM;
       }
       else if(pressedButton[0].ID ==35) {
-          //std::cout<<"explosion mode"<<std::endl;
           return GAME_DRAW_EXPLOSION;
       }
     }
-    //std::cout<<"idle mode" <<std::endl;
     return GAME_ACTIVE;
 }
