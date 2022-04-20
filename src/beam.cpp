@@ -4,20 +4,17 @@
 
 #include "../include/beam.hpp"
 
-/* Beam will add an additional ray for each click while in beam mode */
-    void Beam::incBeamWidth(double xPos, double yPos){
-        if (beamWidth < 5){ /* Maximum of 5 rays in width */
+/* Beam will add an additional ray for each click while in beam mode 
+ * ~ Depreciated ~ */
+    void Beam::incBeamWidth(){
+        if (beamWidth < 3){ /* Maximum of 3 rays in width */
         beamWidth++;
-        rays[beamWidth - 1].init(xPos, yPos);
-        /* Increase the origin position of next ray by the width of one ray */
-        rays[beamWidth - 1].Position[1]+= 10;
-        rays[beamWidth - 1].Tail[1] += 10;
-        rays[beamWidth - 1].setSize(rays[beamWidth - 1].Position, rays[beamWidth - 1].Tail);
         }
-        else Beam::init(xPos, yPos);
+        else beamWidth = 1;
     }
 
-/* Remove all elements in rays array */
+/* Remove all elements in rays array 
+ * ~ Depreciated ~ */
     void Beam::clear(){
         for(int i = 0; i < 5; i++)
             rays[i].clear(); /* Ensure all other rays are cleared from array */
@@ -25,11 +22,17 @@
 
 /* Beam is initially one light ray in width */
     void Beam::init(double xPos, double yPos){
-        Beam::clear();
-        beamWidth = 1;
-        rays[0].init(xPos, yPos);
+        beam.setPosition((float)xPos, (float)yPos);
+        beam.setTail(805, 45);
+        beam.setBeamDimensions(beam.Position, beam.Tail, beamWidth);
+        beam.setDirection();
+        beam.determineBeamOffset();
+        beam.Texture = ResourceManager::GetTexture("laser");
+        beam.Velocity = {0, 0};
+        beam.Destroyed = false;
     }
 
+/* ~ Depreciated ~ */
     void Beam::setBeamDirection(){
         for(int i = 0; i < beamWidth; i++)
             rays[i].setDirection();

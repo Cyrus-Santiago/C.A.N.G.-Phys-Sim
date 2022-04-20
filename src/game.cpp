@@ -7,15 +7,16 @@ and it should not count towards his 1000 lines. */
 #include "../include/game.hpp"
 #include "../include/input.hpp"
 #include "../include/playBorder.hpp"
-//#include "../include/simulationObject.hpp"
 #include "../include/ray.hpp"
-//#include "../include/simulation.hpp"
 #include "../include/explosion.hpp"
-//#include "../include/entityMaestro.hpp"
-//#include "../include/ecs.hpp"
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
 #include "../include/collision.hpp"
+
+//#include "../include/simulation.hpp"
+//#include "../include/simulationObject.hpp"
+//#include "../include/entityMaestro.hpp"
+//#include "../include/ecs.hpp"
 
 
 #define GRAVITY 9.17
@@ -30,7 +31,7 @@ Click newMouseClick;
 Input input;
 Factory factory;
 entt::registry * reg;
-Collision colEngine;
+Collision colEngine(* reg);
 
 std::vector<Button> Buttons;
 //std::vector<SimulationObject> Border;
@@ -81,6 +82,9 @@ void Game::Init(GLFWwindow *window) {
     colEngine.registerEntity(* reg, border);
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
+    }
+    if (reg->get<Border>(border).position == "topBorder") {
+      topBorder = reg->get<Renderable>(border).yPos;
     }
   }
   // give the button data to input class
@@ -133,8 +137,10 @@ void Game::Update(float dt) {
               }
               entity = factory.makeParticle(* reg, pressedButton.Type,
                 glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
-              if (!colEngine.registerEntity(* reg, entity))
-                reg->destroy(entity);
+              if (reg->all_of<Physics>(entity)) {
+                if (!colEngine.registerEntity(* reg, entity))
+                  reg->destroy(entity);
+              }
               break;
 
             case GAME_DRAW_SHAPE:
@@ -148,13 +154,15 @@ void Game::Update(float dt) {
               break;            
 
             case GAME_DRAW_RAY:
+              sfxAudio.playAudio("audio/zap.wav");
               factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
             case GAME_DRAW_BEAM:
-              factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
-                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 1.0f));
+              sfxAudio.playAudio("audio/zap.wav");
+              factory.makeBeam( *reg, glm::vec2((int) newMouseClick.xPos,
+                (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
               break;
 
             case GAME_DRAW_EXPLOSION:
@@ -177,7 +185,8 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  colEngine.collisionLoop(* reg, dt, bottomBorder);
+  colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
+
 }
 
 void Game::Render() {

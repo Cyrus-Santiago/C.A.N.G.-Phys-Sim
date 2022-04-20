@@ -8,15 +8,24 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     glm::vec4 color) {
     // call on the registry for a new entity ID
     auto entity = reg.create();
+    int modifierX = 0, modifierY = 0;
 
-    if (type == "WATER")
-        reg.emplace<Liquid>(entity, 0.1f, 0.0f);
-        
-    reg.emplace<Physics>(entity, 10.0f);
+    if (type == "WATER") {
+        reg.emplace<Liquid>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "FIRE") {
+        reg.emplace<Fire>(entity);
+    } else if (type == "STEAM") {
+        reg.emplace<Gas>(entity);
+        modifierX += (uint)entity % 8 - 4;
+        modifierY -= (uint)entity % 8 - 4;
+    } else {
+        reg.emplace<Physics>(entity, 10.0f);
+    }
     
     // insert data passed to method into renderable component of entity
-    reg.emplace<Renderable>(entity, "particle", "button1", position.x, position.y, 5, 5,
-        0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Renderable>(entity, "particle", "solid", position.x + modifierX,
+    position.y + modifierY, 5, 5, 0.0f, color.x, color.y, color.z, color.w);
 
     return entity;
 }
@@ -47,30 +56,34 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
 
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
-    Ray ray({position.x, position.y});
-    /* Send mouse click coordinates to init function */
-    /* This will tell the ray how to orient itself */
+    Ray ray;
+    /* Send mouse click coordinates to init function
+     * This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
-    float angle = 0;
-    if (position.y > 200)
-        angle = ray.Direction[0] * -1;
-    if (position.y < 200)
-        angle = ray.Direction[0];
-
-    reg.emplace<Renderable>(entity, "ray", "laser", position.x, position.y, (int)ray.Size[0], (int)ray.Size[1],
+    float angle = (float)(ray.Angle * (180/M_PI));   
+    float posX = ray.Position[0] + ray.Offset[0];
+    float posY = ray.Position[1] + ray.Offset[1];
+    reg.emplace<Renderable>(entity, "ray", "laser", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
-    ray.printRayStats();
     return entity;
 }
 
 entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
-    Beam beam({position.x, position.y});
+    Beam myBeam;
+    myBeam.incBeamWidth(); //2 wide
+    myBeam.incBeamWidth(); //3 wide
+    myBeam.init(position.x, position.y);
     auto entity = reg.create();
-
-    reg.emplace<Renderable>(entity, "beam", "laser", position.x, position.y, (int)beam.rays[0].Size[0], (int)beam.rays[0].Size[1],
-        0.0f, color.x, color.y, color.z, color.w);
+    float angle = (float)(myBeam.beam.Angle * (180/M_PI));   
+    float posX = myBeam.beam.Position[0] + myBeam.beam.Offset[0];
+    float posY = myBeam.beam.Position[1] + myBeam.beam.Offset[1];
+    float dimX = myBeam.beam.Dimensions[0];
+    float dimY = myBeam.beam.Dimensions[1];
+    std::cout << "Dimensions = " << dimX << ", " << dimY << std::endl;
+    reg.emplace<Renderable>(entity, "beam", "laser", posX, posY, (int)dimX, (int)dimY,
+        angle, color.x, color.y, color.z, color.w);
     return entity;
 }
 
