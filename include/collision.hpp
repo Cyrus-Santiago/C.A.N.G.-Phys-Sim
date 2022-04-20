@@ -52,7 +52,7 @@ private:
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, int magnitude);
 
     void moveUp(entt::registry &reg, entt::entity entt, float dt);
 

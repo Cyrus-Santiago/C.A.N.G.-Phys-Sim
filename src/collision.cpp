@@ -138,11 +138,7 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
                 ((reg.any_of<Physics>(this->grid[x][y])) ||
                 reg.any_of<Border>(this->grid[x][y]))) {
                 
-                if(reg.get<Renderable>(this->grid[x][y]).type=="particle"){
-                    std::cout<<"aasdfsdfsdf"<<std::endl;
-                    if(!checkX(reg,entt,1))   moveX(reg,entt,dt,1);
-                    else moveX(reg,entt,dt,2);
-                }
+                
                 // we adjust the y component to the top edge of whatever it collided
                 // with
                 newY = reg.get<Renderable>(this->grid[x][y]).yPos;
@@ -160,7 +156,10 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
             }
         }
     }
-
+    //Move objects if there is something in the way. The main purpose is to 
+    //Move when falling onto a triangle.
+    if(!checkX(reg,entt,1) && checkX(reg,entt,2))   moveX(reg,entt,dt,1,5);
+    else if(!checkX(reg,entt,2) && checkX(reg,entt,1)) moveX(reg,entt,dt,2,5);
     // now we erase all the grid data based on the original renderable component
     // of the entity (before any movement) with a buffer to ensure we get it all
     for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
@@ -202,7 +201,7 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
 
     // if there's nothing in the direction we chose, we move that way
     if (!checkX(reg, entt, direction)) {
-        moveX(reg, entt, dt, direction);
+        moveX(reg, entt, dt, direction,3);
     }
     while (above(reg, entt)) {
         moveUp(reg, entt, dt);
@@ -315,18 +314,18 @@ bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
 /* Arguments: entity registry, entity, delta frame time, right bool (true is right, false is left)
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given x direction */
-void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction) {
+void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, int magnitude) {
 
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
 
     // change the x position of the entity based on the delta frame, and direction
     // we were told to move
-    reg.patch<Renderable>(entt, [dt, direction](auto &renderable) {
+    reg.patch<Renderable>(entt, [magnitude,dt, direction](auto &renderable) {
         if (direction % 2 == 0)
-            renderable.xPos += dt * 3 * direction;
+            renderable.xPos += dt * magnitude * direction;
         else
-            renderable.xPos += dt * 3 * direction * -1;
+            renderable.xPos += dt * magnitude * direction * -1;
     });
 
     // get renderable component of future entity
