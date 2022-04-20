@@ -4,7 +4,9 @@
 
 #include "../include/ray.hpp"
 
-/* Print the contents of the rayOrigin array */
+/* Arguments: none
+ * Returns:   N/A
+ * Purpose:   Prints data associated with rays, used for debugging. */
     void Ray::printRayStats(){
         std::cout <<"Head: (" << Position[0] << ", " << Position[1] << ")" << std::endl;
         std::cout <<"Tail: (" << Tail[0] << ", " << Tail[1] << ")" << std::endl;
@@ -12,19 +14,29 @@
         std::cout <<"Angle: " << Angle << std::endl;
     }
 
-/* Set position of the ray origin */
+/* Arguments: x, y coordinates of mouse click
+ * Returns:   N/A
+ * Purpose:   Upon mouse click, this function will set the head of a ray to
+ *            be oriented at that specified location. */
     void Ray::setPosition(double x, double y){
         Position[0] = (float)x;
         Position[1] = (float)y;
     }
 
-/* Set coordinates where the ray will end */
+/* Arguments: x, y coordinates
+ * Returns:   N/A
+ * Purpose:   This sets the tail of a ray to be sourced from the location
+ *            of the x, y coordinate pair. */
     void Ray::setTail(double x, double y){
         Tail[0] = (float)x;
         Tail[1] = (float)y;
     }
 
-/* Ray Dimensions (length, width) */
+/* Arguments: Ray position and tail vectors
+ * Returns:   N/A
+ * Purpose:   This function determines the dimensions of the ray based on the
+ *            previously defined head and tail. This function is specifically 
+ *            used for rays only. */
     void Ray::setDimensions(glm::vec2 position, glm::vec2 tail){
         Dimensions[0] = fabs(tail[0]-position[0]);
         Dimensions[1] = 10; /* always keep rays 10 pixels wide */
@@ -39,14 +51,18 @@
         }
     }
 
-/* Beam Dimensions (length, width) */
+/* Arguments: Ray position and tail vectors
+ * Returns:   N/A
+ * Purpose:   This function determines the dimensions of the beam based on the
+ *            previously defined head, tail, and beam width. This function is specifically 
+ *            used for beams only. */
     void Ray::setBeamDimensions(glm::vec2 position, glm::vec2 tail, int beamWidth){
         Dimensions[0] = fabs(tail[0]-position[0]);
         Dimensions[1] = 10 * beamWidth;
         offsetFlag = false;
 
         /* This will allow ray to rotate properly. 
-         * Otherwise, when the ray angle approaches 90 
+         * Otherwise, when the beam angle approaches 90 
          * degrees, it begins to disappear */
         if (Dimensions[0] < fabs(tail[1] - position[1])){
             Dimensions[0] = fabs(tail[1] - position[1]);
@@ -54,6 +70,12 @@
         }
     }
 
+/* Arguments: none
+ * Returns:   N/A
+ * Purpose:   Determines the offset needed for a ray upon placing in
+ *            the play area. Since all rays originate from the same 
+ *            coordinates, the ray may be angled and must be shifted
+ *            accordingly to ensure the ray stays in the play area. */
     void Ray::determineOffset(){
         if (offsetFlag == true){
             Offset[0] = sin(Angle) * (Dimensions[0]/2);
@@ -63,6 +85,13 @@
         Offset[1] = sin(Angle) * (Dimensions[0]/2);
     }
 
+/* Arguments: none
+ * Returns:   N/A
+ * Purpose:   Determines the offset needed for a beam upon placing in
+ *            the play area. Since all beams originate from the same 
+ *            coordinates, the beam may be angled and must be shifted
+ *            accordingly to ensure the beam stays in the play area.
+ *            This function also accounts for the beam width. */
     void Ray::determineBeamOffset(){
         if (offsetFlag == true){
             Offset[0] = (sin(Angle) * (Dimensions[0]/2)) - (Dimensions[1]/2);
@@ -74,9 +103,14 @@
         }
     }
 
-/* Was ray drawn successfully? */
-    void Ray::successfulDraw(int x){
-        if(x == 1){
+/* Arguments: Boolean
+ * Returns:   N/A
+ * Purpose:   A boolean indicates whether ray was successfully drawn or not.
+ *            If true, a diagnostic of the ray data will be printed to stdout.
+ *            Otherwise, an error statement will print. This is used for
+ *            debugging purposes. */
+    void Ray::successfulDraw(bool x){
+        if(x == true){
             std::cout << "Successfully placed light ray" << std::endl;
             printRayStats();
         }
@@ -84,10 +118,14 @@
             std::cout << "Light ray could not be placed" << std::endl;
     }
 
-/* Initial Stats upon inserting a ray */
+/* Arguments: x, y coordinates
+ * Returns:   N/A
+ * Purpose:   Assigns position to mouse click coordinates, and tail to 
+ *            fixed location. This method will assign all neccessary 
+ *            data to a ray so it can be drawn to play area. */
     void Ray::init(double xPos, double yPos){
-        Position = {(float)xPos, (float)yPos}; /* head is at click */
-        Tail = {805, 45}; /* tail is always at top right corner */
+        setPosition((float)xPos, (float)yPos); /* head is at click */
+        setTail(805, 45); /* tail is always at top right corner */
         setDimensions(Position, Tail); /* tells us ray dimensions for drawing */
         setDirection(); /* set angle relative to head/tail position */
         determineOffset();
@@ -96,7 +134,8 @@
         Destroyed = false;
     }
 
-/* Clear all ray data */
+/* Clear all ray data 
+ * ~ Depreciated ~ */
     void Ray::clear(){
         Position = {0, 0};
         Tail = {0, 0};
@@ -105,7 +144,10 @@
         Destroyed = true;
     }
 
-/* Angle Logic */
+/* Arguments: none
+ * Returns:   N/A
+ * Purpose:   This method determines the angle needed to orient a ray/beam 
+ *            properly. */
     void Ray::setDirection(){
         float posX2 = Position[0] - Dimensions[1],
               posY2 = Position[1] - Dimensions[1],
@@ -127,7 +169,10 @@
         Angle = Direction[0];
     }
 
-/* Physical calculation for incident ray */
+/* Arguments: none
+ * Returns:   Incident Ray
+ * Purpose:   This method calculates data needed to determine incidence
+ *            of a ray or beam. */
     Ray Ray::incident(){
         Ray newRay(Tail); /* Position of previous tail is new Origin */
         /* For incidence on x-axis - i.e. no angle on y-axis */
@@ -147,7 +192,10 @@
         return(newRay);
     }
 
-/* Physical calcualtion for refractive ray */
+/* Arguments: none
+ * Returns:   Refractive Ray
+ * Purpose:   This method calculates data needed to determine refraction
+ *            of a ray or beam. */
     Ray Ray::refractive(){
         Ray newRay = incident();
         if(Direction[1] == 0)
@@ -157,7 +205,9 @@
         return(newRay);
     }
 
-/* Calculations for ray rotation  - this number can be set in the Sprite Renderer class where we specify rotate */
+/* Calculations for ray rotation.
+ * This number can be set in the Sprite Renderer class where we specify rotate.
+ * ~ Depreciated ~ */
     float Ray::rotateLeft(){
         return(-0.25); /* rotate 22.5 degrees to the left */
     }

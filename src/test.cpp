@@ -213,4 +213,69 @@ BOOST_AUTO_TEST_CASE( test12_verify_values){
     BOOST_CHECK_EQUAL(regg->get<Renderable>(exp1).xPos,1);
     BOOST_CHECK_EQUAL(regg->get<Renderable>(exp1).type,"force");
 }
+
+/*
+
+/* Amethyst Testing */
+/*
+Factory testFactory;
+
+BOOST_AUTO_TEST_CASE(MAKE_RAY_TEST){
+    // This tests that the factory method will not return a null 'ray' 
+    // We are using the factory method which uses the Ray
+    // class to initilize position, tail, and size of the ray.
+    // Should pass all
+    entt::registry *testReg = new entt::registry();
+    BOOST_CHECK(testFactory.makeRay(*testReg, {100, 100}) != entt::null);
+    BOOST_CHECK(testReg->valid(testFactory.makeRay(*testReg, {100, 100})));
+    delete testReg;
+}
+
+BOOST_AUTO_TEST_CASE(MAKE_BEAM_TEST){
+    // This tests that the factory method will not return a null 'beam' 
+    // We are using the factory method which uses the Beam
+    // class to initilize position, tail, and size of the beam.
+    // Should pass all
+    entt::registry *testReg = new entt::registry();
+    BOOST_CHECK(testFactory.makeBeam(*testReg, {100, 100}) != entt::null);
+    BOOST_CHECK(testReg->valid(testFactory.makeBeam(*testReg, {100, 100})));
+    delete testReg;
+}
+
+// White Box Test (full coverage)
+BOOST_AUTO_TEST_CASE(BEAM_WIDTH_TEST){
+    Beam testBeam;
+    // This will ensure that the incBeamWidth() function works as it should
+    BOOST_CHECK(testBeam.beamWidth == 0); //should fail
+    BOOST_CHECK(testBeam.beamWidth == 1); //should pass
+    testBeam.incBeamWidth();
+    BOOST_CHECK(testBeam.beamWidth == 2); //should pass
+    testBeam.incBeamWidth();
+    BOOST_CHECK(testBeam.beamWidth == 3); //should pass
+    testBeam.incBeamWidth();
+    BOOST_CHECK(testBeam.beamWidth == 4); //should fail (cannot exceed width of 3)
+}
+
+BOOST_AUTO_TEST_CASE(Test2){
+    Audio testAudio;
+    // These will pass to ensure audio engine starts up
+    // even if a valid file isn't passed to function 
+    BOOST_CHECK(testAudio.playAudio("fakeSongTitle") != -1); // should fail
+    BOOST_CHECK(testAudio.playAudio("audio/blast.wav") != -1); //should pass
+}
+
+BOOST_AUTO_TEST_CASE(Test4){
+     // This tests that valid clicks are made in the window.
+     // Function returns: 0 if legal mouse click, 1 if legal in
+     // play area, and -1 if illegal mouse click 
+    Input click;
+    BOOST_CHECK(click.determineAreaPressed(0.3,0.3) == 1);
+    BOOST_CHECK(click.determineAreaPressed(-0.3,0.3) == 1);
+    BOOST_CHECK(click.determineAreaPressed(-0.3,0.3) == 0);
+    BOOST_CHECK(click.determineAreaPressed(-0.3,0.3) == -1);
+    BOOST_CHECK(click.determineAreaPressed(0.3,-0.3) == 1);
+    BOOST_CHECK(click.determineAreaPressed(0.3,-0.3) == 0);
+    BOOST_CHECK(click.determineAreaPressed(0.3,-0.3) == -1);
+}
+
 */
