@@ -137,7 +137,12 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
             if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt) &&
                 ((reg.any_of<Physics>(this->grid[x][y])) ||
                 reg.any_of<Border>(this->grid[x][y]))) {
-
+                
+                if(reg.get<Renderable>(this->grid[x][y]).type=="particle"){
+                    std::cout<<"aasdfsdfsdf"<<std::endl;
+                    if(!checkX(reg,entt,1))   moveX(reg,entt,dt,1);
+                    else moveX(reg,entt,dt,2);
+                }
                 // we adjust the y component to the top edge of whatever it collided
                 // with
                 newY = reg.get<Renderable>(this->grid[x][y]).yPos;
@@ -525,6 +530,7 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     return true;
 }
 void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt){
+    //if(grounded(reg,entt,bottomBorder)) return;
     float ySize=reg.get<Renderable>(entt).ySize;
     if(reg.get<Renderable>(entt).yPos+reg.get<Renderable>(entt).ySize+1>bottomBorder) {
         reg.patch<Renderable>(entt,[bottomBorder,ySize](auto &renderable){
@@ -569,7 +575,7 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
                 reg.patch<Renderable>(entt, [bottomBorder,newY](auto &renderable) {
                     renderable.yPos = newY - renderable.ySize + 1;
                     if(renderable.yPos>=bottomBorder)   renderable.yPos=bottomBorder;
-                    std::cout<<"render "<<renderable.xPos<<" "<<renderable.yPos<<std::endl;
+                    //std::cout<<"render "<<renderable.xPos<<" "<<renderable.yPos<<std::endl;
                 });
                 reg.patch<Triangle>(entt, [ySize,newY](auto &triangle){
                     triangle.points[0].y=newY-ySize+1;

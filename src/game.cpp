@@ -228,7 +228,7 @@ void Game::Render() {
     factory.draw(* reg, entity, * spriteRenderer);
   }
   //Debug method to highlight wherever a grid spot is filled.
-  colEngine.debugGrid(* spriteRenderer, * reg);
+  //colEngine.debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The
