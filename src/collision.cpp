@@ -325,6 +325,7 @@ bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
 }
 
 /* Arguments: entity registry, entity, delta frame time, direction int (even is right, odd is left)
+ *            magnitude float number
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given x direction */
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
@@ -361,7 +362,10 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
         }
     }
 }
-//Odd direction is up, even direction is down
+/* Arguments: entity registry, entity, delta frame time, direction int (even is down, odd is up)
+ *            magnitude float number
+ * Returns:   N/A
+ * Purpose:   Facilitates movement of entity in a given y direction */
 void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
     //This integer determines which direction to move. Up is positive, down is negative
     int upOrDown =1;
@@ -492,20 +496,29 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     //success
     return true;
 }
+/* 
+*Arguments: entity registry, delta time frame, bottom border y-position, triangle entity
+*Returns:   N/A
+*Purpose:   Performs gravity calculations on a triangle shape. The grid entities 
+*           are updated accordingly. This function is buggy */
 void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt){
+    //Distance from top to bottom of the triangle
     float ySize=reg.get<Renderable>(entt).ySize;
+    //If the triangle's position is at the bottom of the play area, adjust accordingly and return immediately
     if(reg.get<Renderable>(entt).yPos+reg.get<Renderable>(entt).ySize+1>bottomBorder) {
         reg.patch<Renderable>(entt,[bottomBorder,ySize](auto &renderable){
             renderable.yPos=bottomBorder-ySize+1;
         });
-
         return;
     }
+    //This is where the fun begins
     bool breakFlag=false;
     bool slopeFlag=false;
+    //entity that will be deleted
     auto enttTOld= reg.get<Triangle>(entt);
     int newY = 0;
     float gravity = dt * reg.get<Physics>(entt).mass * GRAVITY;
+    //Update entity's y position and triangle point y positions based on the gravity
     reg.patch<Renderable>(entt, [gravity](auto &triangle){
         triangle.yPos+=gravity;
     });
@@ -534,22 +547,23 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
                 // for some reason, it wanted to put the entity on the top border
                 // when it collided with the bottom border, this fixes that.
                 if (newY <= 43 || newY >= 348) newY = bottomBorder;
+                //Update y-position of triangle
                 reg.patch<Renderable>(entt, [bottomBorder,newY](auto &renderable) {
                     renderable.yPos = newY - renderable.ySize + 1;
                     if(renderable.yPos>=bottomBorder)   renderable.yPos=bottomBorder;
-                    //std::cout<<"render "<<renderable.xPos<<" "<<renderable.yPos<<std::endl;
                 });
                 reg.patch<Triangle>(entt, [ySize,newY](auto &triangle){
                     triangle.points[0].y=newY-ySize+1;
                     triangle.points[1].y=newY-ySize+1;
                     triangle.points[2].y=newY+1;
                 });
+                //Only perform the operation once per detection
                 breakFlag=true;
                 break;
             }
             
         }
-        //Update left and right points. They should come closer to each other
+        //Update left and right points. They should come closer to each other every other iteration
         if(slopeFlag){
             xLeft=previousXLeft +1;
             xRight=previousXRight -1;
@@ -568,7 +582,7 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
     for(int y=(int)(leftPointOld.y); y >(int)topPointOld.y ; y-=2){        
         previousXLeft=xLeft;
         previousXRight=xRight;
-        //Checks from left to right on a certain y-line between two triangle points to check if an entity is there
+        //Removes the triangle pixel-by-pixel on a certain y-line
         for(xLeft; xLeft <= xRight; xLeft++)    {
             if(grid[xLeft][y] == entt)    grid[xLeft][y]=entt::null;
             if(grid[xLeft][(y-1)] == entt)    grid[xLeft][(y-1)]=entt::null;
@@ -577,7 +591,7 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
         xLeft=previousXLeft +1;
         xRight=previousXRight -1;
     }
-    //Claim everything one pixel withdrawn from what's rendered
+    //Claim points on grid for new triangle position
     enttTNew=reg.get<Triangle>(entt);
     xLeft=(int)leftPoint.x; 
     xRight=(int)rightPoint.x;
@@ -593,6 +607,7 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
         xRight=previousXRight -1;
     }
 }
+
 entt::entity Collision::entityAtLoc(int x, int y) {
     return this->grid[x][y];
 }
@@ -613,36 +628,47 @@ void Collision::destroyEnttAtLoc(entt::registry &reg, int x, int y) {
     }
 }
 
-
+/*
+*Arguments: entity registry, forcewave entity, delta frame time
+*Returns:   N/A
+*Purpose:   Iterates through each point on a forcewave and determines if any
+*           point intersects with a grid entity. The velocity of the forcewave
+*           is added to the entity. If the forcewave touches a border, the
+*           forcewave gets deleted. */
 void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float dt){
+    //Get forcewave components of entity
     auto enttF=reg.get<Forcewave>(entt);
     entt::entity gridEntt;
+    //Iterate through each triangle point in a forcewave
     for(auto point: reg.get<Triangle>(entt).points){
         gridEntt=entityAtLoc((int)point.x,(int)point.y);
+        //If there is a grid entity at some triangle point
         if(gridEntt!= entt::null){
+            //If the grid entity is a border, delete the forcewave
             if(reg.all_of<Border>(gridEntt))  {
                 reg.destroy(entt);
                 return;
             }
+            //If the grid entity has physics, push it in some direction
             int rotation=reg.get<Renderable>(entt).rotate;
-            //If the explosion force wave goes to the right
+            //If the explosion force wave goes to the right, push right
             if(rotation == 45 || rotation == 90 || rotation == 135){
                 moveX(reg, gridEntt, dt, 1, enttF.xVel * (-1));
             }
-            //If the explosion force wave goes to the left
+            //If the explosion force wave goes to the left, push left
             if(rotation == 225 || rotation == 270 || rotation == 315){
                 moveX(reg, gridEntt, dt, 2, enttF.xVel);
             }
-            //If the explosion force wave goes up
+            //If the explosion force wave goes up, push up
             if(rotation == 0 || rotation == 45 || rotation == 315){
                 moveY(reg, gridEntt, dt, 11, enttF.yVel);
             }
-            //If the explosion force wave goes down
+            //If the explosion force wave goes down, push down
             if(rotation == 180 || rotation == 135 || rotation == 225){
                 moveY(reg, gridEntt, dt, 2, enttF.yVel);
             }
+            //Only perform the move for one point.
             return;
-            //reg.destroy(entt);
         }
     }
 }
