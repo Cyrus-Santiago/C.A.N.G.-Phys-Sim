@@ -31,11 +31,15 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
         if (reg.any_of<Gas>(entity)) {
             gasCollision(reg, dt, topBorder, entity);
         }
-
         if (reg.any_of<Fire>(entity)) {
             flame.burn(reg, entity, dt, * this);
         }
-        if(reg.all_of<Forcewave>(entity))   forcewaveCollision(reg,entity,dt);
+    }
+    //Separate view to loop through explosions because entities might
+    //be deleted, causing in a valid entity assertion fail for other methods
+    auto explosions = reg.view<Forcewave>();
+    for(auto enttF : explosions){
+        forcewaveCollision(reg,enttF,dt);
     }
 }
 
@@ -324,16 +328,16 @@ bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given x direction */
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
-    //This int determines which direction to move. Positive is right, negative is left
-    int leftOrRight = 1;
-    if(direction % 2 ==0)   leftOrRight = (-1);
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
 
     // change the x position of the entity based on the delta frame, and direction
     // we were told to move
-    reg.patch<Renderable>(entt, [magnitude,dt, leftOrRight, direction](auto &renderable) {
-        renderable.xPos += dt * magnitude * leftOrRight * direction;
+    reg.patch<Renderable>(entt, [magnitude,dt, direction](auto &renderable) {
+        if (direction % 2 == 0)
+            renderable.xPos += dt * magnitude * direction;
+        else
+            renderable.xPos += dt * magnitude * direction * -1;
     });
 
     // get renderable component of future entity
@@ -406,6 +410,23 @@ void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int dire
  *            collision grid. */
 void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
 
+    //This only shows the spots of entities with their associated shape. It won't
+    //show every single point on the play area where an "entity" might be (in the case of bugs)
+    /*
+    auto view = reg.view<Renderable>();
+    for(auto ent : view){
+        auto enttR=reg.get<Renderable>(ent);
+        for(int x=enttR.xPos; x<(enttR.xPos +enttR.xSize); x++){
+            for(int y=enttR.yPos; y<(enttR.yPos +enttR.ySize); y++){
+                if(reg.valid(this->grid[x][y])){
+                    Texture2D texture = ResourceManager::GetTexture("button2");
+                    spriteRenderer.DrawSprite(texture, glm::vec2(x, y), glm::vec2(1.0f),
+                    0.0f, glm::vec4(1.0f, 0.0f, 0.0f, 0.4f));
+                }
+            }
+        }
+    }
+    */
     // sorry about the hardcoded values, loops around outside and inside of play
     // area, so you can clearly see borders and entities
     for (int x = 33; x < 816; x++) {
@@ -418,6 +439,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
             }
         }
     }
+    
 }
 
 /* 
@@ -605,15 +627,15 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             int rotation=reg.get<Renderable>(entt).rotate;
             //If the explosion force wave goes to the right
             if(rotation == 45 || rotation == 90 || rotation == 135){
-                moveX(reg, gridEntt, dt, 2, enttF.xVel * (-1));
+                moveX(reg, gridEntt, dt, 1, enttF.xVel * (-1));
             }
             //If the explosion force wave goes to the left
             if(rotation == 225 || rotation == 270 || rotation == 315){
-                moveX(reg, gridEntt, dt, 1, enttF.xVel);
+                moveX(reg, gridEntt, dt, 2, enttF.xVel);
             }
             //If the explosion force wave goes up
             if(rotation == 0 || rotation == 45 || rotation == 315){
-                moveY(reg, gridEntt, dt, 1, enttF.yVel);
+                moveY(reg, gridEntt, dt, 11, enttF.yVel);
             }
             //If the explosion force wave goes down
             if(rotation == 180 || rotation == 135 || rotation == 225){
