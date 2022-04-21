@@ -29,7 +29,10 @@ enum GameState {
     GAME_DRAW_SHAPE,
     GAME_DRAW_RAY,
     GAME_DRAW_BEAM,
-    GAME_DRAW_EXPLOSION
+    GAME_DRAW_EXPLOSION,
+    GAME_MOVE_OBJECT,
+    GAME_RESIZE_OBJECT,
+    GAME_DELETE_OBJECT
 };
 
 // class to hold a lot of the game logic so we can decouple it from

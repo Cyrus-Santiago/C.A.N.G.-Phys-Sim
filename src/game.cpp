@@ -12,6 +12,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/factory.hpp"
 #include "../include/audio.hpp"
 #include "../include/collision.hpp"
+#include "../include/toolBox.hpp"
 
 //#include "../include/simulation.hpp"
 //#include "../include/simulationObject.hpp"
@@ -28,6 +29,7 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
+Tools tools;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -173,13 +175,34 @@ void Game::Update(float dt) {
                   glm::vec2(Explosion::velocityArrayX[i], Explosion::velocityArrayY[i]));
               }
               break;
+
+            /*Allows user to move object around the play area*/
+            case GAME_MOVE_OBJECT:
+              if(Input::mousePressed){
+                Input::mousePressHeldDown(Window);
+                newMouseClick=input.getLastMouseClickPos();
+              } 
+              //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
+              tools.moveObject(reg,newMouseClick);
+              break;
+
+            case GAME_RESIZE_OBJECT:
+              if(Input::mousePressed){
+                Input::mousePressHeldDown(Window);
+                newMouseClick=input.getLastMouseClickPos();
+              }
+              tools.outlineObject(reg, shapeDimensions, newMouseClick, pressedButton.Type);
+              break;
+            case GAME_DELETE_OBJECT:
+              tools.deleteObject(reg, newMouseClick);
+              break;
           }
         }
         break;
     }
     
     //Needed so that multiple clicks are not registered in one spot
-    if (int(State) != GAME_DRAW_ELEMENT)
+    if (int(State) != GAME_DRAW_ELEMENT && int(State) != GAME_MOVE_OBJECT && int(State) != GAME_RESIZE_OBJECT)
       Input::resetValidClick();
   }
   Explosion::updateForcePositions(reg, dt);
@@ -254,6 +277,15 @@ GameState Game::determineGameState()  {
       }
       else if(pressedButton[0].ID ==35) {
           return GAME_DRAW_EXPLOSION;
+      }
+      else if(pressedButton[0].ID == 36) {
+        return GAME_MOVE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 37) {
+        return GAME_RESIZE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 38) {
+        return GAME_DELETE_OBJECT;
       }
     }
     return GAME_ACTIVE;
