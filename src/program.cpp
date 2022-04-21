@@ -61,8 +61,8 @@ int Program::program() {
     float lastFrame = 0.0f;
 
     Audio gameAudio;
-    const char *gameMusic = "audio/playMusic2.wav";
-    //gameAudio.playAudio(gameMusic);
+    const char *gameMusic = "audio/playMusic1.wav";
+    //gameAudio.playAudioLoop(gameMusic);
 
     glfwSwapInterval(1);
 
@@ -84,17 +84,14 @@ int Program::program() {
 
         physSim.Update(deltaTime);
 
-        // here we have a click object that holds position data, and we get that data
-        // from the input class
-
-        // set background color based on mouse position data (to demonstrate that it works)
+        /* Set background color */
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         physSim.Render();
 
 				// draw elements based on vertexes
-        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 				
 				// swaps color buffer and shows it as output to screen
         glfwSwapBuffers(window);

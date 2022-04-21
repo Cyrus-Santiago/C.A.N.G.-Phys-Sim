@@ -39,6 +39,9 @@ private:
     // 43, 806 x coords
     // 43, 387 y coords
     entt::entity grid[820][400];
+    bool registerTriangleEntity(entt::registry &reg, entt::entity entt);
+
+    void triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt);
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
@@ -49,7 +52,7 @@ private:
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, int magnitude);
 
     void moveUp(entt::registry &reg, entt::entity entt, float dt);
 
