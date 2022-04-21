@@ -14,7 +14,21 @@ entt::entity Tools::getObject(entt::registry *reg, Click newMouseClick){
         }
     }
     
+    /*Check if object clicked is the border, and return null is that's the case*/
+    if(checkBorder(reg, clickedObject)){
+        return entt::null;
+    }
     return clickedObject;
+}
+
+bool Tools::checkBorder(entt::registry *reg, entt::entity clickedObject){
+    auto view2 = reg->view<Border>();
+    for(auto object2 : view2){
+        if(clickedObject == object2){
+            return true; //Is a border
+        }
+    }
+    return false; //Not a border
 }
 
 void Tools::moveObject(entt::registry *reg, Click newMouseClick){
@@ -44,4 +58,13 @@ void Tools::deleteObject(entt::registry *reg, Click newMouseClick){
         return;
     }
     reg->destroy(clickedObject);
+}
+
+void Tools::clearAll(entt::registry *reg){
+    auto view = reg->view<Renderable>();
+    for(auto object : view){
+        if(!checkBorder(reg,object)){
+            reg->destroy(object);
+        }
+    }
 }

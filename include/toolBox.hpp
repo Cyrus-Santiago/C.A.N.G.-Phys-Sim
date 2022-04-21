@@ -15,6 +15,7 @@ universally hated design choice. -Cyrus
 class Tools{
     public:
         static entt::entity getObject(entt::registry *reg, Click newMouseClick);
+        static bool checkBorder(entt::registry *reg, entt::entity clickedObject);
         
         /*Methods pertaining to the Move button functionality*/
         static void moveObject(entt::registry *reg, Click newMouseClick);
@@ -26,10 +27,13 @@ class Tools{
 
         /*Methods pertaining to the Delete button functionality*/
         void deleteObject(entt::registry *reg, Click newMouseClick);
+
+        /*Clear button functionality*/
+        void clearAll(entt::registry *reg);
     
     private:
-    Factory factory;
-    entt::entity outline[4]; //Store outline entities for disposal after resizing is complete
+        Factory factory;
+        entt::entity outline[4]; //Store outline entities for disposal after resizing is complete
 };
 
 #endif
