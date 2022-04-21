@@ -28,7 +28,7 @@ Audio sfxAudio;
 SpriteRenderer * spriteRenderer;
 //Simulation simulation;
 Click newMouseClick;
-Move move;
+Tools tools;
 Input input;
 Factory factory;
 entt::registry * reg;
@@ -173,21 +173,25 @@ void Game::Update(float dt) {
               }
               break;
 
-            /**/
+            /*Allows user to move object around the play area*/
             case GAME_MOVE_OBJECT:
               if(Input::mousePressed){
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               } 
               //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
-              move.moveObject(reg,newMouseClick);
+              tools.moveObject(reg,newMouseClick);
               break;
 
             case GAME_RESIZE_OBJECT:
-
+              if(Input::mousePressed){
+                Input::mousePressHeldDown(Window);
+                newMouseClick=input.getLastMouseClickPos();
+              }
+              tools.outlineObject(reg, shapeDimensions, newMouseClick, pressedButton.Type);
               break;
             case GAME_DELETE_OBJECT:
-            
+              tools.deleteObject(reg, newMouseClick);
               break;
           }
         }
@@ -195,7 +199,7 @@ void Game::Update(float dt) {
     }
     
     //Needed so that multiple clicks are not registered in one spot
-    if (int(State) != GAME_DRAW_ELEMENT)
+    if (int(State) != GAME_DRAW_ELEMENT && int(State) != GAME_MOVE_OBJECT && int(State) != GAME_RESIZE_OBJECT)
       Input::resetValidClick();
   }
   Explosion::updateForcePositions(reg, dt);

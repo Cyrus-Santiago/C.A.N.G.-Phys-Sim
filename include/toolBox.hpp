@@ -10,26 +10,26 @@ universally hated design choice. -Cyrus
 
 #include "entt.hpp"
 #include "../include/input.hpp"
+#include "../include/factory.hpp"
 
-/*Methods pertaining to the Move button functionality*/
-class Move{
+class Tools{
     public:
-        static void moveObject(entt::registry *reg, Click newMouseClick);
         static entt::entity getObject(entt::registry *reg, Click newMouseClick);
+        
+        /*Methods pertaining to the Move button functionality*/
+        static void moveObject(entt::registry *reg, Click newMouseClick);
         void moveLoop(entt::registry *reg, float dt);
-};
 
-/*Methods pertaining to the Resize button functionality*/
-class Resize{
-    public:
+        /*Methods pertaining to the Resize button functionality*/
         void resizeObject(entt::registry *reg, Click newMouseClick);
-        void outlineObject(entt::registry *reg, entt::entity obj);
-};
+        entt::entity* outlineObject(entt::registry *reg, glm::vec2 shapeDimensions, Click newMouseClick, std::string type);
 
-/*Methods pertaining to the Delete button functionality*/
-class Delete{
-    public:
-        void deleteObject();
+        /*Methods pertaining to the Delete button functionality*/
+        void deleteObject(entt::registry *reg, Click newMouseClick);
+    
+    private:
+    Factory factory;
+    entt::entity outline[4]; //Store outline entities for disposal after resizing is complete
 };
 
 #endif
