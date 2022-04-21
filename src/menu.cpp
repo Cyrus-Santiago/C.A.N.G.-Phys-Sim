@@ -77,9 +77,9 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         shapesButtonColor[i]));
     }
     /* Written by Griffen */
-    Element toolbarButtonColor[TOOLBAR_NUM-1];
+    Element toolbarButtonColor[TOOLBAR_NUM];
     /* If you need to add another button, add new toolbarTypes and increase TOOLBAR_NUM in menu.hpp*/
-    std::string toolbarTypes[] = { "BOOM!", "MOVE", "RESIZE", "DELETE"};
+    std::string toolbarTypes[] = { "BOOM!", "GLASSIFY!", "MOVE", "RESIZE", "DELETE", "CLEAR ALL"};
     for (int i=0; i<TOOLBAR_NUM; i++)   {
         toolbarButtonColor[i].color = glm::vec4(1.0f,0.2f,0.1f,1.0f);
         Types.insert(std::pair<std::string, Element>(toolbarTypes[i],

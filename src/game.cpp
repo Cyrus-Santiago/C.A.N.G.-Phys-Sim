@@ -176,6 +176,9 @@ void Game::Update(float dt) {
               }
               break;
 
+            case GAME_GLASSIFY:
+              break;
+
             /*Allows user to move object around the play area*/
             case GAME_MOVE_OBJECT:
               if(Input::mousePressed){
@@ -193,8 +196,13 @@ void Game::Update(float dt) {
               }
               tools.outlineObject(reg, shapeDimensions, newMouseClick, pressedButton.Type);
               break;
+
             case GAME_DELETE_OBJECT:
               tools.deleteObject(reg, newMouseClick);
+              break;
+
+            case GAME_CLEAR:
+              tools.clearAll(reg);
               break;
           }
         }
@@ -278,14 +286,20 @@ GameState Game::determineGameState()  {
       else if(pressedButton[0].ID ==35) {
           return GAME_DRAW_EXPLOSION;
       }
-      else if(pressedButton[0].ID == 36) {
+      else if (pressedButton[0].ID == 36) {
+        return GAME_GLASSIFY;
+      }
+      else if(pressedButton[0].ID == 37) {
         return GAME_MOVE_OBJECT;
       }
-      else if (pressedButton[0].ID == 37) {
+      else if (pressedButton[0].ID == 38) {
         return GAME_RESIZE_OBJECT;
       }
-      else if (pressedButton[0].ID == 38) {
+      else if (pressedButton[0].ID == 39) {
         return GAME_DELETE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 40) {
+        return GAME_CLEAR;
       }
     }
     return GAME_ACTIVE;
