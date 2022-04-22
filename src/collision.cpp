@@ -4,7 +4,8 @@
 #include <glm/fwd.hpp>
 #include "../include/flame.hpp"
 
-#define GRAVITY 9.17
+#define GRAVITY     9.17
+
 
 Flame flame;
 
@@ -82,24 +83,97 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
     }
 
     // checks if an entity exists where we're trying to place one
-    for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
-        for (int y = enttR.yPos - 1; y < (enttR.yPos + enttR.ySize) + 1; y++) {
-            // if there is an entity there, we return false and the entity
-            // should be deleted and not drawn
-            if (reg.valid(this->grid[x][y])) return false;
-        }
+    if (entityExists(reg, entt, enttR, IN_PLACE) != entt::null) return false;
+    
+    entityClaim(reg, entt, enttR);
+    return true;
+}
+
+entt::entity Collision::entityExists(entt::registry &reg, entt::entity entt,
+                             Renderable &enttR, int where, bool excludeEntt) {
+  int x = 0, y = 0;
+  switch (where) {
+    case IN_PLACE:
+        break;
+    case UP:
+        y = enttR.yPos - 1;
+        break;
+    case DOWN:
+        y = enttR.yPos + enttR.ySize + 1;
+        break;
+    case LEFT:
+        x = enttR.xPos - 1;
+        break;
+    case RIGHT:
+        x = enttR.xPos + enttR.xSize + 1;
+        break;
+  }
+  if (where == LEFT || where == RIGHT) {
+    // now we scan along the length of the entity at that x position
+    for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+      // if we find something, we return true
+      if (reg.valid(this->grid[x][y])) {
+        return this->grid[x][y];
+      }
     }
-    // since we're not on top of another entity, we register the location of the
-    // new entity, the grid location is 1 pixel smaller all around to make things
-    // more flush visually.
+    // there's nothing there
+    return entt::null;
+  } else if (where == UP || where == DOWN) {
+    // now we scan along the length of the entity at that x position
+    for (int x = enttR.xPos; x < (enttR.xPos + enttR.xSize); x++) {
+      // if we find something, we return true
+      if (reg.valid(this->grid[x][y])) {
+        return this->grid[x][y];
+      }
+    }
+    // there's nothing there
+    return entt::null;
+  } else {
+      // checks if an entity exists where we're trying to place one
+    for (int x = enttR.xPos - 1; x < (enttR.xPos + enttR.xSize) + 1; x++) {
+      for (int y = enttR.yPos - 1; y < (enttR.yPos + enttR.ySize) + 1; y++) {
+
+        // if there is an entity there, we return false and the entity
+        // should be deleted and not drawn
+        if (excludeEntt) {
+            if (reg.valid(this->grid[x][y]))
+                return this->grid[x][y];
+        } else {
+            if ((reg.valid(this->grid[x][y])) && (this->grid[x][y] != entt))
+                return this->grid[x][y];
+        }
+      }
+    }
+    return entt::null;
+  }
+}
+
+void Collision::entityClaim(entt::registry &reg, entt::entity entt,
+    Renderable & enttR) {
+
+    // the grid location is 1 pixel smaller all around to make things more flush
+    // visually.
     for (int x = enttR.xPos + 1; x < (enttR.xPos + enttR.xSize) - 1; x++) {
         for (int y = enttR.yPos + 1; y < (enttR.yPos + enttR.ySize) - 1; y++) {
+
             // set all the grid locations for the entity to the entity ID
             this->grid[x][y] = entt;
         }
     }
-    // success
-    return true;
+}
+
+void Collision::entityUnclaim(entt::registry &reg, entt::entity entt, Renderable & enttR) {
+
+    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
+    // we get it all)
+    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
+        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
+            // ensure we only delete *this* entity
+            if (entt == this->grid[x][y]) {
+                this->grid[x][y] = entt::null;
+            }
+        }
+    }
 }
 
 /* Arguments: entity registry, delta frame time, position of bottom border, entity
@@ -108,91 +182,19 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
  *            down once it makes contact with the ground or another entity. */
 void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder,
     entt::entity entt) {
-    if(reg.all_of<Triangle>(entt))  {
+
+    if(reg.all_of<Triangle>(entt))
         return(triangleGravityCollision(reg, dt, bottomBorder,entt));
-    }
+
     // get the renderable component of the entity
     auto enttR = reg.get<Renderable>(entt);
+
     // calculate gravity based on the delta frame, the mass of the entity, and
     // the gravitational constant
-    float gravity = dt * reg.get<Physics>(entt).mass * GRAVITY;
+    float gravity = reg.get<Physics>(entt).mass * GRAVITY;
 
-    // change the position of the entity by the calculated gravity
-    reg.patch<Renderable>(entt, [&reg, gravity](auto &renderable) {
-        if (gravity < 2)
-            renderable.yPos += gravity;
-        else
-            renderable.yPos += 2;
-    });
-
-    // the following code checks if we need to undo the above y position change
-    // to account for a collision.
-
-    // get the renderable component of the entt now that the y position is changed
-    // we call it newEnttR because it's the renderable data of the entity's new pos
-    auto newEnttR = reg.get<Renderable>(entt);
-    int newY = 0;
-    
-    // we loop through the entire area of the new entity to check for an overlap
-    // with anything else
-    for (int x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
-        for (int y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
-
-            // if we detect a valid entity that is not the entity in question
-            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt) &&
-                ((reg.any_of<Physics>(this->grid[x][y])) ||
-                reg.any_of<Border>(this->grid[x][y]))) {
-                
-                
-                // we adjust the y component to the top edge of whatever it collided
-                // with
-                newY = reg.get<Renderable>(this->grid[x][y]).yPos;
-                //If falling onto the side of a triangle, don't get the yPos from renderable.
-                //Instead, get the yPos from the nearest surface layer
-                if(reg.get<Renderable>(this->grid[x][y]).type=="TRIANGLE"){
-                    int y1=y;
-                    while( this->grid[x][y1] != entt::null){
-                        newY=y1;
-                        y1--;
-                    }
-                }
-                // for some reason, it wanted to put the entity on the top border
-                // when it collided with the bottom border, this fixes that.
-                if (newY == 43) newY = bottomBorder;
-
-                // adjust the y component of our entity so that the bottom is
-                // flush with what it collided into, we subtract the size to get
-                // the new top position, since that's what yPos represents.
-                reg.patch<Renderable>(entt, [newY](auto &renderable) {
-                    renderable.yPos = newY - renderable.ySize + 1;
-                });
-            }
-        }
-    }
-    //Move objects if there is something in the way. The main purpose is to 
-    //Move when falling onto a triangle.
-    if((checkX(reg,entt,1) == entt::null) && (checkX(reg,entt,2)) != entt::null)  moveX(reg,entt,dt,1,5.0f);
-    else if((checkX(reg,entt,2) == entt::null) && (checkX(reg,entt,1)) != entt::null)  moveX(reg,entt,dt,2,5.0f);
-    // now we erase all the grid data based on the original renderable component
-    // of the entity (before any movement) with a buffer to ensure we get it all
-    for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
-        for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
-            // we ensure we're only erasing *this* component
-            if (this->grid[x][y] == entt)
-                this->grid[x][y] = entt::null;
-        }
-    }
-
-    // now we get the renderable data for the new entity again, in case we made any
-    // adjustments since the original fetch
-    newEnttR = reg.get<Renderable>(entt);
-
-    // now we claim everything one pixel withdrawn from what's rendered
-    for (int x = newEnttR.xPos + 1; x < newEnttR.xPos + newEnttR.xSize - 1; x++) {
-        for (int y = newEnttR.yPos + 1; y < newEnttR.yPos + newEnttR.ySize - 1; y++) {
-            this->grid[x][y] = entt;
-        }
-    }
+    if (entityExists(reg, entt, enttR, DOWN) == entt::null)
+        moveY(reg, entt, dt, 2, gravity);
 }
 
 /* Arguments: entity registry, delta frame time, pos of bottom border, entity
@@ -213,12 +215,11 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     int direction = rand() % 19;
 
     // if there's nothing in the direction we chose, we move that way
-    if (checkX(reg, entt, direction) == entt::null) {
-        moveX(reg, entt, dt, direction,3.0f);
-    }
-    while (above(reg, entt)) {
-        moveY(reg, entt, dt, 1,30.0f);
-    }
+    if (entityExists(reg, entt, enttR, (direction % 2 == 0) ? RIGHT : LEFT) == entt::null)
+        moveX(reg, entt, dt, direction, 1);
+        
+    // while (above(reg, entt))
+    //     moveY(reg, entt, dt, 1,30.0f);
 
 }
 
@@ -299,31 +300,6 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
     return false;
 }
 
-/* Arguments: entity registry, entity, right boolean (true is right, false is left)
- * Returns:   The entity at some grid location, entt::null (no entity) if there isn't anything there
- * Purpose:   checks to see if there's an entity to the left or right of a given
- *            entity for safe movment. */
-entt::entity Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
-    
-    // get renderable component of entity
-    auto enttR = reg.get<Renderable>(entt);
-    // if we're moving right we set the x component to the pixel just right of 
-    // the entity, otherwise we set x to the pixel just left
-    int x = 0;
-    if (direction % 2 == 0) x = enttR.xPos + enttR.xSize + 1;
-    else x = enttR.xPos - 1;
-
-    // now we scan along the length of the entity at that x position
-    for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
-        // if we find something, we return that entity
-        if (reg.valid(this->grid[x][y])) {
-            return this->grid[x][y];
-        }
-    }
-    // there's nothing there
-    return entt::null;
-}
-
 /* Arguments: entity registry, entity, delta frame time, direction int (even is right, odd is left)
  *            magnitude float number
  * Returns:   N/A
@@ -331,6 +307,11 @@ entt::entity Collision::checkX(entt::registry &reg, entt::entity entt, int direc
 void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
+
+    if (reg.any_of<Liquid>(entt)) {
+        auto enttL = reg.get<Liquid>(entt);
+        magnitude /= enttL.viscosity;
+    }
 
     // change the x position of the entity based on the delta frame, and direction
     // we were told to move
@@ -340,49 +321,23 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
         else
             renderable.xPos += dt * magnitude * direction * -1;
     });
-
-    // get renderable component of future entity
-    auto newEnttR = reg.get<Renderable>(entt);
     
-    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
-    // we get it all)
-    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
-        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
-            // ensure we only delete *this* entity
-            if (entt == this->grid[x][y]) {
-                this->grid[x][y] = entt::null;
-            }
-        }
-    }
-    
-    // register entity in new x position, with a 1 pixel buffer for better rendering
-    for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
-        for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
-            this->grid[x][y] = entt;
-        }
-    }
+    entityUnclaim(reg, entt, enttR);
+    entityClaim(reg, entt, reg.get<Renderable>(entt));
 }
+
 /* Arguments: entity registry, entity, delta frame time, direction int (even is down, odd is up)
  *            magnitude float number
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given y direction */
 void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
+    
     //This integer determines which direction to move. Up is positive, down is negative
-    int upOrDown =1;
-    if(direction % 2 ==0)   upOrDown = (-1);
+    int upOrDown = 1;
+    if (direction % 2 == 0) upOrDown = -1;
+
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
-    
-    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
-    // we get it all)
-    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
-        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
-            // ensure we only delete *this* entity
-            if (entt == this->grid[x][y]) {
-                this->grid[x][y] = entt::null;
-            }
-        }
-    }
 
     reg.patch<Renderable>(entt, [upOrDown,magnitude,dt](auto &renderable) {
             renderable.yPos -= dt * magnitude * upOrDown;
@@ -393,14 +348,34 @@ void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int dire
 
     // we loop through the entire area of the new entity to check for an overlap
     // with anything else
-    for (int x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
-        for (int y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
+    int x, y;
+    for (x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
+        for (y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
             // if we detect a valid entity
-            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) return;
+            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) break;
+        }
+        if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) {
+            reg.patch<Renderable>(entt, [y](auto &renderable) {
+                renderable.yPos = y - renderable.ySize;
+            });
+            break;
         }
     }
 
-    // register entity in new x position, with a 1 pixel buffer for better rendering
+    newEnttR = reg.get<Renderable>(entt);
+
+    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
+    // we get it all)
+    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
+        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
+            // ensure we only delete *this* entity
+            if (entt == this->grid[x][y]) {
+                this->grid[x][y] = entt::null;
+            }
+        }
+    }
+
+    // register entity in new y position, with a 1 pixel buffer for better rendering
     for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
         for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
             this->grid[x][y] = entt;
@@ -467,7 +442,7 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
         for(xLeft; xLeft <= xRight; xLeft++)    {
             // if there is an entity there, we return false and the entity
             // should be deleted and not drawn
-            if(reg.valid(grid[xLeft][(y)]) ||reg.valid(grid[xLeft][(y-1)]) )   return false;
+            if(reg.valid(this->grid[xLeft][(y)]) ||reg.valid(this->grid[xLeft][(y-1)]) )   return false;
         }
         //Update left and right points. They should come closer to each other
         xLeft=previousXLeft +1;
@@ -484,10 +459,10 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
         previousXRight=xRight;
         for(xLeft; xLeft <= xRight; xLeft++)    {
             // set all the grid locations for the entity to the entity ID
-            grid[xLeft][(y)]=entt;
+            this->grid[xLeft][(y)]=entt;
             //I don't get why I can't decrement y by 1 in the loop conditional. If I do that, only 
             //half the triangle gets registered. So I have to do this statement as well.
-            grid[xLeft][(y-1)]=entt;
+            this->grid[xLeft][(y-1)]=entt;
         }
         //Update left and right points. They should come closer to each other
         xLeft=previousXLeft + 1;
@@ -542,8 +517,8 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
         //Checks from left to right on a certain y-line between two triangle points to check if an entity is there
         for(xLeft; xLeft <= xRight; xLeft++)    {
             //Check if there is a valid entity and if the entity is not the same one.
-            if(reg.valid(grid[xLeft][(y)]) && grid[xLeft][(y)]!= entt ){
-                newY = reg.get<Renderable>(grid[xLeft][y]).yPos;
+            if(reg.valid(this->grid[xLeft][(y)]) && this->grid[xLeft][(y)]!= entt ){
+                newY = reg.get<Renderable>(this->grid[xLeft][y]).yPos;
                 // for some reason, it wanted to put the entity on the top border
                 // when it collided with the bottom border, this fixes that.
                 if (newY <= 43 || newY >= 348) newY = bottomBorder;
@@ -584,8 +559,8 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
         previousXRight=xRight;
         //Removes the triangle pixel-by-pixel on a certain y-line
         for(xLeft; xLeft <= xRight; xLeft++)    {
-            if(grid[xLeft][y] == entt)    grid[xLeft][y]=entt::null;
-            if(grid[xLeft][(y-1)] == entt)    grid[xLeft][(y-1)]=entt::null;
+            if(this->grid[xLeft][y] == entt)    this->grid[xLeft][y]=entt::null;
+            if(this->grid[xLeft][(y-1)] == entt)    this->grid[xLeft][(y-1)]=entt::null;
         }
         //Update left and right points. They should come closer to each other
         xLeft=previousXLeft +1;
@@ -599,8 +574,8 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
         previousXLeft=xLeft;
         previousXRight=xRight;
         for(xLeft; xLeft <= xRight; xLeft++)    {
-            grid[xLeft][y]=entt;
-            grid[xLeft][(y-1)]=entt;
+            this->grid[xLeft][y]=entt;
+            this->grid[xLeft][(y-1)]=entt;
         }
         //Update left and right points. They should come closer to each other
         xLeft=previousXLeft +1;
@@ -617,15 +592,7 @@ void Collision::destroyEnttAtLoc(entt::registry &reg, int x, int y) {
     if (!reg.valid(entt)) return;
     auto enttR = reg.get<Renderable>(entt);
     
-    // now we erase all the grid data based on the original renderable component
-    // of the entity (before any movement) with a buffer to ensure we get it all
-    for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
-        for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
-            // we ensure we're only erasing *this* component
-            if (this->grid[x][y] == entt)
-                this->grid[x][y] = entt::null;
-        }
-    }
+    entityUnclaim(reg, entt, enttR);
 }
 
 /*
@@ -643,7 +610,7 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
     for(auto point: reg.get<Triangle>(entt).points){
         gridEntt=entityAtLoc((int)point.x,(int)point.y);
         //If there is a grid entity at some triangle point
-        if(gridEntt!= entt::null){
+        if(reg.valid(gridEntt)){
             //If the grid entity is a border, delete the forcewave
             if(reg.all_of<Border>(gridEntt))  {
                 reg.destroy(entt);
