@@ -47,17 +47,4 @@ void Explosion::updateForcePositions(entt::registry *reg, float dt)    {
         });
     }
 }
-//This function calculates how long a force vector from an explosion has been
-// on the screen. After 3.5 seconds, the velocity vectors will be deleted.
-void Explosion::updateTimeActive(entt::registry *reg, float dt)  {
-    //Get all force vector entities
-    auto view =reg->view<Forcewave>();
-    for(auto entity: view)  {
-        //If the force vector has been surpassed the maximum time, delete it.
-        if(reg->get<Forcewave>(entity).timeActive >= MAX_TIME)  reg->destroy(entity);
-        //Else, update the time it's active.
-        else    reg->patch<Forcewave>(entity, [dt, reg, entity](auto &force){
-                    force.timeActive+=dt;
-                });
-    }
-}
+

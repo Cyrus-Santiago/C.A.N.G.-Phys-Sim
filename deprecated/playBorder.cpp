@@ -1,3 +1,6 @@
+/*
+//DEPCRECATED, PLACE IN "src" DIRECTORY TO COMPILE
+
 //This is Cyrus's code to draw the borders for the background :D
 #include "../include/playBorder.hpp"
 
@@ -18,3 +21,4 @@ void PlayBorder::createLine(unsigned int PosX, unsigned int PosY, unsigned int s
 //    SimulationObject obj(pos, color, size, ResourceManager::GetTexture("button1"), glm::vec3(1.0f, 1.0f, 1.0f));
 //    this->Border.push_back(obj);
 }
+*/
