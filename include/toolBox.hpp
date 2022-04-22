@@ -9,6 +9,7 @@ universally hated design choice. -Cyrus
 #define TOOLBOX_H
 
 #include "entt.hpp"
+#include <vector>
 #include "../include/input.hpp"
 #include "../include/factory.hpp"
 
@@ -21,9 +22,13 @@ class Tools{
         static void moveObject(entt::registry *reg, Click newMouseClick);
         void moveLoop(entt::registry *reg, float dt);
 
+        /*Stasis button functionality*/
+        void lockObject(entt::registry *reg, Click newMouseClick);
+
         /*Methods pertaining to the Resize button functionality*/
         void resizeObject(entt::registry *reg, Click newMouseClick);
-        entt::entity* outlineObject(entt::registry *reg, glm::vec2 shapeDimensions, Click newMouseClick, std::string type);
+        entt::entity* outlineObject(entt::registry *reg, Click newMouseClick, std::string type);
+        void clearOutline(entt::registry *reg, entt::entity* outline);
 
         /*Methods pertaining to the Delete button functionality*/
         void deleteObject(entt::registry *reg, Click newMouseClick);

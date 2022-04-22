@@ -14,7 +14,7 @@
 #define ELEMENT_NUM 30
 #define SHAPE_NUM 3
 #define RAY_NUM 2
-#define TOOLBAR_NUM 6
+#define TOOLBAR_NUM 7
 // this class is mainly here just to own the buttons. It figures out the layout
 // based on screen width/height and maintains an array of all the buttons
 class Menu {
