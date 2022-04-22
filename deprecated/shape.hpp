@@ -1,3 +1,6 @@
+/*
+//DEPCRECATED, PLACE IN "include" DIRECTORY TO COMPILE
+
 #ifndef SHAPE_H
 #define SHAPE_H
 
@@ -8,3 +11,4 @@ class shape{
 };
 
 #endif 
+*/
