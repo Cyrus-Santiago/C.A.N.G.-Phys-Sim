@@ -58,7 +58,7 @@ private:
 
     void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
 
-    bool checkX(entt::registry &reg, entt::entity entt, int direction);
+    entt::entity checkX(entt::registry &reg, entt::entity entt, int direction);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
 

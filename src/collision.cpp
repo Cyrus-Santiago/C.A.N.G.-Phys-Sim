@@ -171,8 +171,8 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     }
     //Move objects if there is something in the way. The main purpose is to 
     //Move when falling onto a triangle.
-    if(!checkX(reg,entt,1) && checkX(reg,entt,2))   moveX(reg,entt,dt,1,5.0f);
-    else if(!checkX(reg,entt,2) && checkX(reg,entt,1)) moveX(reg,entt,dt,2,5.0f);
+    if((checkX(reg,entt,1) == entt::null) && (checkX(reg,entt,2)) != entt::null)  moveX(reg,entt,dt,1,5.0f);
+    else if((checkX(reg,entt,2) == entt::null) && (checkX(reg,entt,1)) != entt::null)  moveX(reg,entt,dt,2,5.0f);
     // now we erase all the grid data based on the original renderable component
     // of the entity (before any movement) with a buffer to ensure we get it all
     for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
@@ -213,7 +213,7 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     int direction = rand() % 19;
 
     // if there's nothing in the direction we chose, we move that way
-    if (!checkX(reg, entt, direction)) {
+    if (checkX(reg, entt, direction) == entt::null) {
         moveX(reg, entt, dt, direction,3.0f);
     }
     while (above(reg, entt)) {
@@ -300,10 +300,10 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
 }
 
 /* Arguments: entity registry, entity, right boolean (true is right, false is left)
- * Returns:   true if there's something there, false if there isn't
+ * Returns:   The entity at some grid location, entt::null (no entity) if there isn't anything there
  * Purpose:   checks to see if there's an entity to the left or right of a given
  *            entity for safe movment. */
-bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
+entt::entity Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
     
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
@@ -315,13 +315,13 @@ bool Collision::checkX(entt::registry &reg, entt::entity entt, int direction) {
 
     // now we scan along the length of the entity at that x position
     for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
-        // if we find something, we return true
+        // if we find something, we return that entity
         if (reg.valid(this->grid[x][y])) {
-            return true;
+            return this->grid[x][y];
         }
     }
     // there's nothing there
-    return false;
+    return entt::null;
 }
 
 /* Arguments: entity registry, entity, delta frame time, direction int (even is right, odd is left)
