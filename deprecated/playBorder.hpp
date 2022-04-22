@@ -1,3 +1,6 @@
+/*
+//DEPCRECATED, PLACE IN "include" DIRECTORY TO COMPILE
+
 //Cyrus again :) This is the header for the borders around the play area
 #ifndef PLAYBORDER_H
 #define PLAYBORDER_H
@@ -24,3 +27,5 @@ class PlayBorder : public PlayArea{
 };
 
 #endif
+
+*/

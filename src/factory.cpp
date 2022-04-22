@@ -100,9 +100,10 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     //The triangle points are in this particular order in the vector. The order DOES matter
     //Vertices: Left, right, top
     //Midpoints: Left, right, bottom, middle (of triangle)
-    std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x,position.y), glm::vec2(position.x+20,position.y),
-        glm::vec2(position.x+10,position.y+20), glm::vec2(position.x+5,position.y+10), glm::vec2(position.x+15,position.y+10),
-        glm::vec2(position.x+10,position.y), glm::vec2(position.x+10,position.y+10)};
+    std::vector<glm::vec2> trianglePoints={ glm::vec2(position.x-20,position.y+20), glm::vec2(position.x+20,position.y+20), 
+        glm::vec2(position.x,position.y-20), glm::vec2(position.x-10,position.y), glm::vec2(position.x+10,position.y), 
+        glm::vec2(position.x,position.y+20), glm::vec2(position.x,position.y), 
+    };
     reg.emplace<Triangle>(entity, trianglePoints);
     return entity;
 }
@@ -130,11 +131,17 @@ void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::
         3, areaHeight+3, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Border>(entity4, "rightBorder");
 
-    // std::cout << (xPos + areaWidth - 1) - (xPos + 1) << std::endl;
-    // std::cout << (yPos + areaHeight) - (yPos) << std::endl;
-
     return;
 };
+
+entt::entity Factory::makeAnimation(entt::registry &reg, glm::vec2 position, 
+    glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime){
+    auto entity = reg.create();
+    reg.emplace<Renderable>(entity, type, texture, position.x,
+        position.y,size.x, size.y, 0.0f, color.x, color.y, color.z, color.w);
+    reg.emplace<Animated>(entity,maxTime);
+    return entity;
+}
 
 void Factory::draw(entt::registry &reg, entt::entity entity,
     SpriteRenderer &spriteRenderer) {

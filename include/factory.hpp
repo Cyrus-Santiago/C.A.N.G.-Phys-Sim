@@ -30,6 +30,7 @@ struct Physics {
 struct Forcewave{
     float xVel, yVel;
     float timeActive=0.0f;
+    float maxTime=3.5f;
 };
 
 // component used for explosions and for the triangle shape
@@ -48,6 +49,11 @@ struct Liquid {
 struct Magma {};
 
 struct Water {};
+
+struct Animated{
+    float maxTime;
+    float timeActive=0.0f;
+};
 
 struct Fire {};
 
@@ -79,6 +85,11 @@ public:
     entt::entity makeForceVector(entt:: registry &reg, glm::vec2 position =
         glm::vec2(1, 1), float rotation=0.0f, glm::vec4 color = glm::vec4(1.0f),
         glm::vec2 velocity = glm::vec2(100.0f));
+
+    entt::entity makeAnimation(entt::registry &reg, glm::vec2 position =
+        glm::vec2(1,1), glm::vec4 color = glm::vec4(1.0f),
+        glm::vec2 size= glm::vec2(30.0f), std::string texture="button1", 
+        std::string type="NO_NAME", float maxTime=1.0f);
 
     // used to draw an entity of any type
     void draw(entt::registry &reg, entt::entity entity,
