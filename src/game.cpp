@@ -6,7 +6,7 @@ and it should not count towards his 1000 lines. */
 
 #include "../include/game.hpp"
 #include "../include/input.hpp"
-#include "../include/playBorder.hpp"
+#include "../include/playArea.hpp"
 #include "../include/ray.hpp"
 #include "../include/explosion.hpp"
 #include "../include/factory.hpp"
