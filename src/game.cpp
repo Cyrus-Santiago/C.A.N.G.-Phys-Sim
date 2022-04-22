@@ -33,7 +33,7 @@ Tools tools;
 Input input;
 Factory factory;
 entt::registry * reg;
-Collision colEngine(* reg);
+Collision * colEngine;
 
 std::vector<Button> Buttons;
 //std::vector<SimulationObject> Border;
@@ -47,6 +47,7 @@ Game::Game(unsigned int width, unsigned int height)
 Game::~Game() {
   delete spriteRenderer;
   delete reg;
+  delete colEngine;
 }
 
 void Game::Init(GLFWwindow *window) {
@@ -67,6 +68,7 @@ void Game::Init(GLFWwindow *window) {
   // call sprite renderer on our shader
   spriteRenderer = new SpriteRenderer(myShader);
   reg = new entt::registry();
+  colEngine = new Collision(* reg);
 
   // initialize menu, play area, play border, and input dimensions
   Menu::init(6, 5, Width*0.85, Height);
@@ -81,7 +83,7 @@ void Game::Init(GLFWwindow *window) {
   factory.makeBorder(*reg,Width*0.85,Height);
   auto view = reg->view<Border>();
   for (auto border : view) {
-    colEngine.registerEntity(* reg, border);
+    colEngine->registerEntity(* reg, border);
     if (reg->get<Border>(border).position == "bottomBorder") {
       bottomBorder = reg->get<Renderable>(border).yPos;
     }
@@ -140,7 +142,7 @@ void Game::Update(float dt) {
               entity = factory.makeParticle(* reg, pressedButton.Type,
                 glm::vec2((int) newMouseClick.xPos, (int) newMouseClick.yPos), buttonColor);
               if (reg->all_of<Physics>(entity)) {
-                if (!colEngine.registerEntity(* reg, entity))
+                if (!colEngine->registerEntity(* reg, entity))
                   reg->destroy(entity);
               }
               break;
@@ -151,7 +153,7 @@ void Game::Update(float dt) {
                 shapeDimensions.x*=2;
               entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
                 (int)newMouseClick.yPos), buttonColor,shapeDimensions, pressedButton.Type);
-              if (!colEngine.registerEntity(* reg, entity))
+              if (!colEngine->registerEntity(* reg, entity))
                 reg->destroy(entity);
               break;            
 
@@ -216,7 +218,7 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
   Explosion::updateTimeActive(reg, dt);
 
-  colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
+  colEngine->collisionLoop(* reg, dt, bottomBorder, topBorder);
 
 }
 
@@ -259,7 +261,7 @@ void Game::Render() {
     factory.draw(* reg, entity, * spriteRenderer);
   }
   //Debug method to highlight wherever a grid spot is filled.
-  //colEngine.debugGrid(* spriteRenderer, * reg);
+  // colEngine->debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The

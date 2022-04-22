@@ -22,7 +22,7 @@ struct Renderable {
 struct Physics {
     float mass;
     float xVel = 0.00, yVel = 0.00;
-    float xAccel=0.00, yAccel=0.00;
+    float xAccel = 0.00, yAccel = 0.00;
     float friction = 0.5;
 };
 
@@ -41,7 +41,13 @@ struct Border {
     std::string position;
 };
 
-struct Liquid {};
+struct Liquid {
+    float viscosity = 1.0f;
+};
+
+struct Magma {};
+
+struct Water {};
 
 struct Fire {};
 

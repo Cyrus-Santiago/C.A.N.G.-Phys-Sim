@@ -4,7 +4,7 @@
 void PlayArea::Draw(SpriteRenderer &renderer){
     glm::vec2 pos(scrWidth*0.05, scrHeight*0.05);
     glm::vec2 size(areaWidth,areaHeight);
-    Background obj(pos, size, ResourceManager::GetTexture("solid"), glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+    Background obj(pos, size, ResourceManager::GetTexture("background"), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
     obj.Draw(renderer);
 }
 
