@@ -29,7 +29,7 @@ public:
     entt::entity entityAtLoc(int x, int y);
     void destroyEnttAtLoc(entt::registry &reg, int x, int y);
 
-    void triangleCollision(entt::registry *reg,float dt);
+//    void triangleCollision(entt::registry *reg,float dt);
 
     bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
     bool checkCollision(entt::entity entity, entt::registry &reg);
@@ -39,6 +39,11 @@ private:
     // 43, 806 x coords
     // 43, 387 y coords
     entt::entity grid[820][400];
+    bool registerTriangleEntity(entt::registry &reg, entt::entity entt);
+
+    void triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt);
+
+    void forcewaveCollision(entt::registry &reg, entt::entity entt,float dt);
 
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
@@ -49,9 +54,9 @@ private:
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
 
-    void moveUp(entt::registry &reg, entt::entity entt, float dt);
+    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
 
     bool checkX(entt::registry &reg, entt::entity entt, int direction);
 

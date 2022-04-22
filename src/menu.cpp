@@ -69,26 +69,28 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     }
 
     /* Written by Griffen */
-    Element shapesButtonColor[] = {glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),
-        glm::vec4(0.5f, 0.3f, 0.0f, 1.0f),glm::vec4(0.5f, 0.3f, 0.0f, 1.0f)};
+    Element shapesButtonColor[SHAPE_NUM-1];
     std::string shapeTypes[] = { "SQUARE", "TRIANGLE", "RECTANGLE" };
     for (int i=0; i<SHAPE_NUM; i++) {
+        shapesButtonColor[i].color = glm::vec4(0.5f, 0.3f, 0.0f, 1.0f);
         Types.insert(std::pair<std::string, Element>(shapeTypes[i],
         shapesButtonColor[i]));
     }
-    /* */
-    Element toolbarButtonColor[]= {glm::vec4(1.0f,0.2f,0.1f,1.0f),
-        glm::vec4(1.0f,0.2f,0.1f,1.0f)};
-    std::string toolbarTypes[] = { "BOOM!", "PLACEHOLDER"};
+    /* Written by Griffen */
+    Element toolbarButtonColor[TOOLBAR_NUM];
+    /* If you need to add another button, add new toolbarTypes and increase TOOLBAR_NUM in menu.hpp*/
+    std::string toolbarTypes[] = { "BOOM!", "GLASSIFY!", "MOVE", "RESIZE", "DELETE", "CLEAR ALL"};
     for (int i=0; i<TOOLBAR_NUM; i++)   {
+        toolbarButtonColor[i].color = glm::vec4(1.0f,0.2f,0.1f,1.0f);
         Types.insert(std::pair<std::string, Element>(toolbarTypes[i],
         toolbarButtonColor[i]));
     }
 
     /* Written by Amethyst */
-    Element rayButtonColor[] = {glm::vec4(0.6f, 0.1f, 0.9f, 1.0f),glm::vec4 (0.6f, 0.1f, 0.9f, 1.0f)};
+    Element rayButtonColor[RAY_NUM-1];
     std::string rayTypes[] = {"RAY", "BEAM"};
     for (int i=0; i<RAY_NUM; i++) {
+        rayButtonColor[i].color = glm::vec4(0.6f, 0.1f, 0.9f, 1.0f);
         Types.insert(std::pair<std::string, Element>(rayTypes[i],
         rayButtonColor[i]));
     } /* */
@@ -135,6 +137,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
         Buttons.push_back(rayObj);
         idCounter++;
     }
+    /* Initializing the Toolbar Buttons */
     for(int x = 0; x < TOOLBAR_NUM; ++x)    {
         glm::vec2 boxPos(edgeGap + (x * widthGapBetweenBoxes),
             shrunkScrHeight-scrHeightGap);

@@ -5,6 +5,7 @@
 #define AUDIO_H
 
 #include "../include/irrKlang/irrKlang.h"
+#include "../include/irrKlang/ik_ISoundSource.h"
 #include <iostream>
 #include <string>
 #include <vector>
