@@ -4,7 +4,6 @@
 #include <glm/fwd.hpp>
 #include <iostream>
 #include <vector>
-#define MAX_TIME 3.5
 class Explosion{
 public:
 //----------Fields------------------

@@ -13,6 +13,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/audio.hpp"
 #include "../include/collision.hpp"
 #include "../include/toolBox.hpp"
+#include "../include/animation.hpp"
 
 //#include "../include/simulation.hpp"
 //#include "../include/simulationObject.hpp"
@@ -169,9 +170,19 @@ void Game::Update(float dt) {
 
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
+              factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-35, newMouseClick.yPos-35),
+              glm::vec4(1.0f), glm::vec2(70.0f),"explosion","explosion",0.75f);
               for(int i=0; i<8; i++)  {
-                factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos,
-                  (int)newMouseClick.yPos), Explosion::rotation[i], buttonColor, 
+                for(int j=0; j<10; j++){
+                  entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+                    newMouseClick.xPos+i+j+15, (int) newMouseClick.yPos+i+j+15), buttonColor);
+                  //if (!colEngine.registerEntity(* reg, entity)){  reg->destroy(entity);}
+                  entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+                    newMouseClick.xPos-i-j, (int) newMouseClick.yPos-i-j), buttonColor);
+                  //if (!colEngine.registerEntity(* reg, entity)){  reg->destroy(entity);}
+                }
+                factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos-10,
+                  (int)newMouseClick.yPos-10), Explosion::rotation[i], buttonColor, 
                   glm::vec2(Explosion::velocityArrayX[i], Explosion::velocityArrayY[i]));
               }
               break;
@@ -213,8 +224,8 @@ void Game::Update(float dt) {
     if (int(State) != GAME_DRAW_ELEMENT && int(State) != GAME_MOVE_OBJECT && int(State) != GAME_RESIZE_OBJECT)
       Input::resetValidClick();
   }
+  Animation::updateTimeActive(reg,dt);
   Explosion::updateForcePositions(reg, dt);
-  Explosion::updateTimeActive(reg, dt);
 
   colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
 
