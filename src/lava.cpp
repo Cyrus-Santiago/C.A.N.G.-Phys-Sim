@@ -45,7 +45,7 @@ void Lava::lavaStoneCollision(entt::registry &reg, entt::entity entt, float dt,
         otherEntt = colEngine.entityExists(reg, entt, enttR, RIGHT);
 
     if (reg.valid(otherEntt)) {
-        if (reg.any_of<Stone>(otherEntt) && ((int)glfwGetTime() % 4 == 0)) {
+        if (reg.any_of<Stone>(otherEntt) && (((int)glfwGetTime() - (uint) otherEntt) % 4 == 0)) {
             auto otherEnttR = reg.get<Renderable>(otherEntt);
             reg.erase<Stone>(otherEntt);
             reg.emplace<Liquid>(otherEntt);
