@@ -13,7 +13,9 @@ The C.A.N.G. Physics Simulator is a simulation environment written in C/C++. The
 
 ## How to Install:
 
-First, you will need glfw-x11 installed in your /bin directory. This may be done by doing `sudo pamac install glfw-x11` or `sudo apt install xorg-dev libglfw3` depnding on your package manager
+-First, you will need glfw-x11 installed in your /bin directory. This may be done by doing `sudo pamac install glfw-x11` or `sudo apt install xorg-dev libglfw3` depnding on your package manager. <br/>
+-To build the program, type `make`, and type `make clean` to remove object files. <br/>
+-After making, type `./bin/main` from the MAIN DIRECTORY (Important!)
 
 ## Attributions:
 
