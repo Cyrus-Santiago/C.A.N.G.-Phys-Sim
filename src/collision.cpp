@@ -3,11 +3,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
 #include "../include/flame.hpp"
+#include "../include/lava.hpp"
 
 #define GRAVITY     9.17
 
 
 Flame flame;
+Lava lava;
 
 /* Arguments: entity registry, delta frame time, position of the bottom border.
  * Returns:   N/A
@@ -29,18 +31,19 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
             liquidCollision(reg, dt, bottomBorder, entity);
         }
 
-        if (reg.any_of<Gas>(entity)) {
+        if (reg.any_of<Magma>(entity)) {
+            lava.lavaWaterCollision(reg, entity, dt, * this);
+            lava.lavaStoneCollision(reg, entity, dt, * this);
+        }
+
+        if (reg.any_of<Gas>(entity))
             gasCollision(reg, dt, topBorder, entity);
-        }
-        if (reg.any_of<Fire>(entity)) {
+
+        if (reg.any_of<Forcewave>(entity))
+            forcewaveCollision(reg, entity, dt);
+
+        if (reg.any_of<Fire>(entity))
             flame.burn(reg, entity, dt, * this);
-        }
-    }
-    //Separate view to loop through explosions because entities might
-    //be deleted, causing in a valid entity assertion fail for other methods
-    auto explosions = reg.view<Forcewave>();
-    for(auto enttF : explosions){
-        forcewaveCollision(reg,enttF,dt);
     }
 }
 
@@ -217,10 +220,13 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
     // if there's nothing in the direction we chose, we move that way
     if (entityExists(reg, entt, enttR, (direction % 2 == 0) ? RIGHT : LEFT) == entt::null)
         moveX(reg, entt, dt, direction, 1);
-        
-    // while (above(reg, entt))
-    //     moveY(reg, entt, dt, 1,30.0f);
-
+    
+    // auto enttAbove = entityExists(reg, entt, enttR, UP);
+    // while (reg.valid(enttAbove)) {
+    //     if (reg.any_of<Liquid, Gas>(enttAbove)) break;
+    //     moveY(reg, entt, dt, 1, 1, true);
+    //     enttAbove = entityExists(reg, entt, enttR, UP);
+    // }
 }
 
 void Collision::gasCollision(entt::registry &reg, float dt, int topBorder,
@@ -241,6 +247,7 @@ void Collision::gasCollision(entt::registry &reg, float dt, int topBorder,
     if (enttR.yPos <= topBorder + 10) {
         reg.erase<Gas>(entt);
         reg.emplace<Liquid>(entt);
+        reg.emplace<Water>(entt);
         reg.emplace<Physics>(entt, 10.0f);
         reg.replace<Renderable>(entt, "particle", "solid", enttR.xPos, enttR.yPos,
             5, 5, 0.0f, 0.2f, 0.2f, 1.0f, 1.0f);
@@ -330,7 +337,7 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
  *            magnitude float number
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given y direction */
-void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
+void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol) {
     
     //This integer determines which direction to move. Up is positive, down is negative
     int upOrDown = 1;
@@ -343,42 +350,44 @@ void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int dire
             renderable.yPos -= dt * magnitude * upOrDown;
     });
 
-    // get renderable component of future entity
-    auto newEnttR = reg.get<Renderable>(entt);
+    if (!ignoreCol) {
+        // get renderable component of future entity
+        auto newEnttR = reg.get<Renderable>(entt);
 
-    // we loop through the entire area of the new entity to check for an overlap
-    // with anything else
-    int x, y;
-    for (x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
-        for (y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
-            // if we detect a valid entity
-            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) break;
-        }
-        if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) {
-            reg.patch<Renderable>(entt, [y](auto &renderable) {
-                renderable.yPos = y - renderable.ySize;
-            });
-            break;
-        }
-    }
-
-    newEnttR = reg.get<Renderable>(entt);
-
-    // erase past entity from the collision grid (using a 2 pixel buffer to ensure
-    // we get it all)
-    for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
-        for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
-            // ensure we only delete *this* entity
-            if (entt == this->grid[x][y]) {
-                this->grid[x][y] = entt::null;
+        // we loop through the entire area of the new entity to check for an overlap
+        // with anything else
+        int x, y;
+        for (x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
+            for (y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
+                // if we detect a valid entity
+                if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) break;
+            }
+            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) {
+                reg.patch<Renderable>(entt, [y](auto &renderable) {
+                    renderable.yPos = y - renderable.ySize;
+                });
+                break;
             }
         }
-    }
 
-    // register entity in new y position, with a 1 pixel buffer for better rendering
-    for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
-        for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
-            this->grid[x][y] = entt;
+        newEnttR = reg.get<Renderable>(entt);
+
+        // erase past entity from the collision grid (using a 2 pixel buffer to ensure
+        // we get it all)
+        for (int x = enttR.xPos - 2; x < (enttR.xPos + enttR.xSize) + 2; x++) {
+            for (int y = enttR.yPos - 2; y < (enttR.yPos + enttR.ySize) + 2; y++) {
+                // ensure we only delete *this* entity
+                if (entt == this->grid[x][y]) {
+                    this->grid[x][y] = entt::null;
+                }
+            }
+        }
+
+        // register entity in new y position, with a 1 pixel buffer for better rendering
+        for (int x = newEnttR.xPos + 1; x < (newEnttR.xPos + newEnttR.xSize) - 1; x++) {
+            for (int y = newEnttR.yPos + 1; y < (newEnttR.yPos + newEnttR.ySize) - 1; y++) {
+                this->grid[x][y] = entt;
+            }
         }
     }
 }

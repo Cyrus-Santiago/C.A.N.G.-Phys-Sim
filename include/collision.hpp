@@ -62,8 +62,7 @@ private:
         entt::entity entity);
 
     void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
-
-    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
+    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol = false);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
     bool above(entt::registry &reg, entt::entity entt);

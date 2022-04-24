@@ -48,6 +48,8 @@ struct Liquid {
 
 struct Magma {};
 
+struct Stone {};
+
 struct Water {};
 
 struct Animated{
