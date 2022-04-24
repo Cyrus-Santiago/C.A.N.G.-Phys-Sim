@@ -24,6 +24,9 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         reg.emplace<Liquid>(entity, 2.0f);
         reg.emplace<Magma>(entity);
         reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "STONE") {
+        reg.emplace<Stone>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
     } else {
         reg.emplace<Physics>(entity, 10.0f);
     }

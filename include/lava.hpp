@@ -6,7 +6,10 @@
 
 class Lava {
 public:
-    bool lavaWaterCollision(entt::registry &reg, entt::entity entt, float dt, Collision colEngine);
+    void lavaWaterCollision(entt::registry &reg, entt::entity entt, float dt,
+        Collision &colEngine);
+    void lavaStoneCollision(entt::registry &reg, entt::entity entt, float dt,
+        Collision &colEngine);
 };
 
 #endif
