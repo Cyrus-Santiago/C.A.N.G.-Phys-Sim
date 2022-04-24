@@ -51,7 +51,7 @@ private:
     // 43, 387 y coords
     entt::entity grid[820][400];
     bool registerTriangleEntity(entt::registry &reg, entt::entity entt);
-
+    void triangleEntityClaim(entt::registry &reg, entt::entity entt, Renderable & enttR);
     void triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt);
     void forcewaveCollision(entt::registry &reg, entt::entity entt,float dt);
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
