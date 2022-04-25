@@ -522,3 +522,17 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
         }
     }
 }
+/* Arguments: 
+ * Returns:   boolean
+ * Purpose:   Checks if ray collides with an object.
+              Depending on material of object, ray will reflect
+              path of light will halt. */
+bool Collision::rayCollision(entt::registry &reg, entt::entity entt){
+    /* check if ray entity meets solid entity */
+    /* if yes, then shorten ray dimensions to stop at collision */
+    /* check if ray entity meets reflective entity */
+    /* if yes, then create incident ray */
+    /* check if ray entity meets liquid entity */
+    /* if yes, then create refractive ray */
+    return true;
+}

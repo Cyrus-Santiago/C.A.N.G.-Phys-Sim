@@ -129,7 +129,7 @@
         setDimensions(Position, Tail); /* tells us ray dimensions for drawing */
         setDirection(); /* set angle relative to head/tail position */
         determineOffset();
-        Texture = ResourceManager::GetTexture("laser");
+        Texture = ResourceManager::GetTexture("solid");
         Velocity = {0, 0}; /* we don't want the ray to move */
         Destroyed = false;
     }

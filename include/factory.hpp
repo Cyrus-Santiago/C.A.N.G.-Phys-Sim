@@ -59,6 +59,12 @@ struct Fire {};
 
 struct Gas {};
 
+struct Reflective{};
+
+struct Shape{};
+
+struct Ray{};
+
 class Factory {
 public:
     // used to create a new particle entity

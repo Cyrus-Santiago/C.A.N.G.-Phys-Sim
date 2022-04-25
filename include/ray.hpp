@@ -20,7 +20,7 @@ public: glm::vec2 Position, Tail, Offset, Dimensions, Velocity, Direction;
 
     /* Constructor */
         Ray(glm::vec2 position = {45,45}, glm::vec4 color = {0.9f, 0.9f, 0.9f, 0.5f}, glm::vec2 size = {250,10},
-            Texture2D texture = ResourceManager::GetTexture("laser"),
+            Texture2D texture = ResourceManager::GetTexture("solid"),
             glm::vec2 velocity = glm::vec2(0.0f),
             float mass = 0, bool Destroyed = 0){};
 
