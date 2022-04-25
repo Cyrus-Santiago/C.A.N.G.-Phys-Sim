@@ -39,11 +39,12 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
         if (reg.any_of<Gas>(entity))
             gasCollision(reg, dt, topBorder, entity);
 
-        if (reg.any_of<Forcewave>(entity))
-            forcewaveCollision(reg, entity, dt);
-
         if (reg.any_of<Fire>(entity))
             flame.burn(reg, entity, dt, * this);
+        //Need the valid since the entity might be deleted
+        if(reg.valid(entity)){
+            if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
+        }
     }
 }
 
@@ -308,10 +309,18 @@ bool Collision::grounded(entt::registry &reg, entt::entity entt, int bottomBorde
  *            magnitude float number
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given x direction */
-void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude) {
+void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool skip) {
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
-
+    if(!skip){
+        auto gridEntt=entityExists(reg,entt,enttR,direction);
+        if(reg.valid(gridEntt)){
+            if(reg.all_of<Border>(gridEntt)){
+                if(direction % 2 ==0)    return(moveX(reg,entt,dt,3,magnitude*2,true));
+                else    return(moveX(reg,entt,dt,4,magnitude,true));
+            }
+        }
+    }
     if (reg.any_of<Liquid>(entt)) {
         auto enttL = reg.get<Liquid>(entt);
         magnitude /= enttL.viscosity;
@@ -337,13 +346,11 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given y direction */
 void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol) {
-    
+    // get renderable component of entity
+    auto enttR = reg.get<Renderable>(entt);
     //This integer determines which direction to move. Up is positive, down is negative
     int upOrDown = 1;
     if (direction % 2 == 0) upOrDown = -1;
-
-    // get renderable component of entity
-    auto enttR = reg.get<Renderable>(entt);
 
     reg.patch<Renderable>(entt, [upOrDown,magnitude,dt](auto &renderable) {
             renderable.yPos -= dt * magnitude * upOrDown;
@@ -431,18 +438,21 @@ bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     int xLeft=enttR.xPos,    xRight=enttR.xPos+enttR.xSize;
     int previousXLeft=0, previousXRight=0;
     if (entityExists(reg,entt,enttR,IN_PLACE) != entt::null)    return false;
-    //If we leave this loop, that means that there is no entity in the landing zone, meaning
+    //If we leave this if statement, that means that there is no entity in the landing zone, meaning
     //we are free to make a new triangle entity
     triangleEntityClaim(reg,entt,enttR);
     //success
     return true;
 }
-
+/*
+* Argumnents: entity registry, a triangle entity, and its renderable compeonent
+* Returns: N/A
+* Purpose: Claims an entity on the collision grid in the shape of a triangle.*/
 void Collision::triangleEntityClaim(entt::registry &reg, entt::entity entt, 
     Renderable &newEnttR){
     int previousXLeft=0,    previousXRight=0;
     int xLeft=newEnttR.xPos,    xRight=newEnttR.xPos+newEnttR.xSize;
-    //Descending for loop to register from the bottom-up of a triangle. Same routine as before
+    //Descending for loop to register from the bottom-up of a triangle. 
     for(int y=(int)(newEnttR.yPos+newEnttR.ySize); y > (int)newEnttR.yPos; y-=2){
         previousXLeft=xLeft;
         previousXRight=xRight;
@@ -462,7 +472,7 @@ void Collision::triangleEntityClaim(entt::registry &reg, entt::entity entt,
 *Arguments: entity registry, delta time frame, bottom border y-position, triangle entity
 *Returns:   N/A
 *Purpose:   Performs gravity calculations on a triangle shape. The grid entities 
-*           are updated accordingly. This function is buggy */
+*           are updated accordingly.*/
 void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt){
     //Old copy of the triangle renderable
     auto enttR = reg.get<Renderable>(entt);
@@ -540,7 +550,7 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             }
             //If the explosion force wave goes up, push up
             if(rotation == 0 || rotation == 45 || rotation == 315){
-                moveY(reg, gridEntt, dt, 11, enttF.yVel);
+                moveY(reg, gridEntt, dt, 1, enttF.yVel);
             }
             //If the explosion force wave goes down, push down
             if(rotation == 180 || rotation == 135 || rotation == 225){
