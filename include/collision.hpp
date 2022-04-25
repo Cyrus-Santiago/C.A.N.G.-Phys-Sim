@@ -61,7 +61,7 @@ private:
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
 
-    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
+    void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool skip=false);
     void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol = false);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);

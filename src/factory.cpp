@@ -141,7 +141,7 @@ entt::entity Factory::makeAnimation(entt::registry &reg, glm::vec2 position,
     glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime){
     auto entity = reg.create();
     reg.emplace<Renderable>(entity, type, texture, position.x,
-        position.y,size.x, size.y, 0.0f, color.x, color.y, color.z, color.w);
+        position.y, (int)size.x, (int)size.y, 0.0f, color.x, color.y, color.z, color.w);
     reg.emplace<Animated>(entity,maxTime);
     return entity;
 }
