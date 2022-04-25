@@ -435,8 +435,6 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
 bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     //Variables to make this more readable
     auto enttR=reg.get<Renderable>(entt);
-    int xLeft=enttR.xPos,    xRight=enttR.xPos+enttR.xSize;
-    int previousXLeft=0, previousXRight=0;
     if (entityExists(reg,entt,enttR,IN_PLACE) != entt::null)    return false;
     //If we leave this if statement, that means that there is no entity in the landing zone, meaning
     //we are free to make a new triangle entity
@@ -530,7 +528,7 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             }
             //If the explosion force wave goes up, push up
             if(rotation == 0 || rotation == 45 || rotation == 315){
-                moveY(reg, gridEntt, dt, 1, enttF.yVel);
+                moveY(reg, gridEntt, dt, 1, enttF.yVel*(-15));
             }
             //If the explosion force wave goes down, push down
             if(rotation == 180 || rotation == 135 || rotation == 225){

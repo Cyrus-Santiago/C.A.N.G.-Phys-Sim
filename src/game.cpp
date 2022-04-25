@@ -33,6 +33,7 @@ Click newMouseClick;
 Tools tools;
 Input input;
 Factory factory;
+Animation *animationEngine;
 entt::registry * reg;
 Collision * colEngine;
 
@@ -172,8 +173,8 @@ void Game::Update(float dt) {
 
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
-              factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-35, newMouseClick.yPos-35),
-              glm::vec4(1.0f), glm::vec2(70.0f),"explosion","explosion",0.75f);
+              factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-10, newMouseClick.yPos-10),
+              glm::vec4(1.0f), glm::vec2(20.0f),"explosion","explosion",0.75f,106.66f);
               for(int i=0; i<8; i++)  {
                 for(int j=0; j<10; j++){
                   entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
@@ -226,7 +227,7 @@ void Game::Update(float dt) {
     if (int(State) != GAME_DRAW_ELEMENT && int(State) != GAME_MOVE_OBJECT && int(State) != GAME_RESIZE_OBJECT)
       Input::resetValidClick();
   }
-  Animation::updateTimeActive(reg,dt);
+  animationEngine->animationUpdate(*reg, dt);
   Explosion::updateForcePositions(reg, dt);
 
   colEngine->collisionLoop(* reg, dt, bottomBorder, topBorder);
