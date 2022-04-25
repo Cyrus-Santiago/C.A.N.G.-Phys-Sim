@@ -45,6 +45,7 @@ public:
     bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
     bool checkCollision(entt::entity entity, entt::registry &reg);
     // void collide(SimulationObject &obj);
+    bool rayCollision(entt::registry &reg, entt::entity entt);
 
 private:
     // 43, 806 x coords

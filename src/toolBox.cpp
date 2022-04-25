@@ -68,3 +68,42 @@ void Tools::clearAll(entt::registry *reg){
         }
     }
 }
+
+/* Arguments: entity registry, and mouse click coordinates
+ * Returns:   N/A
+ * Purpose:   This method checks to see what type of entity is clicked
+ *            and then will determine whether to glassify. Squares and 
+ *            rectangles are valid entities to change material to glass.
+ *            The user should be able to click on a shape while in 
+ *            "glassify" mode and it will swap materials. Another click
+ *            while in this mode will revert to a solid material. */
+void Tools::glassify(entt::registry *reg, Click newMouseClick){
+    entt::entity clickedObject = getObject(reg, newMouseClick);
+    if(!reg->valid(clickedObject)){
+        return;
+    }
+    /* If already glass texture, we can revert...no triangles yet */
+    if(reg->any_of<Shape>(clickedObject) && !reg->any_of<Triangle>(clickedObject)){
+        if(reg->any_of<Reflective>(clickedObject)){
+        reg->patch<Renderable>(clickedObject, [reg, clickedObject, newMouseClick] (auto &material) {
+            material.texture = "button2";
+            material.colorR = 0.5f;
+            material.colorG = 0.3f;
+            material.colorB = 0.0f;
+            material.colorA = 1.0f;
+        });
+        reg->erase<Reflective>(clickedObject);
+        }
+        else{ /* Otherwise, entity can be glassified */
+            reg->patch<Renderable>(clickedObject, [reg, clickedObject, newMouseClick] (auto &material) {
+            material.texture = "glass";
+            material.colorR = 1.0f;
+            material.colorG = 1.0f;
+            material.colorB = 1.0f;
+            material.colorA = 1.0f;
+        });
+        reg->emplace<Reflective>(clickedObject);
+        }
+    }
+    else return;    
+}

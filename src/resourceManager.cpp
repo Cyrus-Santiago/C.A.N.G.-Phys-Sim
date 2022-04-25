@@ -104,7 +104,7 @@ void ResourceManager::initializeResources(){
   ResourceManager::LoadTexture("textures/button2.png", true, "button2");
   ResourceManager::LoadTexture("textures/solid.jpg", false, "solid");
   ResourceManager::LoadTexture("textures/background.jpg", false, "background");
-  ResourceManager::LoadTexture("textures/laser.png", true, "laser");
+  ResourceManager::LoadTexture("textures/glass.png", false, "glass");
   ResourceManager::LoadTexture("textures/font2.png", true, "font2");
   /* Tell the shader we're going to be providing an image */
   ResourceManager::GetShader("sprite").Use().SetInt("image", 0);

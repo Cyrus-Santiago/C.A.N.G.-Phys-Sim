@@ -191,6 +191,7 @@ void Game::Update(float dt) {
               break;
 
             case GAME_GLASSIFY:
+              tools.glassify(reg, newMouseClick);
               break;
 
             /*Allows user to move object around the play area*/
@@ -291,10 +292,10 @@ GameState Game::determineGameState()  {
           return GAME_DRAW_SHAPE;
       }
         //If the button pressed is light feature
-      else if(pressedButton[0].ID > 32 && pressedButton[0].ID < 34) {
+      else if(pressedButton[0].ID == 33) {
           return GAME_DRAW_RAY;
       }
-      else if(pressedButton[0].ID > 33 && pressedButton[0].ID < 35) {
+      else if(pressedButton[0].ID == 34) {
           return GAME_DRAW_BEAM;
       }
       else if(pressedButton[0].ID ==35) {

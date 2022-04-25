@@ -30,6 +30,9 @@ class Tools{
 
         /*Clear button functionality*/
         void clearAll(entt::registry *reg);
+
+        /* Glassify Object */
+        void glassify(entt::registry *, Click);
     
     private:
         Factory factory;
