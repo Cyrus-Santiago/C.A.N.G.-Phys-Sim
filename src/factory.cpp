@@ -100,6 +100,7 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 20, 20,
         rotation, color.x, color.y, color.z, color.w);
     reg.emplace<Forcewave>(entity, velocity.x, velocity.y);
+    reg.emplace<Animated>(entity, 3.5f,0.0f);
     //The triangle points are in this particular order in the vector. The order DOES matter
     //Vertices: Left, right, top
     //Midpoints: Left, right, bottom, middle (of triangle)
@@ -138,11 +139,11 @@ void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::
 };
 
 entt::entity Factory::makeAnimation(entt::registry &reg, glm::vec2 position, 
-    glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime){
+    glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime, float dR){
     auto entity = reg.create();
     reg.emplace<Renderable>(entity, type, texture, position.x,
         position.y, (int)size.x, (int)size.y, 0.0f, color.x, color.y, color.z, color.w);
-    reg.emplace<Animated>(entity,maxTime);
+    reg.emplace<Animated>(entity,maxTime,dR);
     return entity;
 }
 
