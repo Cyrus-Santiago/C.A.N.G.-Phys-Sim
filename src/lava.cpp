@@ -1,7 +1,7 @@
 #include "../include/lava.hpp"
 #include <GLFW/glfw3.h>
 
-void Lava::lavaWaterCollision(entt::registry &reg, entt::entity entt, float dt,
+void lavaWaterCollision(entt::registry &reg, entt::entity entt, float dt,
     Collision &colEngine) {
     
     // get the renderable component of our entity
@@ -31,7 +31,7 @@ void Lava::lavaWaterCollision(entt::registry &reg, entt::entity entt, float dt,
     }
 }
 
-void Lava::lavaStoneCollision(entt::registry &reg, entt::entity entt, float dt,
+void lavaStoneCollision(entt::registry &reg, entt::entity entt, float dt,
     Collision &colEngine) {
     
     auto enttR = reg.get<Renderable>(entt);

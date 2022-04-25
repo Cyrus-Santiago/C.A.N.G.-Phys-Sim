@@ -1,6 +1,7 @@
 #include "../include/collision.hpp"
 #include "../include/factory.hpp"
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 #include <glm/fwd.hpp>
 #include "../include/flame.hpp"
 #include "../include/lava.hpp"
@@ -9,7 +10,6 @@
 
 
 Flame flame;
-Lava lava;
 
 /* Arguments: entity registry, delta frame time, position of the bottom border.
  * Returns:   N/A
@@ -32,8 +32,8 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
         }
 
         if (reg.any_of<Magma>(entity)) {
-            lava.lavaWaterCollision(reg, entity, dt, * this);
-            lava.lavaStoneCollision(reg, entity, dt, * this);
+            lavaWaterCollision(reg, entity, dt, * this);
+            lavaStoneCollision(reg, entity, dt, * this);
         }
 
         if (reg.any_of<Gas>(entity))
@@ -73,6 +73,20 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
         } else if (enttB.position == "leftBorder") {
             for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize); x++) {
                 for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    // store the border entity ID in the grid locations
+                    this->grid[x][y] = entt;
+                }
+            }
+        } else if (enttB.position == "bottomBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize + 10); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + 11); y++) {
+                    // store the border entity ID in the grid locations
+                    this->grid[x][y] = entt;
+                }
+            }
+        } else if (enttB.position == "topBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize + 10); x++) {
+                for (int y = enttR.yPos - 10; y < (enttR.yPos); y++) {
                     // store the border entity ID in the grid locations
                     this->grid[x][y] = entt;
                 }
@@ -194,8 +208,14 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     // the gravitational constant
     float gravity = reg.get<Physics>(entt).mass * GRAVITY;
 
-    if (entityExists(reg, entt, enttR, DOWN) == entt::null)
+    auto enttBelow = entityExists(reg, entt, enttR, DOWN);
+    if (reg.valid(enttBelow)) {
+        if (reg.any_of<Border>(enttBelow)) {
+            moveY(reg, entt, dt, 2, gravity);
+        }
+    } else {
         moveY(reg, entt, dt, 2, gravity);
+    }
 }
 
 /* Arguments: entity registry, delta frame time, pos of bottom border, entity
@@ -217,7 +237,7 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
 
     // if there's nothing in the direction we chose, we move that way
     if (entityExists(reg, entt, enttR, (direction % 2 == 0) ? RIGHT : LEFT) == entt::null)
-        moveX(reg, entt, dt, direction, 1);
+        moveX(reg, entt, dt, direction, 1, true);
     
     // auto enttAbove = entityExists(reg, entt, enttR, UP);
     // while (reg.valid(enttAbove)) {
@@ -231,25 +251,31 @@ void Collision::gasCollision(entt::registry &reg, float dt, int topBorder,
     entt::entity entt) {
 
     auto enttR = reg.get<Renderable>(entt);
-    // choose a direction to move randomly even is right, odd is left
-    int direction = ((uint)entt) % 3;
-    direction = (direction % 2 == 0) ? direction : direction * -1;
-
-    reg.patch<Renderable>(entt, [dt, direction, entt](auto &renderable) {
-        renderable.xPos += dt * direction;
-        renderable.yPos -= dt * 30;
-    });
-
-    enttR = reg.get<Renderable>(entt);
+    enttR.yPos = enttR.yPos - enttR.ySize;
+    auto enttAbove = entityExists(reg, entt, enttR, UP);
     
-    if (enttR.yPos <= topBorder + 10) {
-        reg.erase<Gas>(entt);
-        reg.emplace<Liquid>(entt);
-        reg.emplace<Water>(entt);
-        reg.emplace<Physics>(entt, 10.0f);
-        reg.replace<Renderable>(entt, "particle", "solid", enttR.xPos, enttR.yPos,
-            5, 5, 0.0f, 0.2f, 0.2f, 1.0f, 1.0f);
-        registerEntity(reg, entt);
+    if (!reg.valid(enttAbove)) {
+        auto enttR = reg.get<Renderable>(entt);
+        // choose a direction to move randomly even is right, odd is left
+        int direction = ((uint)entt) % 3;
+        direction = (direction % 2 == 0) ? direction : direction * -1;
+
+        reg.patch<Renderable>(entt, [dt, direction, entt](auto &renderable) {
+            renderable.xPos += dt * direction;
+            renderable.yPos -= dt * 30;
+        });
+
+    } else {
+        srand(time(0) * (uint) entt);
+        if (rand() % 4 == 0) {
+            reg.erase<Gas>(entt);
+            reg.emplace<Liquid>(entt);
+            reg.emplace<Water>(entt);
+            reg.emplace<Physics>(entt, 10.0f);
+            reg.replace<Renderable>(entt, "particle", "solid", enttR.xPos, enttR.yPos,
+                5, 5, 0.0f, 0.2f, 0.2f, 1.0f, 1.0f);
+            registerEntity(reg, entt);
+        }
     }
 }
 
@@ -366,9 +392,14 @@ void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int dire
     for (x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
         for (y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
             // if we detect a valid entity
-            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) break;
+            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt))
+                break;
         }
         if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) {
+            if (reg.all_of<Border>(this->grid[x][y])) {
+                if (reg.get<Border>(this->grid[x][y]).position == "topBorder")
+                    break;
+            }
             reg.patch<Renderable>(entt, [y](auto &renderable) {
                 renderable.yPos = y - renderable.ySize;
             });
