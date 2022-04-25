@@ -6,7 +6,7 @@
 
 class Flame {
 public:
-    void burn(entt::registry &reg, entt::entity entt, float dt, Collision colEngine);
+    bool burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine);
 };
 
 #endif

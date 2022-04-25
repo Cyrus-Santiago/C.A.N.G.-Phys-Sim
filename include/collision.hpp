@@ -7,6 +7,12 @@
 #include "../include/spriteRenderer.hpp"
 #include "../include/factory.hpp"
 
+#define IN_PLACE    0
+#define LEFT        1
+#define UP          2
+#define RIGHT       3
+#define DOWN        4
+
 class Collision {
 public:
     // constructor
@@ -21,6 +27,11 @@ public:
     // Calculates whether a collision occured
 
     bool registerEntity(entt::registry &reg, entt::entity entity);
+
+    void entityClaim(entt::registry &reg, entt::entity entt, Renderable & enttR);
+    void entityUnclaim(entt::registry &reg, entt::entity entt, Renderable & enttR);
+    entt::entity entityExists(entt::registry &reg, entt::entity entt, Renderable & enttR,
+        int direction, bool excludeEntt = false);
     
     void collisionLoop(entt::registry &reg, float dt, int bottomBorder, int topBorder);
 
@@ -43,28 +54,20 @@ private:
     // 43, 387 y coords
     entt::entity grid[820][400];
     bool registerTriangleEntity(entt::registry &reg, entt::entity entt);
-
+    void triangleEntityClaim(entt::registry &reg, entt::entity entt, Renderable & enttR);
     void triangleGravityCollision(entt::registry &reg, float dt, int bottomBorder, entt::entity entt);
-
     void forcewaveCollision(entt::registry &reg, entt::entity entt,float dt);
-
     void gravityCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
-
     void liquidCollision(entt::registry &reg, float dt, int bottomBorder,
         entt::entity entity);
-
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
 
     void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
-
-    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude);
-
-    bool checkX(entt::registry &reg, entt::entity entt, int direction);
+    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol = false);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
-
     bool above(entt::registry &reg, entt::entity entt);
 };
 
