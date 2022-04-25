@@ -12,6 +12,7 @@ universally hated design choice. -Cyrus
 #include <vector>
 #include "../include/input.hpp"
 #include "../include/factory.hpp"
+#include "../include/collision.hpp"
 
 class Tools{
     public:
@@ -19,7 +20,7 @@ class Tools{
         static bool checkBorder(entt::registry *reg, entt::entity clickedObject);
         
         /*Methods pertaining to the Move button functionality*/
-        static void moveObject(entt::registry *reg, Click newMouseClick);
+        void moveObject(entt::registry &reg, Click newMouseClick, Collision colEngine);
         void moveLoop(entt::registry *reg, float dt);
 
         /*Stasis button functionality*/

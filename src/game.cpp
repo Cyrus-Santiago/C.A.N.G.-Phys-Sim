@@ -197,7 +197,7 @@ void Game::Update(float dt) {
                 newMouseClick=input.getLastMouseClickPos();
               } 
               //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
-              tools.moveObject(reg,newMouseClick);
+              tools.moveObject(*reg,newMouseClick,colEngine);
               break;
             case GAME_STASIS:
               tools.lockObject(reg,newMouseClick);
@@ -208,7 +208,8 @@ void Game::Update(float dt) {
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               }
-              tools.outlineObject(reg, newMouseClick, pressedButton.Type);
+              tools.resizeObject(reg,newMouseClick);
+              //tools.outlineObject(reg, newMouseClick, pressedButton.Type);
               break;
 
             case GAME_DELETE_OBJECT:
@@ -229,7 +230,7 @@ void Game::Update(float dt) {
   }
   Animation::updateTimeActive(reg,dt);
   Explosion::updateForcePositions(reg, dt);
-
+  
   colEngine.collisionLoop(* reg, dt, bottomBorder, topBorder);
 
 }

@@ -35,6 +35,9 @@ public:
     bool checkCollision(entt::entity entity, entt::registry &reg);
     // void collide(SimulationObject &obj);
 
+    void cleanBeforeMove(entt::registry *reg, entt::entity entity);
+    void updateAfterMove(entt::registry *reg, entt::entity entity);
+
 private:
     // 43, 806 x coords
     // 43, 387 y coords
