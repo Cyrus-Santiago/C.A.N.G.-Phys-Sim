@@ -63,6 +63,7 @@ struct Fire {};
 
 struct Gas {};
 
+struct Flammable {};
 struct Reflective{};
 
 struct Shape{};

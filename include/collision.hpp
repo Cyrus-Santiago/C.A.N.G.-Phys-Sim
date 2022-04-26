@@ -42,8 +42,8 @@ public:
 
 //    void triangleCollision(entt::registry *reg,float dt);
 
-    bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
-    bool checkCollision(entt::entity entity, entt::registry &reg);
+    // bool detector(entt::entity &obj1, entt::entity &obj2, entt::registry &reg);
+    // bool checkCollision(entt::entity entity, entt::registry &reg);
     // void collide(SimulationObject &obj);
     bool rayCollision(entt::registry &reg, entt::entity entt);
 

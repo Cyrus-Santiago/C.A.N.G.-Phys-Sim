@@ -62,6 +62,7 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
         (int)dimensions.x, (int)dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
     //For gravity and velocity
     reg.emplace<Physics>(entity, 30.0f);
+    reg.emplace<Flammable>(entity);
     reg.emplace<Shape>(entity);
     return entity;
 }

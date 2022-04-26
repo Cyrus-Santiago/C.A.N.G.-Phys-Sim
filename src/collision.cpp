@@ -37,7 +37,9 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
             lavaStoneCollision(reg, entity, dt, * this);
             lavaIceCollision(reg, entity, dt, * this);
         }
-
+        if(reg.any_of<Light>(entity)){
+            rayCollision(reg, entity);
+        }
         if (reg.any_of<Gas>(entity))
             gasCollision(reg, dt, topBorder, entity);
 
@@ -47,9 +49,7 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
         if(reg.valid(entity)){
             if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
         }
-        if(reg.any_of<Light>(entity)){
-            rayCollision(reg, entity);
-        }
+        
     }
 }
 
