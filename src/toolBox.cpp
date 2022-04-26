@@ -62,17 +62,17 @@ void Tools::lockObject(entt::registry *reg, Click newMouseClick){
     
 }
 
-void Tools::resizeObject(entt::registry *reg, Click newMouseClick){
-    entt::entity clickedObject = getObject(reg, newMouseClick);
-    if(!reg->valid(clickedObject)){
+void Tools::resizeObject(entt::registry &reg, Click newMouseClick, Collision *colEngine){
+    entt::entity clickedObject = getObject(&reg, newMouseClick);
+    if(!reg.valid(clickedObject)){
         return;
     }
 
     /*Extract relevant info from the clickedObject to determine outline*/
-    int objX = reg->get<Renderable>(clickedObject).xPos;
-    int objY = reg->get<Renderable>(clickedObject).yPos;
-    int sizeX = reg->get<Renderable>(clickedObject).xSize;
-    int sizeY = reg->get<Renderable>(clickedObject).ySize;
+    int objX = reg.get<Renderable>(clickedObject).xPos;
+    int objY = reg.get<Renderable>(clickedObject).yPos;
+    int sizeX = reg.get<Renderable>(clickedObject).xSize;
+    int sizeY = reg.get<Renderable>(clickedObject).ySize;
 
     /*Find closest side clicked*/
     int compareLine = (int)newMouseClick.yPos - objY; //Top Line
@@ -80,8 +80,17 @@ void Tools::resizeObject(entt::registry *reg, Click newMouseClick){
     if(compareLine > (objY+sizeY) - (int)newMouseClick.yPos) closest = 2; //Bottom Line
     else if(compareLine > (int)newMouseClick.xPos - objX) closest = 3; //Left Line
     else if(compareLine > (objX+sizeX) - (int)newMouseClick.xPos) closest = 4; //Right Line
+    int resizeRate = 2;
 
+    colEngine->entityUnclaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+    reg.patch<Renderable>(clickedObject, [&reg, clickedObject, resizeRate](auto &obj){
+        obj.xPos-=(resizeRate);      obj.xSize+=resizeRate*2;
+        obj.yPos-=(resizeRate);      obj.ySize+=resizeRate*2;
+    });
+    colEngine->entityClaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+    
     /*Resize based on closest Line*/
+    /*
     switch(closest){
         case 1: //Top Line
             reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick, objY](auto &size){
@@ -108,7 +117,7 @@ void Tools::resizeObject(entt::registry *reg, Click newMouseClick){
                 size.xSize = size.xSize + ((objX+sizeX)-(int)newMouseClick.xPos);
             });
         break;
-    }
+    }*/
 
 }
 

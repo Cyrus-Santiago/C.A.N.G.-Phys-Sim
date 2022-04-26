@@ -27,7 +27,7 @@ class Tools{
         void lockObject(entt::registry *reg, Click newMouseClick);
 
         /*Methods pertaining to the Resize button functionality*/
-        void resizeObject(entt::registry *reg, Click newMouseClick);
+        void resizeObject(entt::registry &reg, Click newMouseClick, Collision *colEngine);
         entt::entity* outlineObject(entt::registry *reg, Click newMouseClick, std::string type);
         void clearOutline(entt::registry *reg, entt::entity* outline);
 

@@ -199,7 +199,7 @@ void Game::Update(float dt) {
               if(Input::mousePressed){
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
-              } 
+              }
               //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
               tools.moveObject(*reg,newMouseClick,colEngine);
               break;
@@ -212,7 +212,7 @@ void Game::Update(float dt) {
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               }
-              tools.resizeObject(reg,newMouseClick);
+              tools.resizeObject(*reg,newMouseClick,colEngine);
               //tools.outlineObject(reg, newMouseClick, pressedButton.Type);
               break;
 
