@@ -78,7 +78,7 @@ entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     float posY = ray.Position[1] + ray.Offset[1];
     reg.emplace<Renderable>(entity, "ray", "solid", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
-    reg.emplace<Ray>(entity);
+    reg.emplace<Light>(entity);
     return entity;
 }
 
@@ -101,7 +101,7 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     float dimY = myBeam.beam.Dimensions[1];
     reg.emplace<Renderable>(entity, "beam", "solid", posX, posY, (int)dimX, (int)dimY,
         angle, color.x, color.y, color.z, color.w);
-    reg.emplace<Ray>(entity);
+    reg.emplace<Light>(entity);
     return entity;
 }
 

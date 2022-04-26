@@ -64,7 +64,7 @@ struct Reflective{};
 
 struct Shape{};
 
-struct Ray{};
+struct Light{};
 
 class Factory {
 public:

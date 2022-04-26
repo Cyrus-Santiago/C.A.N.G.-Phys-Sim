@@ -45,6 +45,9 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
         if(reg.valid(entity)){
             if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
         }
+        if(reg.any_of<Light>(entity)){
+            rayCollision(reg, entity);
+        }
     }
 }
 
@@ -543,13 +546,29 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
  * Returns:   boolean
  * Purpose:   Checks if ray collides with an object.
               Depending on material of object, ray will reflect
-              path of light will halt. */
+              or path of light will halt. */
 bool Collision::rayCollision(entt::registry &reg, entt::entity entt){
+    auto ray = reg.get<Renderable>(entt);
+    auto object = entityExists(reg, entt, ray, DOWN, true);
+    if (reg.valid(object)){
+        if(reg.any_of<Shape>(object)){
+            //std::cout << "shape detected" << std::endl;
+            return true;
+        }
+        else if(reg.any_of<Reflective>(object)){
+            //std::cout << "glass detected" << std::endl;
+            return true;
+        }
+        else if(reg.any_of<Liquid>(object)){
+            //std::cout << "water detected" << std::endl;
+            return true;
+        }
+    }
     /* check if ray entity meets solid entity */
     /* if yes, then shorten ray dimensions to stop at collision */
     /* check if ray entity meets reflective entity */
     /* if yes, then create incident ray */
     /* check if ray entity meets liquid entity */
     /* if yes, then create refractive ray */
-    return true;
+    return false;
 }
