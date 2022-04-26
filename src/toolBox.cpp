@@ -1,4 +1,5 @@
 #include "../include/toolBox.hpp"
+#include "../include/audio.hpp"
 
 entt::entity Tools::getObject(entt::registry *reg, Click newMouseClick){
     entt::entity clickedObject; //Used to update object
@@ -78,6 +79,7 @@ void Tools::clearAll(entt::registry *reg){
  *            "glassify" mode and it will swap materials. Another click
  *            while in this mode will revert to a solid material. */
 void Tools::glassify(entt::registry *reg, Click newMouseClick){
+    Audio audio;
     entt::entity clickedObject = getObject(reg, newMouseClick);
     if(!reg->valid(clickedObject)){
         return;
@@ -93,6 +95,7 @@ void Tools::glassify(entt::registry *reg, Click newMouseClick){
             material.colorA = 1.0f;
         });
         reg->erase<Reflective>(clickedObject);
+        audio.playAudio("audio/paper.wav");
         }
         else{ /* Otherwise, entity can be glassified */
             reg->patch<Renderable>(clickedObject, [reg, clickedObject, newMouseClick] (auto &material) {
@@ -103,6 +106,7 @@ void Tools::glassify(entt::registry *reg, Click newMouseClick){
             material.colorA = 1.0f;
         });
         reg->emplace<Reflective>(clickedObject);
+        audio.playAudio("audio/glass.wav");
         }
     }
     else return;    
