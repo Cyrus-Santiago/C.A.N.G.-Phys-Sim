@@ -3,13 +3,11 @@
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <glm/fwd.hpp>
-#include "../include/flame.hpp"
+#include "../include/fire.hpp"
 #include "../include/lava.hpp"
+#include "../include/ice.hpp"
 
 #define GRAVITY     9.17
-
-
-Flame flame;
 
 /* Arguments: entity registry, delta frame time, position of the bottom border.
  * Returns:   N/A
@@ -31,16 +29,20 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
             liquidCollision(reg, dt, bottomBorder, entity);
         }
 
-        if (reg.any_of<Magma>(entity)) {
+        if (reg.any_of<Ice>(entity))
+            iceWaterCollision(reg, entity, dt, * this);
+
+        if (reg.any_of<Lava>(entity)) {
             lavaWaterCollision(reg, entity, dt, * this);
             lavaStoneCollision(reg, entity, dt, * this);
+            lavaIceCollision(reg, entity, dt, * this);
         }
 
         if (reg.any_of<Gas>(entity))
             gasCollision(reg, dt, topBorder, entity);
 
         if (reg.any_of<Fire>(entity))
-            flame.burn(reg, entity, dt, * this);
+            if (burn(reg, entity, dt, * this)) continue;
         //Need the valid since the entity might be deleted
         if(reg.valid(entity)){
             if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
@@ -265,7 +267,7 @@ void Collision::gasCollision(entt::registry &reg, float dt, int topBorder,
             renderable.yPos -= dt * 30;
         });
 
-    } else {
+    } else if (reg.any_of<Border>(enttAbove)) {
         srand(time(0) * (uint) entt);
         if (rand() % 4 == 0) {
             reg.erase<Gas>(entt);
