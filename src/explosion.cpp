@@ -1,17 +1,6 @@
 #include "../include/explosion.hpp"
 #include "../include/factory.hpp"
 
-/*explosion physics notes
-    -Total momentum is conserved
-    -Total momentum is 0 (50 units forward, 50 backward)
-    -Opposite 180 degree directions, equal in magnitude
-        Principle: m1 * dv1 = -m2 * dv2
-    -If system at rest initially and equal magnitudes, then equal velocities
-    References:
-    - https://www.physicsclassroom.com/class/momentum/Lesson-2/Momentum-Conservation-in-Explosions
-    - https://www.youtube.com/watch?v=_5lWzzYZ6XM
-    - https://www.youtube.com/watch?v=FfaEbqmvKQA
-*/
 
 //up,upright,right,downright,down,downleft,left,upleft
 float Explosion::velocityArrayX[]={0,100,100,100,0,-100,-100,-100};

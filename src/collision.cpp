@@ -1,15 +1,13 @@
 #include "../include/collision.hpp"
 #include "../include/factory.hpp"
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 #include <glm/fwd.hpp>
-#include "../include/flame.hpp"
+#include "../include/fire.hpp"
 #include "../include/lava.hpp"
+#include "../include/ice.hpp"
 
 #define GRAVITY     9.17
-
-
-Flame flame;
-Lava lava;
 
 /* Arguments: entity registry, delta frame time, position of the bottom border.
  * Returns:   N/A
@@ -31,19 +29,26 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
             liquidCollision(reg, dt, bottomBorder, entity);
         }
 
-        if (reg.any_of<Magma>(entity)) {
-            lava.lavaWaterCollision(reg, entity, dt, * this);
-            lava.lavaStoneCollision(reg, entity, dt, * this);
+        if (reg.any_of<Ice>(entity))
+            iceWaterCollision(reg, entity, dt, * this);
+
+        if (reg.any_of<Lava>(entity)) {
+            lavaWaterCollision(reg, entity, dt, * this);
+            lavaStoneCollision(reg, entity, dt, * this);
+            lavaIceCollision(reg, entity, dt, * this);
         }
 
         if (reg.any_of<Gas>(entity))
             gasCollision(reg, dt, topBorder, entity);
 
         if (reg.any_of<Fire>(entity))
-            flame.burn(reg, entity, dt, * this);
+            if (burn(reg, entity, dt, * this)) continue;
         //Need the valid since the entity might be deleted
         if(reg.valid(entity)){
             if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
+        }
+        if(reg.any_of<Light>(entity)){
+            rayCollision(reg, entity);
         }
     }
 }
@@ -73,6 +78,20 @@ bool Collision::registerEntity(entt::registry &reg, entt::entity entt) {
         } else if (enttB.position == "leftBorder") {
             for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize); x++) {
                 for (int y = enttR.yPos; y < (enttR.yPos + enttR.ySize); y++) {
+                    // store the border entity ID in the grid locations
+                    this->grid[x][y] = entt;
+                }
+            }
+        } else if (enttB.position == "bottomBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize + 10); x++) {
+                for (int y = enttR.yPos; y < (enttR.yPos + 11); y++) {
+                    // store the border entity ID in the grid locations
+                    this->grid[x][y] = entt;
+                }
+            }
+        } else if (enttB.position == "topBorder") {
+            for (int x = enttR.xPos - 10; x < (enttR.xPos + enttR.xSize + 10); x++) {
+                for (int y = enttR.yPos - 10; y < (enttR.yPos); y++) {
                     // store the border entity ID in the grid locations
                     this->grid[x][y] = entt;
                 }
@@ -194,8 +213,14 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     // the gravitational constant
     float gravity = reg.get<Physics>(entt).mass * GRAVITY;
 
-    if (entityExists(reg, entt, enttR, DOWN) == entt::null)
+    auto enttBelow = entityExists(reg, entt, enttR, DOWN);
+    if (reg.valid(enttBelow)) {
+        if (reg.any_of<Border>(enttBelow)) {
+            moveY(reg, entt, dt, 2, gravity);
+        }
+    } else {
         moveY(reg, entt, dt, 2, gravity);
+    }
 }
 
 /* Arguments: entity registry, delta frame time, pos of bottom border, entity
@@ -217,7 +242,7 @@ void Collision::liquidCollision(entt::registry &reg, float dt, int bottomBorder,
 
     // if there's nothing in the direction we chose, we move that way
     if (entityExists(reg, entt, enttR, (direction % 2 == 0) ? RIGHT : LEFT) == entt::null)
-        moveX(reg, entt, dt, direction, 1);
+        moveX(reg, entt, dt, direction, 1, true);
     
     // auto enttAbove = entityExists(reg, entt, enttR, UP);
     // while (reg.valid(enttAbove)) {
@@ -231,25 +256,31 @@ void Collision::gasCollision(entt::registry &reg, float dt, int topBorder,
     entt::entity entt) {
 
     auto enttR = reg.get<Renderable>(entt);
-    // choose a direction to move randomly even is right, odd is left
-    int direction = ((uint)entt) % 3;
-    direction = (direction % 2 == 0) ? direction : direction * -1;
-
-    reg.patch<Renderable>(entt, [dt, direction, entt](auto &renderable) {
-        renderable.xPos += dt * direction;
-        renderable.yPos -= dt * 30;
-    });
-
-    enttR = reg.get<Renderable>(entt);
+    enttR.yPos = enttR.yPos - enttR.ySize;
+    auto enttAbove = entityExists(reg, entt, enttR, UP);
     
-    if (enttR.yPos <= topBorder + 10) {
-        reg.erase<Gas>(entt);
-        reg.emplace<Liquid>(entt);
-        reg.emplace<Water>(entt);
-        reg.emplace<Physics>(entt, 10.0f);
-        reg.replace<Renderable>(entt, "particle", "solid", enttR.xPos, enttR.yPos,
-            5, 5, 0.0f, 0.2f, 0.2f, 1.0f, 1.0f);
-        registerEntity(reg, entt);
+    if (!reg.valid(enttAbove)) {
+        auto enttR = reg.get<Renderable>(entt);
+        // choose a direction to move randomly even is right, odd is left
+        int direction = ((uint)entt) % 3;
+        direction = (direction % 2 == 0) ? direction : direction * -1;
+
+        reg.patch<Renderable>(entt, [dt, direction, entt](auto &renderable) {
+            renderable.xPos += dt * direction;
+            renderable.yPos -= dt * 30;
+        });
+
+    } else if (reg.any_of<Border>(enttAbove)) {
+        srand(time(0) * (uint) entt);
+        if (rand() % 4 == 0) {
+            reg.erase<Gas>(entt);
+            reg.emplace<Liquid>(entt);
+            reg.emplace<Water>(entt);
+            reg.emplace<Physics>(entt, 10.0f);
+            reg.replace<Renderable>(entt, "particle", "solid", enttR.xPos, enttR.yPos,
+                5, 5, 0.0f, 0.2f, 0.2f, 1.0f, 1.0f);
+            registerEntity(reg, entt);
+        }
     }
 }
 
@@ -366,9 +397,14 @@ void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int dire
     for (x = newEnttR.xPos; x < newEnttR.xPos + newEnttR.xSize; x++) {
         for (y = newEnttR.yPos; y < newEnttR.yPos + newEnttR.ySize; y++) {
             // if we detect a valid entity
-            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) break;
+            if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt))
+                break;
         }
         if (reg.valid(this->grid[x][y]) && (this->grid[x][y] != entt)) {
+            if (reg.all_of<Border>(this->grid[x][y])) {
+                if (reg.get<Border>(this->grid[x][y]).position == "topBorder")
+                    break;
+            }
             reg.patch<Renderable>(entt, [y](auto &renderable) {
                 renderable.yPos = y - renderable.ySize;
             });
@@ -435,8 +471,6 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
 bool Collision::registerTriangleEntity(entt::registry &reg, entt::entity entt){
     //Variables to make this more readable
     auto enttR=reg.get<Renderable>(entt);
-    int xLeft=enttR.xPos,    xRight=enttR.xPos+enttR.xSize;
-    int previousXLeft=0, previousXRight=0;
     if (entityExists(reg,entt,enttR,IN_PLACE) != entt::null)    return false;
     //If we leave this if statement, that means that there is no entity in the landing zone, meaning
     //we are free to make a new triangle entity
@@ -550,7 +584,7 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             }
             //If the explosion force wave goes up, push up
             if(rotation == 0 || rotation == 45 || rotation == 315){
-                moveY(reg, gridEntt, dt, 1, enttF.yVel);
+                moveY(reg, gridEntt, dt, 1, enttF.yVel*(-15));
             }
             //If the explosion force wave goes down, push down
             if(rotation == 180 || rotation == 135 || rotation == 225){
@@ -560,4 +594,34 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             return;
         }
     }
+}
+/* Arguments: 
+ * Returns:   boolean
+ * Purpose:   Checks if ray collides with an object.
+              Depending on material of object, ray will reflect
+              or path of light will halt. */
+bool Collision::rayCollision(entt::registry &reg, entt::entity entt){
+    auto ray = reg.get<Renderable>(entt);
+    auto object = entityExists(reg, entt, ray, DOWN, true);
+    if (reg.valid(object)){
+        if(reg.any_of<Shape>(object)){
+            //std::cout << "shape detected" << std::endl;
+            return true;
+        }
+        else if(reg.any_of<Reflective>(object)){
+            //std::cout << "glass detected" << std::endl;
+            return true;
+        }
+        else if(reg.any_of<Liquid>(object)){
+            //std::cout << "water detected" << std::endl;
+            return true;
+        }
+    }
+    /* check if ray entity meets solid entity */
+    /* if yes, then shorten ray dimensions to stop at collision */
+    /* check if ray entity meets reflective entity */
+    /* if yes, then create incident ray */
+    /* check if ray entity meets liquid entity */
+    /* if yes, then create refractive ray */
+    return false;
 }

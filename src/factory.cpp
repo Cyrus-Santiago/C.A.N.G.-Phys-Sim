@@ -14,6 +14,9 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         reg.emplace<Liquid>(entity);
         reg.emplace<Water>(entity);
         reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "ICE") {
+        reg.emplace<Ice>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "FIRE") {
         reg.emplace<Fire>(entity);
     } else if (type == "STEAM") {
@@ -22,7 +25,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         modifierY -= (uint)entity % 8 - 4;
     } else if (type == "LAVA") {
         reg.emplace<Liquid>(entity, 2.0f);
-        reg.emplace<Magma>(entity);
+        reg.emplace<Lava>(entity);
         reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "STONE") {
         reg.emplace<Stone>(entity);
@@ -59,24 +62,34 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
         (int)dimensions.x, (int)dimensions.y, 0.0f, color.x, color.y, color.z, color.w);
     //For gravity and velocity
     reg.emplace<Physics>(entity, 30.0f);
+    reg.emplace<Shape>(entity);
     return entity;
 }
 
+/* Arguments: entity registry, position vector, color vector
+ * Returns:   entity (Ray)
+ * Purpose:   Responsible for drawing a Ray to the screen given mouse
+              click data. All Rays originate from the top right corner
+              of the play area. */
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Ray ray;
-    /* Send mouse click coordinates to init function
-     * This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
     float angle = (float)(ray.Angle * (180/M_PI));   
     float posX = ray.Position[0] + ray.Offset[0];
     float posY = ray.Position[1] + ray.Offset[1];
-    reg.emplace<Renderable>(entity, "ray", "laser", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
+    reg.emplace<Renderable>(entity, "ray", "solid", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
+    reg.emplace<Light>(entity);
     return entity;
 }
 
+/* Arguments: entity registry, position vector, color vector
+ * Returns:   entity (Beam)
+ * Purpose:   Responsible for drawing a Beam to the screen given mouse
+              click data. All Beams originate from the top right corner
+              of the play area. Beams are 3 Rays in width. */
 entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Beam myBeam;
@@ -89,8 +102,9 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     float posY = myBeam.beam.Position[1] + myBeam.beam.Offset[1];
     float dimX = myBeam.beam.Dimensions[0];
     float dimY = myBeam.beam.Dimensions[1];
-    reg.emplace<Renderable>(entity, "beam", "laser", posX, posY, (int)dimX, (int)dimY,
+    reg.emplace<Renderable>(entity, "beam", "solid", posX, posY, (int)dimX, (int)dimY,
         angle, color.x, color.y, color.z, color.w);
+    reg.emplace<Light>(entity);
     return entity;
 }
 
@@ -100,6 +114,7 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     reg.emplace<Renderable>(entity, "force", "triangle", position.x, position.y, 20, 20,
         rotation, color.x, color.y, color.z, color.w);
     reg.emplace<Forcewave>(entity, velocity.x, velocity.y);
+    reg.emplace<Animated>(entity, 3.5f,0.0f);
     //The triangle points are in this particular order in the vector. The order DOES matter
     //Vertices: Left, right, top
     //Midpoints: Left, right, bottom, middle (of triangle)
@@ -138,11 +153,11 @@ void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::
 };
 
 entt::entity Factory::makeAnimation(entt::registry &reg, glm::vec2 position, 
-    glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime){
+    glm::vec4 color, glm::vec2 size, std::string texture, std::string type, float maxTime, float dR){
     auto entity = reg.create();
     reg.emplace<Renderable>(entity, type, texture, position.x,
         position.y, (int)size.x, (int)size.y, 0.0f, color.x, color.y, color.z, color.w);
-    reg.emplace<Animated>(entity,maxTime);
+    reg.emplace<Animated>(entity,maxTime,dR);
     return entity;
 }
 

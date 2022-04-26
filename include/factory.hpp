@@ -30,8 +30,6 @@ struct Physics {
 // component used for explosions
 struct Forcewave{
     float xVel, yVel;
-    float timeActive=0.0f;
-    float maxTime=3.5f;
 };
 
 // component used for explosions and for the triangle shape
@@ -47,20 +45,29 @@ struct Liquid {
     float viscosity = 1.0f;
 };
 
-struct Magma {};
+struct Lava {};
 
 struct Stone {};
 
 struct Water {};
 
+struct Ice {};
+
 struct Animated{
     float maxTime;
+    float dR;  //Rate of change for resizing
     float timeActive=0.0f;
 };
 
 struct Fire {};
 
 struct Gas {};
+
+struct Reflective{};
+
+struct Shape{};
+
+struct Light{};
 
 class Factory {
 public:
@@ -92,7 +99,7 @@ public:
     entt::entity makeAnimation(entt::registry &reg, glm::vec2 position =
         glm::vec2(1,1), glm::vec4 color = glm::vec4(1.0f),
         glm::vec2 size= glm::vec2(30.0f), std::string texture="button1", 
-        std::string type="NO_NAME", float maxTime=1.0f);
+        std::string type="NO_NAME", float maxTime=1.0f, float dR=0.0f);
 
     // used to draw an entity of any type
     void draw(entt::registry &reg, entt::entity entity,
