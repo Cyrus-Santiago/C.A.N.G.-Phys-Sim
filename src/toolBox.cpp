@@ -31,18 +31,16 @@ bool Tools::checkBorder(entt::registry *reg, entt::entity clickedObject){
     return false; //Not a border
 }
 
-void Tools::moveObject(entt::registry &reg, Click newMouseClick, Collision colEngine){
+void Tools::moveObject(entt::registry &reg, Click newMouseClick, Collision *colEngine){
     entt::entity clickedObject = getObject(&reg, newMouseClick);
     if(!reg.valid(clickedObject)){ //Check if the user clicked a valid object (valid will return false if this is the case)
         return;
     }
-    colEngine.destroyEnttAtLoc(reg, reg.get<Renderable>(clickedObject).xPos, reg.get<Renderable>(clickedObject).yPos);
-    //colEngine.cleanBeforeMove(reg,clickedObject);
+    colEngine->entityUnclaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
     reg.patch<Renderable>(clickedObject, [&reg, clickedObject,newMouseClick](auto &pos){
         pos.xPos = (int)newMouseClick.xPos-20, pos.yPos = (int)newMouseClick.yPos-20;
     });
-    colEngine.registerEntity(reg, clickedObject);
-    //colEngine.updateAfterMove(reg,clickedObject);
+    colEngine->entityClaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
 }
 
 void Tools::lockObject(entt::registry *reg, Click newMouseClick){

@@ -20,7 +20,7 @@ class Tools{
         static bool checkBorder(entt::registry *reg, entt::entity clickedObject);
         
         /*Methods pertaining to the Move button functionality*/
-        void moveObject(entt::registry &reg, Click newMouseClick, Collision colEngine);
+        void moveObject(entt::registry &reg, Click newMouseClick, Collision *colEngine);
         void moveLoop(entt::registry *reg, float dt);
 
         /*Stasis button functionality*/
