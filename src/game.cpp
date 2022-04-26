@@ -199,9 +199,12 @@ void Game::Update(float dt) {
               if(Input::mousePressed){
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
-              } 
+              }
               //reg->replace<Physics>(clickedObject, 0.0f); //Make object weightless for manipulation
-              tools.moveObject(reg,newMouseClick);
+              tools.moveObject(*reg,newMouseClick,colEngine);
+              break;
+            case GAME_STASIS:
+              tools.lockObject(reg,newMouseClick);
               break;
 
             case GAME_RESIZE_OBJECT:
@@ -209,7 +212,8 @@ void Game::Update(float dt) {
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               }
-              tools.outlineObject(reg, shapeDimensions, newMouseClick, pressedButton.Type);
+              tools.resizeObject(*reg,newMouseClick,colEngine);
+              //tools.outlineObject(reg, newMouseClick, pressedButton.Type);
               break;
 
             case GAME_DELETE_OBJECT:
@@ -274,7 +278,7 @@ void Game::Render() {
     factory.draw(* reg, entity, * spriteRenderer);
   }
   //Debug method to highlight wherever a grid spot is filled.
-  // colEngine->debugGrid(* spriteRenderer, * reg);
+  //colEngine->debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The
@@ -307,13 +311,16 @@ GameState Game::determineGameState()  {
       else if(pressedButton[0].ID == 37) {
         return GAME_MOVE_OBJECT;
       }
-      else if (pressedButton[0].ID == 38) {
-        return GAME_RESIZE_OBJECT;
+      else if(pressedButton[0].ID == 38) {
+        return GAME_STASIS;
       }
       else if (pressedButton[0].ID == 39) {
-        return GAME_DELETE_OBJECT;
+        return GAME_RESIZE_OBJECT;
       }
       else if (pressedButton[0].ID == 40) {
+        return GAME_DELETE_OBJECT;
+      }
+      else if (pressedButton[0].ID == 41) {
         return GAME_CLEAR;
       }
     }
