@@ -60,6 +60,8 @@ struct Fire {};
 
 struct Gas {};
 
+struct Flammable {};
+
 class Factory {
 public:
     // used to create a new particle entity

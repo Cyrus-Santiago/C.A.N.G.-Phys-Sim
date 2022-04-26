@@ -22,7 +22,9 @@ bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &co
     auto otherEntt = colEngine.entityExists(reg, entt, enttR, IN_PLACE, true);
 
     if (reg.valid(otherEntt)) {
-        colEngine.entityUnclaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
+        if(reg.any_of<Liquid,Gas>(otherEntt))  {
+            colEngine.entityUnclaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
+        }
 
         if (reg.any_of<Liquid>(otherEntt)) {
             reg.erase<Liquid>(otherEntt);
@@ -30,6 +32,12 @@ bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &co
             reg.emplace<Gas>(otherEntt);
             reg.replace<Renderable>(otherEntt, "particle", "solid", enttR.xPos, enttR.yPos,
                 5, 5, 0.0f, 0.9f, 0.9f, 0.9f, 0.6f);
+        }
+        if(reg.any_of<Flammable>(otherEntt)){
+            if(!reg.any_of<Animated>(otherEntt)){
+                reg.emplace<Animated>(otherEntt,4.0f,0.0f);
+                colEngine.entityClaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
+            }
         }
         reg.destroy(entt);
         return true;

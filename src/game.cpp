@@ -231,6 +231,18 @@ void Game::Update(float dt) {
   Explosion::updateForcePositions(reg, dt);
 
   colEngine->collisionLoop(* reg, dt, bottomBorder, topBorder);
+  auto flammableView= reg->view<Flammable>();
+  for(auto enttFL : flammableView){
+    if(reg->all_of<Animated>(enttFL)){
+      auto enttFLR=reg->get<Renderable>(enttFL);
+      int xRand= rand() % (int)enttFLR.xSize;
+      int yRand= rand() % 5;
+
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+xRand, (int) enttFLR.yPos-yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+    }
+  }
+
 
 }
 
@@ -273,7 +285,7 @@ void Game::Render() {
     factory.draw(* reg, entity, * spriteRenderer);
   }
   //Debug method to highlight wherever a grid spot is filled.
-  // colEngine->debugGrid(* spriteRenderer, * reg);
+   //colEngine->debugGrid(* spriteRenderer, * reg);
 }
 
 //This function tells the game class which button is being pressed. The
