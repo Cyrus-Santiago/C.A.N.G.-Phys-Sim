@@ -1,7 +1,7 @@
-#include "../include/flame.hpp"
+#include "../include/fire.hpp"
 #include "../include/factory.hpp"
 
-bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine) {
+bool burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine) {
     // get the renderable component of our entity
     auto enttR = reg.get<Renderable>(entt);
     // choose a direction to move randomly even is right, odd is left
@@ -14,7 +14,8 @@ bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &co
         renderable.colorA -= dt;
     });
     if (reg.get<Renderable>(entt).colorA <= 0) {
-        reg.destroy(entt);
+        if (reg.valid(entt))
+            reg.destroy(entt);
         return true;
     }
     
@@ -26,8 +27,9 @@ bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &co
             colEngine.entityUnclaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
         }
 
-        if (reg.any_of<Liquid>(otherEntt)) {
+        if (reg.any_of<Water>(otherEntt)) {
             reg.erase<Liquid>(otherEntt);
+            reg.erase<Water>(otherEntt);
             reg.erase<Physics>(otherEntt);
             reg.emplace<Gas>(otherEntt);
             reg.replace<Renderable>(otherEntt, "particle", "solid", enttR.xPos, enttR.yPos,
@@ -39,7 +41,8 @@ bool Flame::burn(entt::registry &reg, entt::entity entt, float dt, Collision &co
                 colEngine.entityClaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
             }
         }
-        reg.destroy(entt);
+        if (reg.valid(entt))
+            reg.destroy(entt);
         return true;
     }
     return false;

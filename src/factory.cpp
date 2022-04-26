@@ -14,6 +14,9 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         reg.emplace<Liquid>(entity);
         reg.emplace<Water>(entity);
         reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "ICE") {
+        reg.emplace<Ice>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "FIRE") {
         reg.emplace<Fire>(entity);
     } else if (type == "STEAM") {
@@ -22,7 +25,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         modifierY -= (uint)entity % 8 - 4;
     } else if (type == "LAVA") {
         reg.emplace<Liquid>(entity, 2.0f);
-        reg.emplace<Magma>(entity);
+        reg.emplace<Lava>(entity);
         reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "STONE") {
         reg.emplace<Stone>(entity);
@@ -79,7 +82,7 @@ entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     float posY = ray.Position[1] + ray.Offset[1];
     reg.emplace<Renderable>(entity, "ray", "solid", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
-    reg.emplace<Ray>(entity);
+    reg.emplace<Light>(entity);
     return entity;
 }
 
@@ -102,7 +105,7 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     float dimY = myBeam.beam.Dimensions[1];
     reg.emplace<Renderable>(entity, "beam", "solid", posX, posY, (int)dimX, (int)dimY,
         angle, color.x, color.y, color.z, color.w);
-    reg.emplace<Ray>(entity);
+    reg.emplace<Light>(entity);
     return entity;
 }
 

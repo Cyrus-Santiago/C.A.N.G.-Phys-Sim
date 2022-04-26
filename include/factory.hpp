@@ -44,11 +44,13 @@ struct Liquid {
     float viscosity = 1.0f;
 };
 
-struct Magma {};
+struct Lava {};
 
 struct Stone {};
 
 struct Water {};
+
+struct Ice {};
 
 struct Animated{
     float maxTime;
@@ -65,7 +67,7 @@ struct Reflective{};
 
 struct Shape{};
 
-struct Ray{};
+struct Light{};
 
 class Factory {
 public:
