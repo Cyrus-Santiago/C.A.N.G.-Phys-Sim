@@ -245,6 +245,9 @@ void Game::Update(float dt) {
 
       entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
               enttFLR.xPos+xRand, (int) enttFLR.yPos-yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      reg->patch<Renderable>(enttFL, [dt](auto &renderable){
+        renderable.colorR+=dt/4;
+      });
     }
   }
 
