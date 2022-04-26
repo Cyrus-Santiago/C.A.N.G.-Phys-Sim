@@ -14,6 +14,9 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         reg.emplace<Liquid>(entity);
         reg.emplace<Water>(entity);
         reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "ICE") {
+        reg.emplace<Ice>(entity);
+        reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "FIRE") {
         reg.emplace<Fire>(entity);
     } else if (type == "STEAM") {
@@ -22,7 +25,7 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
         modifierY -= (uint)entity % 8 - 4;
     } else if (type == "LAVA") {
         reg.emplace<Liquid>(entity, 2.0f);
-        reg.emplace<Magma>(entity);
+        reg.emplace<Lava>(entity);
         reg.emplace<Physics>(entity, 10.0f);
     } else if (type == "STONE") {
         reg.emplace<Stone>(entity);
