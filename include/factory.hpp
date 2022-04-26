@@ -61,6 +61,11 @@ struct Fire {};
 struct Gas {};
 
 struct Flammable {};
+struct Reflective{};
+
+struct Shape{};
+
+struct Ray{};
 
 class Factory {
 public:

@@ -60,24 +60,34 @@ entt::entity Factory::makeShape(entt::registry &reg, glm::vec2 position,
     //For gravity and velocity
     reg.emplace<Physics>(entity, 30.0f);
     reg.emplace<Flammable>(entity);
+    reg.emplace<Shape>(entity);
     return entity;
 }
 
+/* Arguments: entity registry, position vector, color vector
+ * Returns:   entity (Ray)
+ * Purpose:   Responsible for drawing a Ray to the screen given mouse
+              click data. All Rays originate from the top right corner
+              of the play area. */
 entt::entity Factory::makeRay(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Ray ray;
-    /* Send mouse click coordinates to init function
-     * This will tell the ray how to orient itself */
     ray.init(position.x, position.y);
     auto entity = reg.create();
     float angle = (float)(ray.Angle * (180/M_PI));   
     float posX = ray.Position[0] + ray.Offset[0];
     float posY = ray.Position[1] + ray.Offset[1];
-    reg.emplace<Renderable>(entity, "ray", "laser", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
+    reg.emplace<Renderable>(entity, "ray", "solid", posX, posY, (int)ray.Dimensions[0], (int)ray.Dimensions[1],
         angle, color.x, color.y, color.z, color.w);
+    reg.emplace<Ray>(entity);
     return entity;
 }
 
+/* Arguments: entity registry, position vector, color vector
+ * Returns:   entity (Beam)
+ * Purpose:   Responsible for drawing a Beam to the screen given mouse
+              click data. All Beams originate from the top right corner
+              of the play area. Beams are 3 Rays in width. */
 entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     glm::vec4 color) {
     Beam myBeam;
@@ -90,8 +100,9 @@ entt::entity Factory::makeBeam(entt::registry &reg, glm::vec2 position,
     float posY = myBeam.beam.Position[1] + myBeam.beam.Offset[1];
     float dimX = myBeam.beam.Dimensions[0];
     float dimY = myBeam.beam.Dimensions[1];
-    reg.emplace<Renderable>(entity, "beam", "laser", posX, posY, (int)dimX, (int)dimY,
+    reg.emplace<Renderable>(entity, "beam", "solid", posX, posY, (int)dimX, (int)dimY,
         angle, color.x, color.y, color.z, color.w);
+    reg.emplace<Ray>(entity);
     return entity;
 }
 
