@@ -432,7 +432,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
 
     //This only shows the spots of entities with their associated shape. It won't
     //show every single point on the play area where an "entity" might be (in the case of bugs)
-    /*
+    
     auto view = reg.view<Renderable>();
     for(auto ent : view){
         auto enttR=reg.get<Renderable>(ent);
@@ -446,7 +446,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
             }
         }
     }
-    */
+    
     // sorry about the hardcoded values, loops around outside and inside of play
     // area, so you can clearly see borders and entities
     for (int x = 33; x < 816; x++) {
@@ -529,6 +529,26 @@ void Collision::destroyEnttAtLoc(entt::registry &reg, int x, int y) {
     
     entityUnclaim(reg, entt, enttR);
 }
+
+// void Collision::cleanBeforeMove(entt::registry *reg, entt::entity entity){
+//     auto enttR = reg->get<Renderable>(entity);
+//     for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
+//         for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
+//             // we ensure we're only erasing *this* component
+//             if (this->grid[x][y] == entity)
+//                 this->grid[x][y] = entt::null;
+//         }
+//     }
+// }
+
+// void Collision::updateAfterMove(entt::registry *reg, entt::entity entity){
+//     auto enttR = reg->get<Renderable>(entity);
+//     for (int x = enttR.xPos + 2; x < (enttR.xPos + enttR.xSize) - 2; x++) {
+//         for (int y = enttR.yPos + 2; y < (enttR.yPos + enttR.ySize) - 2; y++) {
+//             this->grid[x][y] = entity;
+//         }
+//     }
+// }
 
 /*
 *Arguments: entity registry, forcewave entity, delta frame time

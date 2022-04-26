@@ -24,6 +24,7 @@ struct Physics {
     float xVel = 0.00, yVel = 0.00;
     float xAccel = 0.00, yAccel = 0.00;
     float friction = 0.5;
+    bool lock = false;
 };
 
 // component used for explosions

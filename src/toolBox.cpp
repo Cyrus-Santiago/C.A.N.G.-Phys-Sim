@@ -14,7 +14,7 @@ entt::entity Tools::getObject(entt::registry *reg, Click newMouseClick){
         }
     }
     
-    /*Check if object clicked is the border, and return null is that's the case*/
+    /*Check if object clicked is the border, and return null if that's the case*/
     if(checkBorder(reg, clickedObject)){
         return entt::null;
     }
@@ -31,25 +31,141 @@ bool Tools::checkBorder(entt::registry *reg, entt::entity clickedObject){
     return false; //Not a border
 }
 
-void Tools::moveObject(entt::registry *reg, Click newMouseClick){
+void Tools::moveObject(entt::registry &reg, Click newMouseClick, Collision *colEngine){
+    entt::entity clickedObject = getObject(&reg, newMouseClick);
+    if(!reg.valid(clickedObject)){ //Check if the user clicked a valid object (valid will return false if this is the case)
+        return;
+    }
+    colEngine->entityUnclaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+    reg.patch<Renderable>(clickedObject, [&reg, clickedObject,newMouseClick](auto &pos){
+        pos.xPos = (int)newMouseClick.xPos-20, pos.yPos = (int)newMouseClick.yPos-20;
+    });
+    colEngine->entityClaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+}
+
+void Tools::lockObject(entt::registry *reg, Click newMouseClick){
     entt::entity clickedObject = getObject(reg, newMouseClick);
     if(!reg->valid(clickedObject)){ //Check if the user clicked a valid object (valid will return false if this is the case)
         return;
     }
-    reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick](auto &pos){
-        pos.xPos = (int)newMouseClick.xPos-20, pos.yPos = (int)newMouseClick.yPos-20;
-    });
+    /*If it's already locked, unlock it*/
+    if(reg->get<Physics>(clickedObject).lock)
+        reg->patch<Physics>(clickedObject, [reg,clickedObject](auto &obj){
+            obj.mass = 30.0f;
+            obj.lock = false;
+        });
+    else //Otherwise you lock it in place
+        reg->patch<Physics>(clickedObject, [reg,clickedObject](auto &obj){
+            obj.mass = 0.0f;
+            obj.lock = true;
+        });
+    
 }
 
-entt::entity* Tools::outlineObject(entt::registry *reg, glm::vec2 shapeDimensions, Click newMouseClick, std::string type){
+void Tools::resizeObject(entt::registry &reg, Click newMouseClick, Collision *colEngine){
+    entt::entity clickedObject = getObject(&reg, newMouseClick);
+    if(!reg.valid(clickedObject)){
+        return;
+    }
+
+    /*Extract relevant info from the clickedObject to determine outline*/
+    int objX = reg.get<Renderable>(clickedObject).xPos;
+    int objY = reg.get<Renderable>(clickedObject).yPos;
+    int sizeX = reg.get<Renderable>(clickedObject).xSize;
+    int sizeY = reg.get<Renderable>(clickedObject).ySize;
+
+    /*Find closest side clicked*/
+    int compareLine = (int)newMouseClick.yPos - objY; //Top Line
+    int closest = 1;
+    if(compareLine > (objY+sizeY) - (int)newMouseClick.yPos) closest = 2; //Bottom Line
+    else if(compareLine > (int)newMouseClick.xPos - objX) closest = 3; //Left Line
+    else if(compareLine > (objX+sizeX) - (int)newMouseClick.xPos) closest = 4; //Right Line
+    int resizeRate = 2;
+
+    colEngine->entityUnclaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+    reg.patch<Renderable>(clickedObject, [&reg, clickedObject, resizeRate](auto &obj){
+        obj.xPos-=(resizeRate);      obj.xSize+=resizeRate*2;
+        obj.yPos-=(resizeRate);      obj.ySize+=resizeRate*2;
+    });
+    colEngine->entityClaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
+    
+    /*Resize based on closest Line*/
+    /*
+    switch(closest){
+        case 1: //Top Line
+            reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick, objY](auto &size){
+                size.yPos = size.ySize + ((int)newMouseClick.yPos-objY);
+                size.ySize = 2*(size.ySize + ((int)newMouseClick.yPos-objY));
+            });
+        break;
+        
+        case 2: //Bottom Line
+            reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick, objY,sizeY](auto &size){
+                size.ySize = size.ySize + ((objY+sizeY)-(int)newMouseClick.yPos);
+            });
+        break;
+        
+        case 3: //Left Line
+            reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick, objX](auto &size){
+                size.xPos = size.xPos + ((int)newMouseClick.yPos-objX);
+                size.xSize = 2*(size.xSize + ((int)newMouseClick.yPos-objX));
+            });
+        break;
+
+        case 4: //Right Line
+            reg->patch<Renderable>(clickedObject, [reg, clickedObject,newMouseClick, objX, sizeX](auto &size){
+                size.xSize = size.xSize + ((objX+sizeX)-(int)newMouseClick.xPos);
+            });
+        break;
+    }*/
+
+}
+
+entt::entity* Tools::outlineObject(entt::registry *reg, Click newMouseClick, std::string type){
     glm::vec4 outlineColor = glm::vec4(1.0f,1.0f,0.0f,1.0f); //Outline should be yellow
-    /*int xLeft = reg->get<Renderable>(obj).xPos;
-    int xRight = xLeft + reg->get<Renderable>(obj).xSize;
-    int yTop = reg->get<Renderable>(obj).yPos;
-    int yBottom = yTop + reg->get<Renderable>(obj).ySize;*/
-    factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos-20,
-                (int)newMouseClick.yPos-20), outlineColor,shapeDimensions, type);
+    entt::entity clickedObject = getObject(reg, newMouseClick); //Get the clicked object
+    if(!reg->valid(clickedObject)){
+        for(int i=0;i<4;i++){
+            outline[i] = entt::null;
+        }
+        return outline;
+    }
+
+    /*Extract relevant info from the clickedObject to draw outline*/
+    int objX = reg->get<Renderable>(clickedObject).xPos;
+    int objY = reg->get<Renderable>(clickedObject).yPos;
+    int sizeX = reg->get<Renderable>(clickedObject).xSize;
+    int sizeY = reg->get<Renderable>(clickedObject).ySize;
+    
+    /*Build Outline*/
+    auto topLine = reg->create();
+    reg->emplace<Renderable>(topLine,"outline","button2",(float) objX+3,(float) objY,
+    sizeX-6, 3, 1.0f, 1.0f, 0.0f, 1.0f);
+    outline[0] = topLine;
+
+    auto bottomLine = reg->create();
+    reg->emplace<Renderable>(bottomLine,"outline","button2",(float) objX+3,(float) (objY+sizeY)-3,
+    sizeX-6, 3, 1.0f, 1.0f, 0.0f, 1.0f);
+    outline[1] = bottomLine;
+
+    auto leftLine = reg->create();
+    reg->emplace<Renderable>(leftLine,"outline","button2",(float) objX,(float) objY,
+    3, sizeY, 1.0f, 1.0f, 0.0f, 1.0f);
+    outline[2] = leftLine;
+
+    auto rightLine = reg->create();
+    reg->emplace<Renderable>(rightLine,"outline","button2",(float) (objX+sizeX)-3,(float) objY,
+    3, sizeY, 1.0f, 1.0f, 0.0f, 1.0f);
+    outline[3] = rightLine;
+
     return outline;
+}
+
+void Tools::clearOutline(entt::registry *reg, entt::entity* outline){
+    int arraySize = sizeof(outline) / sizeof(entt::entity);
+    for(int i=0; i<arraySize; i++){
+        reg->destroy(outline[i]);
+    }
 }
 
 void Tools::deleteObject(entt::registry *reg, Click newMouseClick){
