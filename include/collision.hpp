@@ -33,7 +33,7 @@ public:
     entt::entity entityExists(entt::registry &reg, entt::entity entt, Renderable & enttR,
         int direction, bool excludeEntt = false);
     
-    void collisionLoop(entt::registry &reg, float dt, int bottomBorder, int topBorder);
+    void collisionLoop(entt::registry &reg, float dt, int borderThreshold[]);
 
     void debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg);
 
@@ -64,9 +64,10 @@ private:
         entt::entity entity);
     void gasCollision(entt::registry &reg, float dt, int topBorder,
         entt::entity entity);
-
+    bool borderCollision(entt::registry &reg, entt:: entity entt, float dt,int borderThreshold[]);
     void moveX(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool skip=false);
-    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol = false);
+    void moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, 
+        bool ignoreCol = false, bool skip=false);
 
     bool grounded(entt::registry &reg, entt::entity entt, int bottomBorder);
     bool above(entt::registry &reg, entt::entity entt);
