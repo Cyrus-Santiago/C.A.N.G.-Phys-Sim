@@ -61,7 +61,8 @@ class Game {
 
     private:
         static GameState determineGameState();
-        int bottomBorder, topBorder;
+        //0=bottom, 1=top, 2=left, 3=right border
+        int borderThreshold[4];
 };
 
 #endif

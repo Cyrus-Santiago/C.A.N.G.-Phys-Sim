@@ -86,12 +86,15 @@ void Game::Init(GLFWwindow *window) {
   auto view = reg->view<Border>();
   for (auto border : view) {
     colEngine->registerEntity(* reg, border);
-    if (reg->get<Border>(border).position == "bottomBorder") {
-      bottomBorder = reg->get<Renderable>(border).yPos;
-    }
-    if (reg->get<Border>(border).position == "topBorder") {
-      topBorder = reg->get<Renderable>(border).yPos;
-    }
+    auto enttBR =reg->get<Renderable>(border);
+    if (reg->get<Border>(border).position == "bottomBorder")
+      borderThreshold[0] = enttBR.yPos;
+    if (reg->get<Border>(border).position == "topBorder")
+      borderThreshold[1] = enttBR.yPos;
+    if (reg->get<Border>(border).position == "leftBorder")
+      borderThreshold[2] = enttBR.xPos-enttBR.xSize;
+    if (reg->get<Border>(border).position == "rightBorder")
+      borderThreshold[3] = enttBR.xPos+enttBR.xSize;
   }
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -235,7 +238,7 @@ void Game::Update(float dt) {
   animationEngine->animationUpdate(*reg, dt);
   Explosion::updateForcePositions(reg, dt);
 
-  colEngine->collisionLoop(* reg, dt, bottomBorder, topBorder);
+  colEngine->collisionLoop(* reg, dt, borderThreshold);
   auto flammableView= reg->view<Flammable>();
   for(auto enttFL : flammableView){
     if(reg->all_of<Animated>(enttFL)){

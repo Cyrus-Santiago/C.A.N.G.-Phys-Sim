@@ -35,7 +35,7 @@ bool burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine
         }
         if(reg.any_of<Flammable>(otherEntt)){
             if(!reg.any_of<Animated>(otherEntt)){
-                reg.emplace<Animated>(otherEntt,4.0f,0.0f);
+                //reg.emplace<Animated>(otherEntt,4.0f,0.0f);
             }
             colEngine.entityClaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
         }
