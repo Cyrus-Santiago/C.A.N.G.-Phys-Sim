@@ -295,9 +295,11 @@ void Game::Render() {
   //Debug method to highlight wherever a grid spot is filled.
    //colEngine->debugGrid(* spriteRenderer, * reg);
 }
-
-//This function tells the game class which button is being pressed. The
-//game state is changed based on that
+/*
+*Arguments: N/A
+*Returns:   GameState Enum
+*Purpose:   Tells the game class which button is being pressed. 
+*           The game state is changed based on that */
 GameState Game::determineGameState()  {
     std::vector<Button> pressedButton=Input::getButtonPressed();
     //If a button WAS pressed
