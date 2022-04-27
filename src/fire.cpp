@@ -39,7 +39,7 @@ bool burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine
             }
             colEngine.entityClaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
         }
-        if (reg.valid(entt))
+        if (reg.valid(entt) && (!reg.all_of<Flammable>(entt)))
             reg.destroy(entt);
         return true;
     }

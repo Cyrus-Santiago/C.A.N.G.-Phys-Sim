@@ -245,9 +245,16 @@ void Game::Update(float dt) {
       auto enttFLR=reg->get<Renderable>(enttFL);
       int xRand= rand() % (int)enttFLR.xSize;
       int yRand= rand() % 5;
-
       entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
               enttFLR.xPos+xRand, (int) enttFLR.yPos-yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+xRand, (int) enttFLR.yPos+enttFLR.ySize+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      yRand= rand() % (int)enttFLR.ySize;
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos-5, (int) enttFLR.yPos+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      yRand= rand() % (int)enttFLR.ySize;
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+enttFLR.xSize+5, (int) enttFLR.yPos+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
       reg->patch<Renderable>(enttFL, [dt](auto &renderable){
         renderable.colorR+=dt/4;
       });
