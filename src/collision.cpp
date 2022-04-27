@@ -45,6 +45,7 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int borderThreshold
 
         if (reg.any_of<Fire>(entity))
             if (burn(reg, entity, dt, * this)) continue;
+
         if (reg.any_of<Forcewave>(entity))  {
             forcewaveCollision(reg,entity,dt);
             continue;
