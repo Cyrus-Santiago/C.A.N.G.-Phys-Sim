@@ -212,8 +212,8 @@ void Game::Update(float dt) {
                 Input::mousePressHeldDown(Window);
                 newMouseClick=input.getLastMouseClickPos();
               }
-              tools.resizeObject(*reg,newMouseClick,colEngine);
-              //tools.outlineObject(reg, newMouseClick, pressedButton.Type);
+              tools.resizeObject(*reg,newMouseClick,colEngine, Input::leftRightClick);
+              //tools.outlineObject(*reg, newMouseClick, pressedButton.Type);
               break;
 
             case GAME_DELETE_OBJECT:

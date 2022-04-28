@@ -21,15 +21,15 @@ class Tools{
         
         /*Methods pertaining to the Move button functionality*/
         void moveObject(entt::registry &reg, Click newMouseClick, Collision *colEngine);
-        void moveLoop(entt::registry *reg, float dt);
+        //void moveLoop(entt::registry *reg, float dt);
 
         /*Stasis button functionality*/
         void lockObject(entt::registry *reg, Click newMouseClick);
 
         /*Methods pertaining to the Resize button functionality*/
-        void resizeObject(entt::registry &reg, Click newMouseClick, Collision *colEngine);
-        entt::entity* outlineObject(entt::registry *reg, Click newMouseClick, std::string type);
-        void clearOutline(entt::registry *reg, entt::entity* outline);
+        void resizeObject(entt::registry &reg, Click newMouseClick, Collision *colEngine, bool growShrink);
+        //entt::entity* outlineObject(entt::registry &reg, Click newMouseClick, std::string type);
+        //void clearOutline(entt::registry &reg, entt::entity* outline);
 
         /*Methods pertaining to the Delete button functionality*/
         void deleteObject(entt::registry *reg, Click newMouseClick);
@@ -42,7 +42,7 @@ class Tools{
     
     private:
         Factory factory;
-        entt::entity outline[4]; //Store outline entities for disposal after resizing is complete
+        //entt::entity outline[4]; //Store outline entities for disposal after resizing is complete
 };
 
 #endif
