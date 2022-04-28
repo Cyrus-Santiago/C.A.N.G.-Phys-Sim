@@ -9,9 +9,10 @@
 void Animation::animationUpdate(entt::registry &reg, float dt){
     auto view=reg.view<Animated>();
     for( auto entt : view){
-        //Don't update the size of a force vector lol
+        //Don't update the size or rotation of a force vector lol
         if(!reg.all_of<Forcewave>(entt)){
             resizeAnimation(reg,entt,dt);
+            updateAnimationRotation(reg,entt,dt);
         }
         updateTimeActive(reg,entt,dt);
     }
@@ -34,12 +35,24 @@ void Animation::updateTimeActive(entt::registry &reg, entt::entity entt, float d
 *Returns:   N/A
 *Purpose:   Changes the size of an animation by the same amount in the
 *           x and y directions. The center of the animation remains the same.
-*           Animations with a dR value of 0 are not resized.*/
+*           Animations with a dRSize value of 0 are not resized.*/
 void Animation::resizeAnimation(entt::registry &reg, entt:: entity entt,float dt)  {
     auto enttA = reg.get<Animated>(entt);
-    float rateOfChange=enttA.dR * dt;
+    float rateOfChange=enttA.dRSize * dt;
     reg.patch<Renderable>(entt, [dt,rateOfChange](auto &renderable){
         renderable.xPos-=(rateOfChange );      renderable.xSize+=rateOfChange *2;
         renderable.yPos-=(rateOfChange );      renderable.ySize+=rateOfChange*2;
+    });
+}
+/*
+*Arguments: entity registry, animated entity, delta time frame
+*Returns:   N/A
+*Purpose:   Updates the rotation of an animation by the rate of change.
+*           Animations with a dRRotation value of 0 are not rotated.*/
+void Animation::updateAnimationRotation(entt::registry &reg, entt:: entity entt,float dt)  {
+    auto enttA = reg.get<Animated>(entt);
+    float rateOfChange=enttA.dRRotation * dt;
+    reg.patch<Renderable>(entt, [dt,rateOfChange](auto &renderable){
+        renderable.rotate+=rateOfChange;
     });
 }

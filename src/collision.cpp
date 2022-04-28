@@ -576,6 +576,9 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
             }
             //If the grid entity has physics, push it in some direction
             int rotation=reg.get<Renderable>(entt).rotate;
+            reg.patch<Renderable>(gridEntt, [rotation](auto &renderable){
+                renderable.rotate=rotation;
+            });
             //If the explosion force wave goes to the right, push right
             if(rotation == 45 || rotation == 90 || rotation == 135){
                 moveX(reg, gridEntt, dt, 1, enttF.xVel * (-1));
