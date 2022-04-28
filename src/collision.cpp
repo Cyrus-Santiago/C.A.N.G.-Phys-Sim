@@ -6,6 +6,7 @@
 #include "../include/fire.hpp"
 #include "../include/lava.hpp"
 #include "../include/ice.hpp"
+#include "../include/bird.hpp"
 
 #define GRAVITY     9.17
 
@@ -22,7 +23,7 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int borderThreshold
 
     // loops through each entity with the physics component
     for (auto entity : renderable) {
-        if (reg.any_of<Physics>(entity)) {
+        if (reg.any_of<Physics>(entity) && !reg.any_of<Bird>(entity)) {
             if(borderCollision(reg,entity, dt, borderThreshold))    continue;
             // enacts gravity and bottom border collision
             gravityCollision(reg, dt, borderThreshold[0], entity);
@@ -45,6 +46,9 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int borderThreshold
 
         if (reg.any_of<Fire>(entity))
             if (burn(reg, entity, dt, * this)) continue;
+
+        if (reg.any_of<Bird>(entity))
+            birdLoop(reg, entity, dt);
 
         if (reg.any_of<Forcewave>(entity))  {
             forcewaveCollision(reg,entity,dt);
@@ -215,11 +219,7 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     float gravity = reg.get<Physics>(entt).mass * GRAVITY;
 
     auto enttBelow = entityExists(reg, entt, enttR, DOWN);
-    if (reg.valid(enttBelow)) {
-        if (reg.any_of<Border>(enttBelow)) {
-            moveY(reg, entt, dt, 2, gravity);
-        }
-    } else {
+    if (!reg.valid(enttBelow)) {
         moveY(reg, entt, dt, 2, gravity);
     }
 }

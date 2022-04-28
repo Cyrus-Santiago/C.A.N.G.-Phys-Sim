@@ -260,8 +260,6 @@ void Game::Update(float dt) {
       });
     }
   }
-
-
 }
 
 void Game::Render() {

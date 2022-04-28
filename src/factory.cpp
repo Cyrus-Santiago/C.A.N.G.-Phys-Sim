@@ -30,6 +30,9 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     } else if (type == "STONE") {
         reg.emplace<Stone>(entity);
         reg.emplace<Physics>(entity, 10.0f);
+    } else if (type == "BIRD") {
+        reg.emplace<Bird>(entity);
+        reg.emplace<Physics>(entity);
     } else {
         reg.emplace<Physics>(entity, 10.0f);
     }
