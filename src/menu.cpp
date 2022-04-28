@@ -79,7 +79,7 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     /* Written by Griffen */
     Element toolbarButtonColor[TOOLBAR_NUM];
     /* If you need to add another button, add new toolbarTypes and increase TOOLBAR_NUM in menu.hpp*/
-    std::string toolbarTypes[] = { "BOOM!", "GLASSIFY!", "MOVE", "STASIS", "RESIZE", "DELETE", "CLEAR ALL"};
+    std::string toolbarTypes[] = { "BOOM!", "GLASSIFY!", "MOVE", "STASIS", "RESIZE", "DELETE", "CLEAR ALL", "CHAOS"};
     for (int i=0; i<TOOLBAR_NUM; i++)   {
         toolbarButtonColor[i].color = glm::vec4(1.0f,0.2f,0.1f,1.0f);
         Types.insert(std::pair<std::string, Element>(toolbarTypes[i],
@@ -139,8 +139,15 @@ void Menu::init(unsigned int menuWidth, unsigned int menuHeight,
     }
     /* Initializing the Toolbar Buttons */
     for(int x = 0; x < TOOLBAR_NUM; ++x)    {
-        glm::vec2 boxPos(edgeGap + (x * widthGapBetweenBoxes),
+        glm::vec2 boxPos;
+        //First 7 buttons in one spot. Rest in another
+        if(x<7){
+            boxPos=glm::vec2(edgeGap + (x * widthGapBetweenBoxes),
             shrunkScrHeight-scrHeightGap);
+        }
+        else{
+            boxPos=glm::vec2(scrWidth,(shrunkScrHeight - ((x-5) * scrHeightGap)));
+        }
         Button toolbarObj(boxPos,buttonSize, "button2",
             glm::vec4(1.0f,1.0f,1.0f,1.0f), toolbarTypes[x], false, idCounter);
         Buttons.push_back(toolbarObj);

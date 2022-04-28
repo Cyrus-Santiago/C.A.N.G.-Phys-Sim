@@ -226,6 +226,10 @@ void Game::Update(float dt) {
             case GAME_CLEAR:
               tools.clearAll(reg);
               break;
+
+            case GAME_CHAOS:
+              Game::determineChaos();
+              break;
           }
         }
         break;
@@ -348,6 +352,163 @@ GameState Game::determineGameState()  {
       else if (pressedButton[0].ID == 41) {
         return GAME_CLEAR;
       }
+      else if (pressedButton[0].ID == 42) {
+        return GAME_CHAOS;
+      }
     }
     return GAME_ACTIVE;
+}
+void Game::determineChaos(){
+  srand(rand()+ int(newMouseClick.xPos * newMouseClick.yPos));
+  int outcome=rand() % 14;
+  //std::cout<<outcome<<std::endl;
+  auto view =reg->view<Renderable>();
+  switch(outcome){
+    //Makes Flaming birds (phoenix?)
+    case 1:
+      for(int i=0;i<15;i++){
+        entity=entity = factory.makeParticle(* reg, "BIRD",glm::vec2((int) 
+          newMouseClick.xPos+i,(int) newMouseClick.yPos+i), glm::vec4(1.0f));
+        reg->emplace<Flammable>(entity);
+        reg->emplace<Animated>(entity,10000.0f,0.01f);
+      }
+      break;
+    //Close the game
+    case 2:
+      std::cout<<"Oops! You got unlucky and the game intentionally closed."<<std::endl;
+      glfwSetWindowShouldClose(Window,true);
+      break;
+    //Turn all current light,shapes, and physical entities to the color green
+    case 3:
+      for(auto entt : view){
+        if(reg->any_of<Physics,Shape,Light>(entt)){
+          reg->patch<Renderable>(entt, [](auto &renderable){
+            renderable.colorR=0.0f;
+            renderable.colorG=1.0f;
+            renderable.colorB=0.0f;
+          });
+        }
+      }
+      break;
+    //Delete all entities on screen like the clear all tool
+    case 4:
+      tools.deleteObject(reg, newMouseClick);
+      break;
+    //Make a single, weird explosion force vector
+    case 5:
+      factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos-10,
+        (int)newMouseClick.yPos-10), 123, glm::vec4(1.0f,0.0f,0.0f,1.0f), 
+        glm::vec2(Explosion::velocityArrayX[0], Explosion::velocityArrayY[0]));
+      break;
+    //Glassify the first shape found, if any
+    case 6:
+      for(auto entt : view){
+        if(reg->any_of<Shape>(entt)){
+          tools.glassify(reg, newMouseClick);
+          break;
+        }
+      }
+      break;
+    //Turn off the chaos button and turn on a random button
+    case 7:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int buttonNum= rand() % 42;
+      Buttons[42].Pressed=false;
+      Buttons[buttonNum].Pressed=true;
+      break;
+    }
+    //Make one explosion, water, and beam entity
+    case 8:
+      sfxAudio.playAudio("audio/zap.wav");
+      factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
+      factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos-10,
+        (int)newMouseClick.yPos-10), 275, glm::vec4(1.0f,0.0f,0.0f,1.0f), 
+        glm::vec2(Explosion::velocityArrayX[1], Explosion::velocityArrayY[1]));
+      entity = factory.makeParticle(* reg, "WATER", glm::vec2((int) newMouseClick.xPos, 
+        (int) newMouseClick.yPos), glm::vec4(0.0f,0.0f,1.0f,1.0f));
+      if (reg->all_of<Physics>(entity)) {
+        if (!colEngine->registerEntity(* reg, entity))reg->destroy(entity);
+      }
+      break;
+    //Make an "animation" with resizing and a random texture and noise
+    case 9:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int randomTexture= rand() % 4;
+      int randomNoise= rand() % 5;
+      std::string textureName;
+      switch(randomTexture){
+        case 0:
+          textureName="button2";
+          break;
+        case 1:
+          textureName="glass";
+          break;
+        case 2:
+          textureName="explosion";
+          break;
+        default:
+          textureName="triangle";
+          break;
+      }
+      switch(randomNoise){
+        case 0:
+          sfxAudio.playAudio("audio/zap.wav");
+          break;
+        case 1:
+          sfxAudio.playAudio("audio/blast.wav");
+          break;
+        case 2:
+          sfxAudio.playAudio("audio/electric.wav");
+          break;
+        case 3:
+          sfxAudio.playAudio("audio/blop.wav");
+          break;
+      }
+      factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-10, newMouseClick.yPos-10),
+        glm::vec4(1.0f), glm::vec2(20.0f),textureName,"random",1.0f,106.66f);
+      break;
+    }
+    //Make a black box that covers the screen and shrinks down over time
+    case 10:
+      factory.makeAnimation(*reg, glm::vec2(0,0), glm::vec4(1.0f), glm::vec2(1000.0f,860.0f),"button2",
+        "random",0.5f,0.0f);
+      break;
+    //Set light rays and beams on fire
+    case 11:
+      factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
+      for(auto entt : view){
+        if(reg->all_of<Light>(entt)){
+          reg->emplace<Animated>(entt,4.0f,0.0f);
+          reg->emplace<Flammable>(entt);
+        }
+      }
+      break;
+    //Make a massive box that is on fire for a long, long time
+    case 12:{
+      entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(1.0f), glm::vec2(80.0f), "BIG BOX");
+      if (!colEngine->registerEntity(* reg, entity)){  
+        reg->destroy(entity);
+        break;}
+      else{
+        reg->emplace<Flammable>(entity);
+        reg->emplace<Animated>(entity,100000.0f,0.0f);
+      }
+      break;
+    }
+    //Makes a shape with the gas component
+    case 13:{
+      entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(1.0f), glm::vec2(40.0f), "GAS BOX");
+      if (!colEngine->registerEntity(* reg, entity)){  reg->destroy(entity);}
+      else{
+        reg->emplace<Gas>(entity);
+      }
+    }
+    //Nothing happens
+    default:
+      break;
+  }
 }

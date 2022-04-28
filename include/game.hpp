@@ -35,7 +35,8 @@ enum GameState {
     GAME_STASIS,
     GAME_RESIZE_OBJECT,
     GAME_DELETE_OBJECT,
-    GAME_CLEAR
+    GAME_CLEAR,
+    GAME_CHAOS
 };
 
 // class to hold a lot of the game logic so we can decouple it from
@@ -61,6 +62,7 @@ class Game {
 
     private:
         static GameState determineGameState();
+        static void determineChaos();
         //0=bottom, 1=top, 2=left, 3=right border
         int borderThreshold[4];
 };
