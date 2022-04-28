@@ -18,7 +18,7 @@ std::vector<Button> Input::Buttons;
 int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
   //If the click was in the menu area
   if(mode==0){
-    if(yPos > screenHeight * 0.5){
+    if(yPos > screenHeight * 0.4){
       for (int i = 0; i < Buttons.size(); ++i) {
         int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
         int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
