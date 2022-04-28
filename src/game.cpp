@@ -177,7 +177,7 @@ void Game::Update(float dt) {
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
               factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-10, newMouseClick.yPos-10),
-              glm::vec4(1.0f), glm::vec2(20.0f),"explosion","explosion",0.75f,106.66f);
+              glm::vec4(1.0f), glm::vec2(20.0f),"explosion","explosion",0.75f,106.66f,100.0f);
               for(int i=0; i<8; i++)  {
                 for(int j=0; j<10; j++){
                   entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
@@ -368,7 +368,7 @@ GameState Game::determineGameState()  {
 *           for comedic relief.*/
 void Game::determineChaos(){
   srand(rand()+ int(newMouseClick.xPos * newMouseClick.yPos));
-  int outcome=rand() % 18;
+  int outcome=rand() % 19;
   //std::cout<<outcome<<std::endl;
   auto view =reg->view<Renderable>();
   switch(outcome){
@@ -537,6 +537,15 @@ void Game::determineChaos(){
         usleep(100000);
         sfxAudio.playAudio("audio/playMusic2.wav");
       }
+      break;
+    //Explosion animation on the screen for a long, long time that rotates at a random pace
+    case 18:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int rotation= rand() % 1000;
+      factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-100, newMouseClick.yPos-100),
+        glm::vec4(1.0f), glm::vec2(200.0f),"explosion","explosion",100000.0f,0.01f,rotation);
+      break;
+    }
     //Nothing happens
     default:
       break;
