@@ -86,12 +86,15 @@ void Game::Init(GLFWwindow *window) {
   auto view = reg->view<Border>();
   for (auto border : view) {
     colEngine->registerEntity(* reg, border);
-    if (reg->get<Border>(border).position == "bottomBorder") {
-      bottomBorder = reg->get<Renderable>(border).yPos;
-    }
-    if (reg->get<Border>(border).position == "topBorder") {
-      topBorder = reg->get<Renderable>(border).yPos;
-    }
+    auto enttBR =reg->get<Renderable>(border);
+    if (reg->get<Border>(border).position == "bottomBorder")
+      borderThreshold[0] = enttBR.yPos;
+    if (reg->get<Border>(border).position == "topBorder")
+      borderThreshold[1] = enttBR.yPos;
+    if (reg->get<Border>(border).position == "leftBorder")
+      borderThreshold[2] = enttBR.xPos-enttBR.xSize;
+    if (reg->get<Border>(border).position == "rightBorder")
+      borderThreshold[3] = enttBR.xPos+enttBR.xSize;
   }
   // give the button data to input class
   Input::getButtonData(Buttons);
@@ -235,8 +238,28 @@ void Game::Update(float dt) {
   animationEngine->animationUpdate(*reg, dt);
   Explosion::updateForcePositions(reg, dt);
 
-  colEngine->collisionLoop(* reg, dt, bottomBorder, topBorder);
-
+  colEngine->collisionLoop(* reg, dt, borderThreshold);
+  auto flammableView= reg->view<Flammable>();
+  for(auto enttFL : flammableView){
+    if(reg->all_of<Animated>(enttFL)){
+      auto enttFLR=reg->get<Renderable>(enttFL);
+      int xRand= rand() % (int)enttFLR.xSize;
+      int yRand= rand() % 5;
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+xRand, (int) enttFLR.yPos-yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+xRand, (int) enttFLR.yPos+enttFLR.ySize+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      yRand= rand() % (int)enttFLR.ySize;
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos-5, (int) enttFLR.yPos+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      yRand= rand() % (int)enttFLR.ySize;
+      entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
+              enttFLR.xPos+enttFLR.xSize+5, (int) enttFLR.yPos+yRand), glm::vec4(1.0f,0.2f,0.2f,1.0f));
+      reg->patch<Renderable>(enttFL, [dt](auto &renderable){
+        renderable.colorR+=dt/4;
+      });
+    }
+  }
 }
 
 void Game::Render() {
@@ -278,11 +301,13 @@ void Game::Render() {
     factory.draw(* reg, entity, * spriteRenderer);
   }
   //Debug method to highlight wherever a grid spot is filled.
-  //colEngine->debugGrid(* spriteRenderer, * reg);
+   //colEngine->debugGrid(* spriteRenderer, * reg);
 }
-
-//This function tells the game class which button is being pressed. The
-//game state is changed based on that
+/*
+*Arguments: N/A
+*Returns:   GameState Enum
+*Purpose:   Tells the game class which button is being pressed. 
+*           The game state is changed based on that */
 GameState Game::determineGameState()  {
     std::vector<Button> pressedButton=Input::getButtonPressed();
     //If a button WAS pressed

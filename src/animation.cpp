@@ -1,6 +1,11 @@
 #include "../include/animation.hpp"
 #include "../include/factory.hpp"
 
+/*
+*Arguments: entity registry, delta time frame
+*Returns:   N/A
+*Purpose:   Updates appropriate values in a loop through each animated entity
+*/
 void Animation::animationUpdate(entt::registry &reg, float dt){
     auto view=reg.view<Animated>();
     for( auto entt : view){
@@ -24,9 +29,13 @@ void Animation::updateTimeActive(entt::registry &reg, entt::entity entt, float d
             animation.timeActive+=dt;
     });
 }
-
+/*
+*Arguments: entity registry, animated entity, delta time frame
+*Returns:   N/A
+*Purpose:   Changes the size of an animation by the same amount in the
+*           x and y directions. The center of the animation remains the same.
+*           Animations with a dR value of 0 are not resized.*/
 void Animation::resizeAnimation(entt::registry &reg, entt:: entity entt,float dt)  {
-    auto enttR = reg.get<Renderable>(entt);
     auto enttA = reg.get<Animated>(entt);
     float rateOfChange=enttA.dR * dt;
     reg.patch<Renderable>(entt, [dt,rateOfChange](auto &renderable){

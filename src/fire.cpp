@@ -33,7 +33,13 @@ bool burn(entt::registry &reg, entt::entity entt, float dt, Collision &colEngine
             reg.replace<Renderable>(otherEntt, "particle", "solid", enttR.xPos, enttR.yPos,
                 5, 5, 0.0f, 0.9f, 0.9f, 0.9f, 0.6f);
         }
-        if (reg.valid(entt))
+        if(reg.any_of<Flammable>(otherEntt)){
+            if(!reg.any_of<Animated>(otherEntt)){
+                reg.emplace<Animated>(otherEntt,4.0f,0.0f);
+            }
+            colEngine.entityClaim(reg, otherEntt, reg.get<Renderable>(otherEntt));
+        }
+        if (reg.valid(entt) && (!reg.all_of<Flammable>(entt)))
             reg.destroy(entt);
         return true;
     }

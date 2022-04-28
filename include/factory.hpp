@@ -53,6 +53,8 @@ struct Water {};
 
 struct Ice {};
 
+struct Bird {};
+
 struct Animated{
     float maxTime;
     float dR;  //Rate of change for resizing
@@ -63,6 +65,7 @@ struct Fire {};
 
 struct Gas {};
 
+struct Flammable {};
 struct Reflective{};
 
 struct Shape{};

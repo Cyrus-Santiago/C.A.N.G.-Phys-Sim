@@ -6,6 +6,7 @@
 #include "../include/fire.hpp"
 #include "../include/lava.hpp"
 #include "../include/ice.hpp"
+#include "../include/bird.hpp"
 
 #define GRAVITY     9.17
 
@@ -14,7 +15,7 @@
  * Purpose:   Loops through every entity and calls different collisons functions.
  *            It's more efficient than having individual loops for every type of
  *            collision. */
-void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, int topBorder) {
+void Collision::collisionLoop(entt::registry &reg, float dt, int borderThreshold[]) {
 
     // auto renderable = reg.group<Renderable>(entt::get<Renderable>);
 
@@ -22,13 +23,13 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
 
     // loops through each entity with the physics component
     for (auto entity : renderable) {
-        if (reg.any_of<Physics>(entity)) {
+        if (reg.any_of<Physics>(entity) && !reg.any_of<Bird>(entity)) {
+            if(borderCollision(reg,entity, dt, borderThreshold))    continue;
             // enacts gravity and bottom border collision
-            gravityCollision(reg, dt, bottomBorder, entity);
+            gravityCollision(reg, dt, borderThreshold[0], entity);
             // simulates liquid movement and collision
-            liquidCollision(reg, dt, bottomBorder, entity);
+            liquidCollision(reg, dt, borderThreshold[0], entity);
         }
-
         if (reg.any_of<Ice>(entity))
             iceWaterCollision(reg, entity, dt, * this);
 
@@ -37,19 +38,23 @@ void Collision::collisionLoop(entt::registry &reg, float dt, int bottomBorder, i
             lavaStoneCollision(reg, entity, dt, * this);
             lavaIceCollision(reg, entity, dt, * this);
         }
-
-        if (reg.any_of<Gas>(entity))
-            gasCollision(reg, dt, topBorder, entity);
-
-        if (reg.any_of<Fire>(entity))
-            if (burn(reg, entity, dt, * this)) continue;
-        //Need the valid since the entity might be deleted
-        if(reg.valid(entity)){
-            if (reg.any_of<Forcewave>(entity))  forcewaveCollision(reg,entity,dt);
-        }
         if(reg.any_of<Light>(entity)){
             rayCollision(reg, entity);
         }
+        if (reg.any_of<Gas>(entity))
+            gasCollision(reg, dt, borderThreshold[1], entity);
+
+        if (reg.any_of<Fire>(entity))
+            if (burn(reg, entity, dt, * this)) continue;
+
+        if (reg.any_of<Bird>(entity))
+            birdLoop(reg, entity, dt);
+
+        if (reg.any_of<Forcewave>(entity))  {
+            forcewaveCollision(reg,entity,dt);
+            continue;
+        }
+        
     }
 }
 
@@ -214,11 +219,7 @@ void Collision::gravityCollision(entt::registry &reg, float dt, int bottomBorder
     float gravity = reg.get<Physics>(entt).mass * GRAVITY;
 
     auto enttBelow = entityExists(reg, entt, enttR, DOWN);
-    if (reg.valid(enttBelow)) {
-        if (reg.any_of<Border>(enttBelow)) {
-            moveY(reg, entt, dt, 2, gravity);
-        }
-    } else {
+    if (!reg.valid(enttBelow)) {
         moveY(reg, entt, dt, 2, gravity);
     }
 }
@@ -344,14 +345,22 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
     if(!skip){
-        auto gridEntt=entityExists(reg,entt,enttR,direction);
+        entt::entity gridEntt=entt::null;
+        //Check if an entity exists in the direction the entity wants to move in
+        //want to move in right direction
+        if(direction % 2 == 0)  gridEntt=entityExists(reg,entt,enttR,RIGHT);
+        //want to move in left direction
+        else    gridEntt=entityExists(reg,entt,enttR,LEFT);
+        //Check if an entity exists in the direction the entity wants to move in
         if(reg.valid(gridEntt)){
+            //If there is something there, and it's a border, move in the opposite direction
             if(reg.all_of<Border>(gridEntt)){
-                if(direction % 2 ==0)    return(moveX(reg,entt,dt,3,magnitude*2,true));
-                else    return(moveX(reg,entt,dt,4,magnitude,true));
+                if(direction % 2 ==0)    return(moveX(reg,entt,dt,1,magnitude,true));
+                else    return(moveX(reg,entt,dt,2,magnitude,true));
             }
         }
     }
+    
     if (reg.any_of<Liquid>(entt)) {
         auto enttL = reg.get<Liquid>(entt);
         magnitude /= enttL.viscosity;
@@ -376,9 +385,20 @@ void Collision::moveX(entt::registry &reg, entt::entity entt, float dt, int dire
  *            magnitude float number
  * Returns:   N/A
  * Purpose:   Facilitates movement of entity in a given y direction */
-void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol) {
+void Collision::moveY(entt::registry &reg, entt::entity entt, float dt, int direction, float magnitude, bool ignoreCol, bool skip) {
     // get renderable component of entity
     auto enttR = reg.get<Renderable>(entt);
+    if(!skip){
+        //Check if an entity exists in the direction the entity wants to move in
+        auto gridEntt=entityExists(reg,entt,enttR,UP);
+        if(reg.valid(gridEntt)){
+            //If there is something there, and it's a border, move in the opposite direction
+            if(reg.all_of<Border>(gridEntt) && (direction % 2 == 1) && !reg.all_of<Gas>(entt)){
+                moveY(reg,entt,dt,2,magnitude*2,false, true);
+            }
+        }
+    }
+    
     //This integer determines which direction to move. Up is positive, down is negative
     int upOrDown = 1;
     if (direction % 2 == 0) upOrDown = -1;
@@ -432,7 +452,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
 
     //This only shows the spots of entities with their associated shape. It won't
     //show every single point on the play area where an "entity" might be (in the case of bugs)
-    
+    /*
     auto view = reg.view<Renderable>();
     for(auto ent : view){
         auto enttR=reg.get<Renderable>(ent);
@@ -446,7 +466,7 @@ void Collision::debugGrid(SpriteRenderer &spriteRenderer, entt::registry &reg) {
             }
         }
     }
-    
+    */
     // sorry about the hardcoded values, loops around outside and inside of play
     // area, so you can clearly see borders and entities
     for (int x = 33; x < 816; x++) {
@@ -487,7 +507,7 @@ void Collision::triangleEntityClaim(entt::registry &reg, entt::entity entt,
     int previousXLeft=0,    previousXRight=0;
     int xLeft=newEnttR.xPos,    xRight=newEnttR.xPos+newEnttR.xSize;
     //Descending for loop to register from the bottom-up of a triangle. 
-    for(int y=(int)(newEnttR.yPos+newEnttR.ySize); y > (int)newEnttR.yPos; y-=2){
+    for(int y=(int)(newEnttR.yPos+newEnttR.ySize-1); y > (int)newEnttR.yPos; y-=2){
         previousXLeft=xLeft;
         previousXRight=xRight;
         for(xLeft;xLeft <= xRight; xLeft++){
@@ -512,9 +532,12 @@ void Collision::triangleGravityCollision(entt::registry &reg, float dt, int bott
     auto enttR = reg.get<Renderable>(entt);
     float gravity = reg.get<Physics>(entt).mass * GRAVITY;
     //If there is no entity beneath the triangle
-    if (entityExists(reg,entt,enttR,DOWN,false) == entt::null){
-        entityUnclaim(reg,entt,enttR);
-        moveY(reg, entt, dt, 2, gravity);
+    auto gridEntt=entityExists(reg,entt,enttR,DOWN);
+    if(reg.valid(gridEntt)){
+        if(!reg.all_of<Border>(gridEntt)){
+            entityUnclaim(reg,entt,enttR);
+            moveY(reg, entt, dt, 2, gravity);
+        }
     }
 }
 
@@ -529,26 +552,6 @@ void Collision::destroyEnttAtLoc(entt::registry &reg, int x, int y) {
     
     entityUnclaim(reg, entt, enttR);
 }
-
-// void Collision::cleanBeforeMove(entt::registry *reg, entt::entity entity){
-//     auto enttR = reg->get<Renderable>(entity);
-//     for (int x = enttR.xPos - 1; x < enttR.xPos + enttR.xSize + 1; x++) {
-//         for (int y = enttR.yPos - 1; y < enttR.yPos + enttR.ySize + 1; y++) {
-//             // we ensure we're only erasing *this* component
-//             if (this->grid[x][y] == entity)
-//                 this->grid[x][y] = entt::null;
-//         }
-//     }
-// }
-
-// void Collision::updateAfterMove(entt::registry *reg, entt::entity entity){
-//     auto enttR = reg->get<Renderable>(entity);
-//     for (int x = enttR.xPos + 2; x < (enttR.xPos + enttR.xSize) - 2; x++) {
-//         for (int y = enttR.yPos + 2; y < (enttR.yPos + enttR.ySize) - 2; y++) {
-//             this->grid[x][y] = entity;
-//         }
-//     }
-// }
 
 /*
 *Arguments: entity registry, forcewave entity, delta frame time
@@ -571,7 +574,6 @@ void Collision::forcewaveCollision(entt::registry &reg, entt::entity entt,float 
                 reg.destroy(entt);
                 return;
             }
-            // auto enttR=reg.get<Renderable>(gridEntt);
             //If the grid entity has physics, push it in some direction
             int rotation=reg.get<Renderable>(entt).rotate;
             //If the explosion force wave goes to the right, push right
@@ -624,4 +626,39 @@ bool Collision::rayCollision(entt::registry &reg, entt::entity entt){
     /* check if ray entity meets liquid entity */
     /* if yes, then create refractive ray */
     return false;
+}
+
+/*
+*Arguments: entity registry, entity, delta time frame, array of thresholds that objects can't go past
+*Returns:   true if the entity got deleted, false if not
+*Purpose:   Pushes objects that are on or a little past the border back into the play area.
+*           If they are way past the border, the entity gets deleted as a safety mechanism */
+bool Collision::borderCollision(entt::registry &reg, entt:: entity entt, float dt, int borderThreshold[]){
+    auto enttR=reg.get<Renderable>(entt);
+    Renderable enttRNew;
+    bool deleteFlag=false;
+    //If the entity position is past the left border, try to push it back in
+    if(enttR.xPos<borderThreshold[2]){
+        moveX(reg,entt,dt,2,10);
+        enttRNew=reg.get<Renderable>(entt);
+        if(enttRNew.xPos<borderThreshold[2])    deleteFlag=true;
+    }
+    //If the entity position is past the right border, try to push it back in
+    else if(enttR.xPos+enttR.xSize>borderThreshold[3]){
+        moveX(reg,entt,dt,1,10,true);
+        enttRNew=reg.get<Renderable>(entt);
+        if(enttRNew.xPos+enttRNew.xSize<borderThreshold[2])    deleteFlag=true;
+    }
+    else if(enttR.yPos<borderThreshold[1]-15)   {
+        moveY(reg,entt,dt,2,10,false,true);
+        enttRNew=reg.get<Renderable>(entt);
+        if(enttRNew.yPos<5)    deleteFlag=true;
+    }
+    //Nuclear option, delete entity and it's grid spots
+    if(deleteFlag){
+            entityUnclaim(reg,entt, enttRNew);
+            reg.destroy(entt);
+            return true;
+    }
+    else    return false;
 }
