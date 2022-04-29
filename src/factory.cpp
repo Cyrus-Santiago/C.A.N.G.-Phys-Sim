@@ -33,6 +33,11 @@ entt::entity Factory::makeParticle(entt::registry &reg, std::string type, glm::v
     } else if (type == "BIRD") {
         reg.emplace<Bird>(entity);
         reg.emplace<Physics>(entity);
+    } else if (type == "LIGHTNING") {
+        reg.emplace<Lightning>(entity);
+        reg.emplace<Animated>(entity, 0.5f,0.0f,0.0f);
+        srand(rand() + (uint)entity % 8);
+        modifierX += (uint)entity % 8 - 4;
     } else {
         reg.emplace<Physics>(entity, 10.0f);
     }

@@ -20,5 +20,6 @@ The C.A.N.G. Physics Simulator is a simulation environment written in C/C++. The
 ## Attributions:
 
 -"blast.wav" audio clip obtained from https://www.zapsplat.com <br/>
+-"thundre.wav" audio clip obtained from https://www.zapsplat.com <br/>
 -"explosion.png" texture from Twemoji at https://twemoji.twitter.com/ is licensed under CCBY 4.0 <br/>
 

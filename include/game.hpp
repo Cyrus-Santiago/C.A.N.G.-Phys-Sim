@@ -36,7 +36,8 @@ enum GameState {
     GAME_RESIZE_OBJECT,
     GAME_DELETE_OBJECT,
     GAME_CLEAR,
-    GAME_CHAOS
+    GAME_CHAOS,
+    GAME_DRAW_LIGHTNING
 };
 
 // class to hold a lot of the game logic so we can decouple it from

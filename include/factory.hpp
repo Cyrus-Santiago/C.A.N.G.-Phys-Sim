@@ -72,6 +72,7 @@ struct Reflective{};
 struct Shape{};
 
 struct Light{};
+struct Lightning{};
 
 class Factory {
 public:
