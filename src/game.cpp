@@ -230,6 +230,23 @@ void Game::Update(float dt) {
             case GAME_CHAOS:
               Game::determineChaos();
               break;
+
+            case GAME_DRAW_LIGHTNING:{
+              int yPos=borderThreshold[1];
+              int newXPos=(int)newMouseClick.xPos;
+              sfxAudio.playAudio("audio/thundre.wav");
+              for(yPos;yPos < borderThreshold[0]; yPos+=6){
+                entity = factory.makeParticle(*reg, "LIGHTNING", glm::vec2((int) newXPos, (int) yPos), buttonColor);
+                if (!colEngine->registerEntity(* reg, entity)){
+                  reg->destroy(entity);
+                  break;
+                }
+              }
+              for(int i=0;i<5;i++){    
+                entity = factory.makeParticle(*reg, "FIRE", glm::vec2(newXPos+i,yPos), glm::vec4(1.0f,0.0f,0.0f,1.0f)); }
+              for(int j=0;j<5;j++){    
+                entity = factory.makeParticle(*reg, "FIRE", glm::vec2(newXPos-j,yPos), glm::vec4(1.0f,0.0f,0.0f,1.0f)); }
+              break;  }
           }
         }
         break;
@@ -317,43 +334,21 @@ GameState Game::determineGameState()  {
     //If a button WAS pressed
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
-      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
-        return GAME_DRAW_ELEMENT;
-      }
+      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  return GAME_DRAW_ELEMENT;
       //If the button pressed is a shape
-      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
-          return GAME_DRAW_SHAPE;
-      }
-        //If the button pressed is light feature
-      else if(pressedButton[0].ID == 33) {
-          return GAME_DRAW_RAY;
-      }
-      else if(pressedButton[0].ID == 34) {
-          return GAME_DRAW_BEAM;
-      }
-      else if(pressedButton[0].ID ==35) {
-          return GAME_DRAW_EXPLOSION;
-      }
-      else if (pressedButton[0].ID == 36) {
-        return GAME_GLASSIFY;
-      }
-      else if(pressedButton[0].ID == 37) {
-        return GAME_MOVE_OBJECT;
-      }
-      else if(pressedButton[0].ID == 38) {
-        return GAME_STASIS;
-      }
-      else if (pressedButton[0].ID == 39) {
-        return GAME_RESIZE_OBJECT;
-      }
-      else if (pressedButton[0].ID == 40) {
-        return GAME_DELETE_OBJECT;
-      }
-      else if (pressedButton[0].ID == 41) {
-        return GAME_CLEAR;
-      }
-      else if (pressedButton[0].ID == 42) {
-        return GAME_CHAOS;
+      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  return GAME_DRAW_SHAPE;
+      switch(pressedButton[0].ID) {
+        case 33: return GAME_DRAW_RAY;
+        case 34: return GAME_DRAW_BEAM;
+        case 35: return GAME_DRAW_EXPLOSION;
+        case 36: return GAME_GLASSIFY;
+        case 37: return GAME_MOVE_OBJECT;
+        case 38: return GAME_STASIS;
+        case 39: return GAME_RESIZE_OBJECT;
+        case 40: return GAME_DELETE_OBJECT;
+        case 41: return GAME_CLEAR;
+        case 42: return GAME_CHAOS;
+        case 43: return GAME_DRAW_LIGHTNING;
       }
     }
     return GAME_ACTIVE;
