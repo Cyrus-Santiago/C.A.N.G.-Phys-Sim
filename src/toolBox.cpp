@@ -117,8 +117,8 @@ void Tools::resizeObject(entt::registry &reg, Click newMouseClick, Collision *co
     else{ //Right Click shrinks object
         colEngine->entityUnclaim(reg,clickedObject,reg.get<Renderable>(clickedObject));
         reg.patch<Renderable>(clickedObject, [&reg, clickedObject, resizeRate](auto &obj){
-            obj.xPos+=(resizeRate);      obj.xSize-=resizeRate*2;
-            obj.yPos+=(resizeRate);      obj.ySize-=resizeRate*2;
+            obj.xSize-=resizeRate*2;     obj.xPos+=(resizeRate);
+            obj.ySize-=resizeRate*2;     obj.yPos+=(resizeRate); 
         });
         if(reg.get<Renderable>(clickedObject).yPos <= 2)
             reg.destroy(clickedObject);

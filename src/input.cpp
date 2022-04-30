@@ -2,9 +2,11 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
+#include "../include/screenshot.hpp"
 
 
 Audio audio;
+Screenshot screenshot;
 bool Input::mousePressed=false;
 bool Input::leftRightClick=false;
 double Input::xClick = 1;
@@ -101,6 +103,10 @@ void Input::processInput(GLFWwindow *window) {
       audio.adjustVolume(false);
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
       audio.pauseResumeAudio();
+    if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS)
+      //screenshot.takeScreenshot(screenWidth,screenHeight);
+      return; //Nothing to see here, move along traveler
+
 }
 
 // allows us to access mouse position data without using global variables
