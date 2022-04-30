@@ -21,7 +21,8 @@ std::vector<Button> Input::Buttons;
 int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
   //If the click was in the menu area
   if(mode==0){
-    if(yPos > screenHeight * 0.5){
+    //Comemnted out because more buttons have been added towards the top of the screen
+    //if(yPos > screenHeight * 0.4){
       for (int i = 0; i < Buttons.size(); ++i) {
         int upperBoundX=Buttons[i].Position.x + Buttons[i].Size.x;
         int upperBoundY=Buttons[i].Position.y + Buttons[i].Size.y;
@@ -48,7 +49,7 @@ int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
           return 0;
         }
       }
-    }
+    //}
   }
   //If the click is in the play area
   if((xPos < screenWidth*0.95+3) && (xPos > screenWidth*0.0425) &&

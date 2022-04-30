@@ -14,7 +14,7 @@ and it should not count towards his 1000 lines. */
 #include "../include/collision.hpp"
 #include "../include/toolBox.hpp"
 #include "../include/animation.hpp"
-
+#include <unistd.h>
 //#include "../include/simulation.hpp"
 //#include "../include/simulationObject.hpp"
 //#include "../include/entityMaestro.hpp"
@@ -177,7 +177,7 @@ void Game::Update(float dt) {
             case GAME_DRAW_EXPLOSION:
               sfxAudio.playAudio("audio/blast.wav");
               factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-10, newMouseClick.yPos-10),
-              glm::vec4(1.0f), glm::vec2(20.0f),"explosion","explosion",0.75f,106.66f);
+              glm::vec4(1.0f), glm::vec2(20.0f),"explosion","explosion",0.75f,106.66f,100.0f);
               for(int i=0; i<8; i++)  {
                 for(int j=0; j<10; j++){
                   entity = factory.makeParticle(* reg, "FIRE",glm::vec2((int) 
@@ -226,6 +226,27 @@ void Game::Update(float dt) {
             case GAME_CLEAR:
               tools.clearAll(reg);
               break;
+
+            case GAME_CHAOS:
+              Game::determineChaos();
+              break;
+
+            case GAME_DRAW_LIGHTNING:{
+              int yPos=borderThreshold[1];
+              int newXPos=(int)newMouseClick.xPos;
+              sfxAudio.playAudio("audio/thundre.wav");
+              for(yPos;yPos < borderThreshold[0]; yPos+=6){
+                entity = factory.makeParticle(*reg, "LIGHTNING", glm::vec2((int) newXPos, (int) yPos), buttonColor);
+                if (!colEngine->registerEntity(* reg, entity)){
+                  reg->destroy(entity);
+                  break;
+                }
+              }
+              for(int i=0;i<5;i++){    
+                entity = factory.makeParticle(*reg, "FIRE", glm::vec2(newXPos+i,yPos), glm::vec4(1.0f,0.0f,0.0f,1.0f)); }
+              for(int j=0;j<5;j++){    
+                entity = factory.makeParticle(*reg, "FIRE", glm::vec2(newXPos-j,yPos), glm::vec4(1.0f,0.0f,0.0f,1.0f)); }
+              break;  }
           }
         }
         break;
@@ -313,41 +334,215 @@ GameState Game::determineGameState()  {
     //If a button WAS pressed
     if(pressedButton.size()!=0) {
       //If the button pressed is an element
-      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  {
-        return GAME_DRAW_ELEMENT;
-      }
+      if(pressedButton[0].ID >= 0 && pressedButton[0].ID < 30)  return GAME_DRAW_ELEMENT;
       //If the button pressed is a shape
-      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  {
-          return GAME_DRAW_SHAPE;
-      }
-        //If the button pressed is light feature
-      else if(pressedButton[0].ID == 33) {
-          return GAME_DRAW_RAY;
-      }
-      else if(pressedButton[0].ID == 34) {
-          return GAME_DRAW_BEAM;
-      }
-      else if(pressedButton[0].ID ==35) {
-          return GAME_DRAW_EXPLOSION;
-      }
-      else if (pressedButton[0].ID == 36) {
-        return GAME_GLASSIFY;
-      }
-      else if(pressedButton[0].ID == 37) {
-        return GAME_MOVE_OBJECT;
-      }
-      else if(pressedButton[0].ID == 38) {
-        return GAME_STASIS;
-      }
-      else if (pressedButton[0].ID == 39) {
-        return GAME_RESIZE_OBJECT;
-      }
-      else if (pressedButton[0].ID == 40) {
-        return GAME_DELETE_OBJECT;
-      }
-      else if (pressedButton[0].ID == 41) {
-        return GAME_CLEAR;
+      else if(pressedButton[0].ID > 29 && pressedButton[0].ID < 33)  return GAME_DRAW_SHAPE;
+      switch(pressedButton[0].ID) {
+        case 33: return GAME_DRAW_RAY;
+        case 34: return GAME_DRAW_BEAM;
+        case 35: return GAME_DRAW_EXPLOSION;
+        case 36: return GAME_GLASSIFY;
+        case 37: return GAME_MOVE_OBJECT;
+        case 38: return GAME_STASIS;
+        case 39: return GAME_RESIZE_OBJECT;
+        case 40: return GAME_DELETE_OBJECT;
+        case 41: return GAME_CLEAR;
+        case 42: return GAME_CHAOS;
+        case 43: return GAME_DRAW_LIGHTNING;
       }
     }
     return GAME_ACTIVE;
+}
+/*
+*Arguments: N/A
+*Returns:   N/A
+*Purpose:   A random effect happens whenever you click on the play area with the
+*           "CHAOS" button pressed down. Honestly, I thought I would have fun and show off a sample
+*           of everything (or close to it) that the program is capable of doing. There is also some
+*           random humor thrown into here. This method is not meant to be taken seriously and is simply
+*           for comedic relief.*/
+void Game::determineChaos(){
+  srand(rand()+ int(newMouseClick.xPos * newMouseClick.yPos));
+  int outcome=rand() % 19;
+  //std::cout<<outcome<<std::endl;
+  auto view =reg->view<Renderable>();
+  switch(outcome){
+    //Makes Flaming birds (phoenix?)
+    case 1:
+      for(int i=0;i<20;i++){
+        entity=entity = factory.makeParticle(* reg, "BIRD",glm::vec2((int) 
+          newMouseClick.xPos+(2*i),(int) newMouseClick.yPos+(2*i)), glm::vec4(1.0f));
+        reg->emplace<Flammable>(entity);
+        reg->emplace<Animated>(entity,10000.0f,0.01f);
+      }
+      break;
+    //Close the game
+    case 2:
+      std::cout<<"Oops! You got unlucky and the game intentionally closed."<<std::endl;
+      glfwSetWindowShouldClose(Window,true);
+      break;
+    //Turn all current light,shapes, and physical entities to the color green
+    case 3:
+      for(auto entt : view){
+        if(reg->any_of<Physics,Shape,Light>(entt)){
+          reg->patch<Renderable>(entt, [](auto &renderable){
+            renderable.colorR=0.0f;
+            renderable.colorG=1.0f;
+            renderable.colorB=0.0f;
+          });
+        }
+      }
+      break;
+    //Delete all entities on screen like the clear all tool
+    case 4:
+      tools.deleteObject(reg, newMouseClick);
+      break;
+    //Make a single, weird explosion force vector
+    case 5:
+      factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos-10,
+        (int)newMouseClick.yPos-10), 123, glm::vec4(1.0f,0.0f,0.0f,1.0f), 
+        glm::vec2(Explosion::velocityArrayX[0], Explosion::velocityArrayY[0]));
+      break;
+    //Glassify the first shape found, if any
+    case 6:
+      for(auto entt : view){
+        if(reg->any_of<Shape>(entt)){
+          tools.glassify(reg, newMouseClick);
+          break;
+        }
+      }
+      break;
+    //Turn off the chaos button and turn on a random button
+    case 7:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int buttonNum= rand() % 42;
+      Buttons[42].Pressed=false;
+      Buttons[buttonNum].Pressed=true;
+      break;
+    }
+    //Make one explosion, water, and beam entity
+    case 8:
+      sfxAudio.playAudio("audio/zap.wav");
+      factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
+      factory.makeForceVector(*reg, glm::vec2((int) newMouseClick.xPos-10,
+        (int)newMouseClick.yPos-10), 275, glm::vec4(1.0f,0.0f,0.0f,1.0f), 
+        glm::vec2(Explosion::velocityArrayX[1], Explosion::velocityArrayY[1]));
+      entity = factory.makeParticle(* reg, "WATER", glm::vec2((int) newMouseClick.xPos, 
+        (int) newMouseClick.yPos), glm::vec4(0.0f,0.0f,1.0f,1.0f));
+      if (reg->all_of<Physics>(entity)) {
+        if (!colEngine->registerEntity(* reg, entity))reg->destroy(entity);
+      }
+      break;
+    //Make an "animation" with resizing and a random texture and noise
+    case 9:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int randomTexture= rand() % 4;
+      int randomNoise= rand() % 5;
+      std::string textureName;
+      switch(randomTexture){
+        case 0:
+          textureName="button2";
+          break;
+        case 1:
+          textureName="glass";
+          break;
+        case 2:
+          textureName="explosion";
+          break;
+        default:
+          textureName="triangle";
+          break;
+      }
+      switch(randomNoise){
+        case 0:
+          sfxAudio.playAudio("audio/zap.wav");
+          break;
+        case 1:
+          sfxAudio.playAudio("audio/blast.wav");
+          break;
+        case 2:
+          sfxAudio.playAudio("audio/electric.wav");
+          break;
+        case 3:
+          sfxAudio.playAudio("audio/blop.wav");
+          break;
+      }
+      factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-10, newMouseClick.yPos-10),
+        glm::vec4(1.0f), glm::vec2(20.0f),textureName,"random",1.0f,106.66f);
+      break;
+    }
+    //Make a black box that covers the screen and shrinks down over time
+    case 10:
+      factory.makeAnimation(*reg, glm::vec2(0,0), glm::vec4(1.0f), glm::vec2(1000.0f,860.0f),"button2",
+        "random",0.5f,0.0f);
+      break;
+    //Set light rays and beams on fire
+    case 11:
+      factory.makeRay( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(0.9f, 0.9f, 0.1f, 0.6f));
+      for(auto entt : view){
+        if(reg->all_of<Light>(entt)){
+          reg->emplace<Animated>(entt,4.0f,0.0f);
+          reg->emplace<Flammable>(entt);
+        }
+      }
+      break;
+    //Make a massive box that is on fire for a long, long time
+    case 12:
+      entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(1.0f), glm::vec2(40.0f), "BIG BOX");
+      if (!colEngine->registerEntity(* reg, entity)){  reg->destroy(entity);  }
+      else  reg->emplace<Animated>(entity,100000.0f,0.0f);
+      break;
+    //Makes a shape with the gas component but no physics or flammable
+    case 13:
+      entity=factory.makeShape( *reg, glm::vec2((int) newMouseClick.xPos,
+        (int)newMouseClick.yPos), glm::vec4(1.0f), glm::vec2(40.0f), "GAS BOX");
+      if (!colEngine->registerEntity(* reg, entity)){  reg->destroy(entity);}
+      else{
+        reg->emplace<Gas>(entity);
+        reg->erase<Physics>(entity);
+        reg->erase<Flammable>(entity);
+      }
+      break;
+    //Nothing can happen for 2 seconds
+    case 14:
+      usleep(2000000);
+      break;
+    //Print out Lorem ipsum placeholder text to stdout
+    case 15:
+      std::cout<<"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."<<std::endl;
+      break;
+    //Sit through a minute with blast.wav and electric.wav playing on repeat
+    case 16:{
+      bool blastOrWav=true;
+      for(int i=0;i<60;i++){
+        if(blastOrWav)    sfxAudio.playAudio("audio/blast.wav");
+        else              sfxAudio.playAudio("audio/electric.wav");
+        blastOrWav=!blastOrWav;
+        usleep(1000000);
+      }
+      break;
+    }
+    //The noise gets loud and chaotic
+    case 17:
+      for(int i=0; i<2; i++){
+        sfxAudio.playAudio("audio/playMusic1.wav");
+        usleep(100000);
+        sfxAudio.playAudio("audio/playMusic2.wav");
+      }
+      break;
+    //Explosion animation on the screen for a long, long time that rotates at a random pace
+    case 18:{
+      srand(time(0) * (int)newMouseClick.xPos * (int)newMouseClick.yPos);
+      int rotation= rand() % 1000;
+      factory.makeAnimation(*reg, glm::vec2(newMouseClick.xPos-100, newMouseClick.yPos-100),
+        glm::vec4(1.0f), glm::vec2(200.0f),"explosion","explosion",100000.0f,0.01f,rotation);
+      break;
+    }
+    //Nothing happens
+    default:
+      break;
+  }
 }
