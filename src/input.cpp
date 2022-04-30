@@ -2,10 +2,13 @@
 
 #include "../include/input.hpp"
 #include "../include/audio.hpp"
+#include "../include/screenshot.hpp"
 
 
 Audio audio;
+Screenshot screenshot;
 bool Input::mousePressed=false;
+bool Input::leftRightClick=false;
 double Input::xClick = 1;
 double Input::yClick = 1;
 int Input::screenHeight=1;
@@ -63,6 +66,7 @@ int Input::determineAreaPressed(double xPos, double yPos, int mode)  {
 void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int mods) {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
       mousePressed=true;
+      leftRightClick=false; //Left Click
     // debug statement
     //std::cout << "X=" << xPos << ", Y=" << yPos << std::endl;
     // we record the mouse click in the input class as a public variable
@@ -72,6 +76,16 @@ void Input::mouseClickCallback(GLFWwindow * window, int button, int action, int 
     // std::cout<<"mouse is clicking"<<std::endl;
     glfwGetCursorPos(window, &xPos, &yPos);
     //std::cout<<"Click registered at: x "<<xPos<<" y "<<yPos<<std::endl;
+    Input::validClick=Input::determineAreaPressed(xPos,yPos,0);
+  }
+  else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+      mousePressed=true;
+      leftRightClick=true; //Right Click
+    // we record the mouse click in the input class as a public variable
+    // declare variables that glfw will store mouse position data in
+    double xPos, yPos;
+    // call glfw to give us mouse position data
+    glfwGetCursorPos(window, &xPos, &yPos);
     Input::validClick=Input::determineAreaPressed(xPos,yPos,0);
   }
   else if (action==GLFW_RELEASE)  {
@@ -90,6 +104,10 @@ void Input::processInput(GLFWwindow *window) {
       audio.adjustVolume(false);
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
       audio.pauseResumeAudio();
+    if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS)
+      //screenshot.takeScreenshot(screenWidth,screenHeight);
+      return; //Nothing to see here, move along traveler
+
 }
 
 // allows us to access mouse position data without using global variables

@@ -38,6 +38,7 @@ public:
     static int validClick;
     //Used to register a mouse click
     static bool mousePressed;
+    static bool leftRightClick;
     static int screenWidth, screenHeight;
     //Called to check where the mouse was clicked. Activates any boxes if needed.
     static int determineAreaPressed(double xPos, double yPos, int mode);

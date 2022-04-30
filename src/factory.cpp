@@ -134,6 +134,12 @@ entt::entity Factory::makeForceVector(entt::registry &reg, glm::vec2 position,
     reg.emplace<Triangle>(entity, trianglePoints);
     return entity;
 }
+
+/* Arguments: entity registry, int width, int height, color vector
+ * Returns:   N/A
+ * Purpose:   Intakes screen and color information, and creates the physical border 
+ *            that is used to calculate collisions between objects and the edge of the 
+ *            the play area. */
 void Factory::makeBorder(entt::registry &reg, int scrWidth, int scrHeight, glm::vec4 color){
     int areaWidth=scrWidth*0.9, areaHeight=scrHeight*0.4;
     int xPos=scrWidth*0.05, yPos=scrHeight*0.05;
